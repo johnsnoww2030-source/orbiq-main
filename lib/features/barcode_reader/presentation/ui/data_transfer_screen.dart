@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 
@@ -22,6 +23,9 @@ class DataTransferScreenState extends State<DataTransferScreen> {
   final TextEditingController _ipController = TextEditingController();
   bool isServer = true;
   String? serverIpAddress;
+  int totalScans = 0;
+  int serverScans = 0;
+  int clientScans = 0;
 
   @override
   void initState() {
@@ -40,58 +44,104 @@ class DataTransferScreenState extends State<DataTransferScreen> {
     }
   }
 
+  void _copyToClipboard(String text) {
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('IP کپی شد'),
+        duration: Duration(seconds: 1),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: isDark
+          ? const Color(0xFF0F0F0F)
+          : const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text(
-          'انتقال داده',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: isDark ? 0.1 : 0.2),
-                borderRadius: BorderRadius.circular(20),
+                color: theme.primaryColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    isServer ? 'سرور' : 'کلاینت',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Switch(
-                    value: isServer,
-                    onChanged: (value) {
-                      if (!isServer) {
-                        context.read<ChatBloc>().add(DisconnectEvent());
-                      }
-                      setState(() {
-                        isServer = value;
-                      });
-                    },
-                    activeThumbColor: Colors.white,
-                    activeTrackColor: theme.primaryColor.withValues(alpha: 0.5),
-                    inactiveThumbColor: Colors.grey.shade300,
-                    inactiveTrackColor: Colors.grey.shade400,
-                  ),
-                ],
+              child: Icon(
+                Icons.qr_code_scanner_rounded,
+                color: theme.primaryColor,
+                size: 24,
               ),
             ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Barcode Scanner',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                Text(
+                  'Scan and manage barcodes in server or client mode',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          BlocBuilder<ChatBloc, ChatState>(
+            builder: (context, state) {
+              final isConnected = state is ChatConnected;
+              return Container(
+                margin: const EdgeInsets.only(left: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: isConnected
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.grey.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isConnected ? Colors.red : Colors.grey,
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isConnected ? Icons.link_off : Icons.link,
+                      size: 16,
+                      color: isConnected ? Colors.red : Colors.grey,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      isConnected ? 'Disconnect' : 'Disconnected',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: isConnected ? Colors.red : Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
-          const SizedBox(width: 8),
         ],
       ),
       body: BlocConsumer<ChatBloc, ChatState>(
@@ -112,6 +162,12 @@ class DataTransferScreenState extends State<DataTransferScreen> {
                 behavior: SnackBarBehavior.floating,
               ),
             );
+          } else if (state is ChatConnected) {
+            setState(() {
+              totalScans = state.messages.length;
+              serverScans = state.messages.where((m) => m.isSent).length;
+              clientScans = state.messages.where((m) => !m.isSent).length;
+            });
           }
         },
         builder: (context, state) {
@@ -133,82 +189,332 @@ class DataTransferScreenState extends State<DataTransferScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Statistics Cards
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  context,
+                  'Total Scans',
+                  totalScans.toString(),
+                  Icons.bar_chart_rounded,
+                  Colors.grey,
+                  isDark,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatCard(
+                  context,
+                  'Server Scans',
+                  serverScans.toString(),
+                  Icons.dns_rounded,
+                  Colors.blue,
+                  isDark,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatCard(
+                  context,
+                  'Client Scans',
+                  clientScans.toString(),
+                  Icons.computer_rounded,
+                  Colors.purple,
+                  isDark,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // Main Content Row
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Left Panel - Mode Selection
+              Expanded(child: _buildModeSelectionPanel(context, theme, isDark)),
+              const SizedBox(width: 20),
+
+              // Right Panel - Scan Barcode
+              Expanded(child: _buildScanPanel(context, theme, isDark)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(
+    BuildContext context,
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+    bool isDark,
+  ) {
     return Container(
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            isDark
-                ? const Color(0xFF1A1A1A)
-                : theme.primaryColor.withValues(alpha: 0.05),
-            theme.scaffoldBackgroundColor,
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+        color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE0E0E0),
         ),
       ),
-      child: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
-            child: Card(
-              elevation: 8,
-              shadowColor: theme.primaryColor.withValues(alpha: 0.3),
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 500),
-                padding: const EdgeInsets.all(24.0),
-                child: isServer
-                    ? _buildServerUI(context, theme, isDark)
-                    : _buildClientUI(context, theme, isDark),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
+              Icon(icon, size: 18, color: color),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: color,
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModeSelectionPanel(
+    BuildContext context,
+    ThemeData theme,
+    bool isDark,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE0E0E0),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Select Mode',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Toggle Switch
+          Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF0F0F0F) : const Color(0xFFF5F5F5),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildModeToggle(
+                    context,
+                    'Server Mode',
+                    Icons.dns_rounded,
+                    isServer,
+                    true,
+                    theme,
+                    isDark,
+                  ),
+                ),
+                Expanded(
+                  child: _buildModeToggle(
+                    context,
+                    'Client Mode',
+                    Icons.computer_rounded,
+                    !isServer,
+                    false,
+                    theme,
+                    isDark,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Setup Area
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF0F0F0F) : const Color(0xFFF8F9FA),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: isServer
+                ? _buildServerSetup(context, theme, isDark)
+                : _buildClientSetup(context, theme, isDark),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModeToggle(
+    BuildContext context,
+    String label,
+    IconData icon,
+    bool isActive,
+    bool isServerMode,
+    ThemeData theme,
+    bool isDark,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isServer = isServerMode;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        decoration: BoxDecoration(
+          color: isActive
+              ? (isDark ? const Color(0xFF2A2A2A) : Colors.white)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isActive
+                  ? theme.primaryColor
+                  : (isDark ? Colors.grey.shade600 : Colors.grey.shade400),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+                color: isActive
+                    ? (isDark ? Colors.white : Colors.black87)
+                    : (isDark ? Colors.grey.shade600 : Colors.grey.shade400),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildServerUI(BuildContext context, ThemeData theme, bool isDark) {
+  Widget _buildServerSetup(BuildContext context, ThemeData theme, bool isDark) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: theme.primaryColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Icon(Icons.dns_rounded, size: 60, color: theme.primaryColor),
-        ),
-        const SizedBox(height: 20),
+        Icon(Icons.dns_rounded, size: 48, color: Colors.blue),
+        const SizedBox(height: 16),
         Text(
-          'راه‌اندازی سرور',
-          style: theme.textTheme.headlineSmall?.copyWith(
+          'Server Setup',
+          style: TextStyle(
+            fontSize: 18,
             fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : Colors.black87,
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'برای شروع انتقال داده، سرور را راه‌اندازی کنید',
+          'Start the server to enable barcode data transfer',
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(
+          style: TextStyle(
+            fontSize: 13,
             color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
           ),
         ),
         const SizedBox(height: 24),
+
+        // Server IP Display
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE0E0E0),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Your Server IP',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    serverIpAddress ?? '...',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                  ),
+                  if (serverIpAddress != null)
+                    IconButton(
+                      icon: const Icon(Icons.copy, size: 18),
+                      onPressed: () => _copyToClipboard(serverIpAddress!),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Start Server Button
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
             onPressed: () {
               context.read<ChatBloc>().add(StartServerEvent());
-              Navigator.pop(context);
             },
             icon: const Icon(Icons.play_arrow_rounded),
             label: const Text(
-              'شروع سرور',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              'Start Server',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              backgroundColor: isDark ? Colors.white : Colors.black,
+              foregroundColor: isDark ? Colors.black : Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
         ),
@@ -216,49 +522,79 @@ class DataTransferScreenState extends State<DataTransferScreen> {
     );
   }
 
-  Widget _buildClientUI(BuildContext context, ThemeData theme, bool isDark) {
+  Widget _buildClientSetup(BuildContext context, ThemeData theme, bool isDark) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: theme.primaryColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Icon(
-            Icons.devices_rounded,
-            size: 60,
-            color: theme.primaryColor,
-          ),
-        ),
-        const SizedBox(height: 20),
+        Icon(Icons.computer_rounded, size: 48, color: Colors.purple),
+        const SizedBox(height: 16),
         Text(
-          'اتصال به سرور',
-          style: theme.textTheme.headlineSmall?.copyWith(
+          'Client Setup',
+          style: TextStyle(
+            fontSize: 18,
             fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : Colors.black87,
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'آدرس IP سرور را وارد کنید',
+          'Enter the server IP address to connect',
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(
+          style: TextStyle(
+            fontSize: 13,
             color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
           ),
         ),
         const SizedBox(height: 24),
-        TextField(
-          controller: _ipController,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 16),
-          decoration: InputDecoration(
-            labelText: 'IP سرور',
-            hintText: '192.168.1.100',
-            prefixIcon: Icon(Icons.computer_rounded, color: theme.primaryColor),
+
+        // Server IP Input
+        Container(
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE0E0E0),
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: Text(
+                  'Server IP Address',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                  ),
+                ),
+              ),
+              TextField(
+                controller: _ipController,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Enter server IP address',
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.refresh, size: 20),
+                    onPressed: () {
+                      _ipController.clear();
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
+
+        // Connect Button
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
@@ -267,39 +603,111 @@ class DataTransferScreenState extends State<DataTransferScreen> {
                 ConnectToServerEvent(_ipController.text),
               );
             },
-            icon: const Icon(Icons.link_rounded),
+            icon: const Icon(Icons.wifi, size: 20),
             label: const Text(
-              'اتصال به سرور',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              'Connect to Server',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              backgroundColor: isDark
+                  ? Colors.grey.shade800
+                  : Colors.grey.shade700,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
+
+        // Auto Connect Button
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
             onPressed: () {
               context.read<ChatBloc>().add(AutoConnectToServerEvent());
             },
-            icon: Icon(Icons.autorenew_rounded, color: theme.primaryColor),
-            label: Text(
-              'اتصال خودکار',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: theme.primaryColor,
-              ),
+            icon: const Icon(Icons.autorenew_rounded, size: 20),
+            label: const Text(
+              'Auto Connect',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
             style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              side: BorderSide(color: theme.primaryColor, width: 2),
+              foregroundColor: isDark
+                  ? Colors.grey.shade300
+                  : Colors.grey.shade700,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              side: BorderSide(
+                color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildScanPanel(BuildContext context, ThemeData theme, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? const Color(0xFF2A2A2A) : const Color(0xFFE0E0E0),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Scan Barcode',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          Container(
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF0F0F0F) : const Color(0xFFF8F9FA),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 32,
+                    color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    isServer
+                        ? 'Please start the server first'
+                        : 'Please connect to server first',
+                    style: TextStyle(
+                      color: isDark
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade600,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
