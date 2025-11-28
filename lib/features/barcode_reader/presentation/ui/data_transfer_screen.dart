@@ -42,41 +42,56 @@ class DataTransferScreenState extends State<DataTransferScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'انتقال داده',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
-        elevation: 2,
         actions: [
-          Row(
-            children: [
-              Switch(
-                value: isServer,
-                onChanged: (value) {
-                  if (!isServer) {
-                    context.read<ChatBloc>().add(DisconnectEvent());
-                  }
-                  setState(() {
-                    isServer = value;
-                  });
-                },
-                activeThumbColor: Colors.white,
-                activeTrackColor: Colors.indigo[300],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: isDark ? 0.1 : 0.2),
+                borderRadius: BorderRadius.circular(20),
               ),
-              Text(
-                isServer ? 'سرور' : 'کلاینت',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    isServer ? 'سرور' : 'کلاینت',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Switch(
+                    value: isServer,
+                    onChanged: (value) {
+                      if (!isServer) {
+                        context.read<ChatBloc>().add(DisconnectEvent());
+                      }
+                      setState(() {
+                        isServer = value;
+                      });
+                    },
+                    activeThumbColor: Colors.white,
+                    activeTrackColor: theme.primaryColor.withValues(alpha: 0.5),
+                    inactiveThumbColor: Colors.grey.shade300,
+                    inactiveTrackColor: Colors.grey.shade400,
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-            ],
+            ),
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: BlocConsumer<ChatBloc, ChatState>(
@@ -101,13 +116,10 @@ class DataTransferScreenState extends State<DataTransferScreen> {
         },
         builder: (context, state) {
           if (state is ChatLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.indigo),
+            return Center(
+              child: CircularProgressIndicator(color: theme.primaryColor),
             );
           } else if (state is ChatConnected) {
-            _messageController.text = state.messages.isNotEmpty
-                ? state.messages.last.text
-                : '';
             return _buildChatUI(context, state.messages, state.clients);
           } else {
             return _buildInitialUI(context);
@@ -118,99 +130,176 @@ class DataTransferScreenState extends State<DataTransferScreen> {
   }
 
   Widget _buildInitialUI(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: isServer
-          ? Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  context.read<ChatBloc>().add(StartServerEvent());
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigo,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'شروع سرور',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            isDark
+                ? const Color(0xFF1A1A1A)
+                : theme.primaryColor.withValues(alpha: 0.05),
+            theme.scaffoldBackgroundColor,
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20.0),
+            child: Card(
+              elevation: 8,
+              shadowColor: theme.primaryColor.withValues(alpha: 0.3),
+              child: Container(
+                constraints: const BoxConstraints(maxWidth: 500),
+                padding: const EdgeInsets.all(24.0),
+                child: isServer
+                    ? _buildServerUI(context, theme, isDark)
+                    : _buildClientUI(context, theme, isDark),
               ),
-            )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextField(
-                  controller: _ipController,
-                  decoration: InputDecoration(
-                    labelText: 'IP سرور',
-                    hintText: 'مثال: 192.168.1.100',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Colors.indigo,
-                        width: 2,
-                      ),
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.computer,
-                      color: Colors.indigo,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () {
-                    context.read<ChatBloc>().add(
-                      ConnectToServerEvent(_ipController.text),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'اتصال به سرور',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    context.read<ChatBloc>().add(AutoConnectToServerEvent());
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo[700],
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'اتصال خودکار به سرور',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildServerUI(BuildContext context, ThemeData theme, bool isDark) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: theme.primaryColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Icon(Icons.dns_rounded, size: 60, color: theme.primaryColor),
+        ),
+        const SizedBox(height: 20),
+        Text(
+          'راه‌اندازی سرور',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'برای شروع انتقال داده، سرور را راه‌اندازی کنید',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+          ),
+        ),
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              context.read<ChatBloc>().add(StartServerEvent());
+              Navigator.pop(context);
+            },
+            icon: const Icon(Icons.play_arrow_rounded),
+            label: const Text(
+              'شروع سرور',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildClientUI(BuildContext context, ThemeData theme, bool isDark) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: theme.primaryColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Icon(
+            Icons.devices_rounded,
+            size: 60,
+            color: theme.primaryColor,
+          ),
+        ),
+        const SizedBox(height: 20),
+        Text(
+          'اتصال به سرور',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'آدرس IP سرور را وارد کنید',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+          ),
+        ),
+        const SizedBox(height: 24),
+        TextField(
+          controller: _ipController,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 16),
+          decoration: InputDecoration(
+            labelText: 'IP سرور',
+            hintText: '192.168.1.100',
+            prefixIcon: Icon(Icons.computer_rounded, color: theme.primaryColor),
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              context.read<ChatBloc>().add(
+                ConnectToServerEvent(_ipController.text),
+              );
+            },
+            icon: const Icon(Icons.link_rounded),
+            label: const Text(
+              'اتصال به سرور',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () {
+              context.read<ChatBloc>().add(AutoConnectToServerEvent());
+            },
+            icon: Icon(Icons.autorenew_rounded, color: theme.primaryColor),
+            label: Text(
+              'اتصال خودکار',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: theme.primaryColor,
+              ),
+            ),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              side: BorderSide(color: theme.primaryColor, width: 2),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -219,54 +308,113 @@ class DataTransferScreenState extends State<DataTransferScreen> {
     List<Message> messages,
     List<ClientInfo> clients,
   ) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Column(
       children: [
         if (isServer)
           Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color: Colors.indigo[50],
+              color: theme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
             ),
-            margin: const EdgeInsets.all(8.0),
+            margin: const EdgeInsets.all(12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.computer, color: Colors.indigo),
-                    const SizedBox(width: 8),
-                    Text(
-                      'آدرس سرور: ${serverIpAddress ?? 'در حال تعیین'}',
-                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: theme.cardTheme.color,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        Icons.dns_rounded,
+                        color: theme.primaryColor,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'آدرس سرور',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: isDark
+                                  ? Colors.grey.shade400
+                                  : Colors.grey.shade600,
+                            ),
+                          ),
+                          Text(
+                            serverIpAddress ?? 'در حال تعیین...',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
                 if (clients.isNotEmpty) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
+                  Divider(color: theme.dividerColor),
+                  const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.people, color: Colors.indigo),
-                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: theme.cardTheme.color,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.people_rounded,
+                          color: theme.primaryColor,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
                       Text(
-                        'تعداد کلاینت‌های متصل: ${clients.length}',
-                        style: const TextStyle(fontWeight: FontWeight.w500),
+                        '${clients.length} کلاینت متصل',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
+                  const SizedBox(height: 8),
                   ...clients.map(
-                    (client) => Padding(
-                      padding: const EdgeInsets.only(right: 32, top: 4),
-                      child: Text(
-                        'کلاینت: ${client.address}',
-                        style: TextStyle(color: Colors.indigo[700]),
+                    (client) => Container(
+                      margin: const EdgeInsets.only(top: 6, right: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.cardTheme.color?.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.circle,
+                            size: 8,
+                            color: Colors.green.shade600,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            client.address,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -275,115 +423,134 @@ class DataTransferScreenState extends State<DataTransferScreen> {
             ),
           ),
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            itemCount: messages.length,
-            itemBuilder: (context, index) {
-              final message = messages[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Align(
-                  alignment: message.isSent
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  child: Container(
-                    constraints: BoxConstraints(
-                      maxWidth: MediaQuery.of(context).size.width * 0.75,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: message.isSent ? Colors.indigo : Colors.grey[200],
-                      borderRadius: BorderRadius.circular(16).copyWith(
-                        bottomRight: message.isSent
-                            ? const Radius.circular(0)
-                            : null,
-                        bottomLeft: !message.isSent
-                            ? const Radius.circular(0)
-                            : null,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  isDark ? const Color(0xFF1A1A1A) : Colors.grey.shade50,
+                  theme.scaffoldBackgroundColor,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                final message = messages[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Align(
+                    alignment: message.isSent
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Container(
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.75,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: message.isSent
+                            ? theme.primaryColor
+                            : (isDark
+                                  ? const Color(0xFF2C2C2C)
+                                  : Colors.grey.shade200),
+                        borderRadius: BorderRadius.circular(16).copyWith(
+                          bottomRight: message.isSent
+                              ? const Radius.circular(4)
+                              : null,
+                          bottomLeft: !message.isSent
+                              ? const Radius.circular(4)
+                              : null,
                         ),
-                      ],
-                    ),
-                    child: Text(
-                      message.text,
-                      style: TextStyle(
-                        color: message.isSent ? Colors.white : Colors.black87,
-                        fontSize: 15,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(
+                              alpha: isDark ? 0.3 : 0.1,
+                            ),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        message.text,
+                        style: TextStyle(
+                          color: message.isSent
+                              ? Colors.white
+                              : (isDark ? Colors.white : Colors.black87),
+                          fontSize: 15,
+                          height: 1.4,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
         Container(
           padding: const EdgeInsets.all(12.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.cardTheme.color,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 4,
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 8,
                 offset: const Offset(0, -2),
               ),
             ],
           ),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _messageController,
-                  decoration: InputDecoration(
-                    hintText: 'پیام خود را وارد کنید',
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide.none,
+          child: SafeArea(
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    decoration: const InputDecoration(
+                      hintText: 'پیام خود را وارد کنید...',
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
+                    style: const TextStyle(fontSize: 15),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              CircleAvatar(
-                backgroundColor: Colors.indigo,
-                child: IconButton(
-                  icon: const Icon(Icons.send, color: Colors.white),
+                const SizedBox(width: 8),
+                IconButton.filled(
+                  icon: const Icon(Icons.send_rounded),
                   onPressed: () {
-                    context.read<ChatBloc>().add(
-                      SendMessageEvent(_messageController.text),
-                    );
-                    _messageController.clear();
+                    if (_messageController.text.trim().isNotEmpty) {
+                      context.read<ChatBloc>().add(
+                        SendMessageEvent(_messageController.text),
+                      );
+                      _messageController.clear();
+                    }
                   },
-                ),
-              ),
-              const SizedBox(width: 8),
-              CircleAvatar(
-                backgroundColor: Colors.red,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.power_settings_new,
-                    color: Colors.white,
+                  style: IconButton.styleFrom(
+                    backgroundColor: theme.primaryColor,
+                    foregroundColor: Colors.white,
                   ),
+                ),
+                const SizedBox(width: 4),
+                IconButton.filled(
+                  icon: const Icon(Icons.power_settings_new_rounded),
                   onPressed: () {
                     context.read<ChatBloc>().add(DisconnectEvent());
                   },
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
