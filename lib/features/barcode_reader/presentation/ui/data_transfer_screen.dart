@@ -5,8 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 
-import '../../domain/entities/message.dart';
-import '../../domain/entities/client_info.dart';
 import '../controller/chat_bloc.dart';
 import '../controller/chat_event_.dart';
 import '../controller/chat_state.dart';
@@ -103,7 +101,25 @@ class DataTransferScreenState extends State<DataTransferScreen> {
         actions: [
           BlocBuilder<ChatBloc, ChatState>(
             builder: (context, state) {
-              final isConnected = state is ChatConnected;
+              String statusText = 'Disconnected';
+              Color statusColor = Colors.grey;
+              IconData statusIcon = Icons.link_off;
+
+              if (state is ChatConnected) {
+                switch (state.connectionType) {
+                  case ConnectionType.serverRunning:
+                    statusText = 'Server Running';
+                    statusColor = Colors.orange;
+                    statusIcon = Icons.dns_rounded;
+                    break;
+                  case ConnectionType.connected:
+                    statusText = 'Connected';
+                    statusColor = Colors.green;
+                    statusIcon = Icons.check_circle;
+                    break;
+                }
+              }
+
               return Container(
                 margin: const EdgeInsets.only(left: 12),
                 padding: const EdgeInsets.symmetric(
@@ -111,30 +127,21 @@ class DataTransferScreenState extends State<DataTransferScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: isConnected
-                      ? Colors.red.withValues(alpha: 0.1)
-                      : Colors.grey.withValues(alpha: 0.1),
+                  color: statusColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isConnected ? Colors.red : Colors.grey,
-                    width: 1,
-                  ),
+                  border: Border.all(color: statusColor, width: 1),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      isConnected ? Icons.link_off : Icons.link,
-                      size: 16,
-                      color: isConnected ? Colors.red : Colors.grey,
-                    ),
+                    Icon(statusIcon, size: 16, color: statusColor),
                     const SizedBox(width: 6),
                     Text(
-                      isConnected ? 'Disconnect' : 'Disconnected',
+                      statusText,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: isConnected ? Colors.red : Colors.grey,
+                        color: statusColor,
                       ),
                     ),
                   ],
@@ -176,7 +183,7 @@ class DataTransferScreenState extends State<DataTransferScreen> {
               child: CircularProgressIndicator(color: theme.primaryColor),
             );
           } else if (state is ChatConnected) {
-            return _buildChatUI(context, state.messages, state.clients);
+            return _buildChatUI(context, state);
           } else {
             return _buildInitialUI(context);
           }
@@ -711,17 +718,13 @@ class DataTransferScreenState extends State<DataTransferScreen> {
     );
   }
 
-  Widget _buildChatUI(
-    BuildContext context,
-    List<Message> messages,
-    List<ClientInfo> clients,
-  ) {
+  Widget _buildChatUI(BuildContext context, ChatConnected state) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
     return Column(
       children: [
-        if (isServer)
+        if (state.isServer)
           Container(
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
@@ -770,7 +773,7 @@ class DataTransferScreenState extends State<DataTransferScreen> {
                     ),
                   ],
                 ),
-                if (clients.isNotEmpty) ...[
+                if (state.clients.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   Divider(color: theme.dividerColor),
                   const SizedBox(height: 12),
@@ -790,7 +793,7 @@ class DataTransferScreenState extends State<DataTransferScreen> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        '${clients.length} کلاینت متصل',
+                        '${state.clients.length} کلاینت متصل',
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -798,7 +801,7 @@ class DataTransferScreenState extends State<DataTransferScreen> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  ...clients.map(
+                  ...state.clients.map(
                     (client) => Container(
                       margin: const EdgeInsets.only(top: 6, right: 12),
                       padding: const EdgeInsets.symmetric(
@@ -844,9 +847,9 @@ class DataTransferScreenState extends State<DataTransferScreen> {
             ),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              itemCount: messages.length,
+              itemCount: state.messages.length,
               itemBuilder: (context, index) {
-                final message = messages[index];
+                final message = state.messages[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Align(
@@ -933,16 +936,20 @@ class DataTransferScreenState extends State<DataTransferScreen> {
                 const SizedBox(width: 8),
                 IconButton.filled(
                   icon: const Icon(Icons.send_rounded),
-                  onPressed: () {
-                    if (_messageController.text.trim().isNotEmpty) {
-                      context.read<ChatBloc>().add(
-                        SendMessageEvent(_messageController.text),
-                      );
-                      _messageController.clear();
-                    }
-                  },
+                  onPressed: !state.canSendMessage
+                      ? null
+                      : () {
+                          if (_messageController.text.trim().isNotEmpty) {
+                            context.read<ChatBloc>().add(
+                              SendMessageEvent(_messageController.text),
+                            );
+                            _messageController.clear();
+                          }
+                        },
                   style: IconButton.styleFrom(
-                    backgroundColor: theme.primaryColor,
+                    backgroundColor: !state.canSendMessage
+                        ? Colors.grey.shade400
+                        : theme.primaryColor,
                     foregroundColor: Colors.white,
                   ),
                 ),
