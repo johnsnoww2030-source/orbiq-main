@@ -1,0 +1,626 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Persian (`fa`).
+class AppLocalizationsFa extends AppLocalizations {
+  AppLocalizationsFa([String locale = 'fa']) : super(locale);
+
+  @override
+  String get appTitle => 'اوربیک';
+
+  @override
+  String get loading => 'در حال بارگذاری...';
+
+  @override
+  String get error => 'خطا';
+
+  @override
+  String get success => 'موفق';
+
+  @override
+  String get cancel => 'انصراف';
+
+  @override
+  String get save => 'ذخیره';
+
+  @override
+  String get edit => 'ویرایش';
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String get confirm => 'تایید';
+
+  @override
+  String get back => 'بازگشت';
+
+  @override
+  String get next => 'بعدی';
+
+  @override
+  String get done => 'انجام شد';
+
+  @override
+  String get search => 'جستجو';
+
+  @override
+  String get noResults => 'نتیجه‌ای یافت نشد';
+
+  @override
+  String get login => 'ورود';
+
+  @override
+  String get logout => 'خروج';
+
+  @override
+  String get username => 'نام کاربری';
+
+  @override
+  String get password => 'رمز عبور';
+
+  @override
+  String get enterUsername => 'نام کاربری را وارد کنید';
+
+  @override
+  String get enterPassword => 'رمز عبور را وارد کنید';
+
+  @override
+  String get changePassword => 'تغییر رمز عبور';
+
+  @override
+  String get oldPassword => 'رمز عبور فعلی';
+
+  @override
+  String get newPassword => 'رمز عبور جدید';
+
+  @override
+  String get confirmPassword => 'تکرار رمز عبور';
+
+  @override
+  String get enterOldPassword => 'رمز عبور فعلی را وارد کنید';
+
+  @override
+  String get enterNewPassword => 'رمز عبور جدید را وارد کنید';
+
+  @override
+  String get confirmNewPassword => 'رمز عبور جدید را تکرار کنید';
+
+  @override
+  String get passwordsDontMatch => 'رمزهای عبور مطابقت ندارند';
+
+  @override
+  String get passwordChanged => 'رمز عبور با موفقیت تغییر کرد';
+
+  @override
+  String get invalidCredentials => 'نام کاربری یا رمز عبور نادرست است';
+
+  @override
+  String get managerDashboard => 'داشبورد مدیر';
+
+  @override
+  String get welcomeManager => 'خوش آمدید، مدیر گرامی';
+
+  @override
+  String get addProduct => 'افزودن محصول';
+
+  @override
+  String get sale => 'فروش';
+
+  @override
+  String get userManagement => 'مدیریت کاربران';
+
+  @override
+  String get viewReports => 'مشاهده گزارشات';
+
+  @override
+  String get update => 'بروزرسانی';
+
+  @override
+  String get sellerDashboard => 'داشبورد فروشنده';
+
+  @override
+  String get welcomeSeller => 'خوش آمدید، فروشنده گرامی';
+
+  @override
+  String get startSelling => 'شروع فروش';
+
+  @override
+  String get viewProducts => 'مشاهده محصولات';
+
+  @override
+  String get scanBarcode => 'اسکن بارکد';
+
+  @override
+  String get products => 'محصولات';
+
+  @override
+  String get productName => 'نام محصول';
+
+  @override
+  String get productPrice => 'قیمت محصول';
+
+  @override
+  String get productQuantity => 'تعداد محصول';
+
+  @override
+  String get productSerial => 'سریال محصول';
+
+  @override
+  String get enterProductName => 'لطفاً نام محصول را وارد کنید';
+
+  @override
+  String get enterProductPrice => 'قیمت محصول را وارد کنید';
+
+  @override
+  String get enterProductQuantity => 'تعداد محصول را وارد کنید';
+
+  @override
+  String get enterProductSerial => 'سریال محصول را وارد کنید';
+
+  @override
+  String get addNewProduct => 'افزودن محصول جدید';
+
+  @override
+  String get editProduct => 'ویرایش محصول';
+
+  @override
+  String get deleteProduct => 'حذف محصول';
+
+  @override
+  String get productAdded => 'محصول با موفقیت اضافه شد';
+
+  @override
+  String get productUpdated => 'محصول با موفقیت به‌روز شد';
+
+  @override
+  String get productDeleted => 'محصول با موفقیت حذف شد';
+
+  @override
+  String get noProductsFound => 'محصولی یافت نشد';
+
+  @override
+  String get searchProducts => 'جستجوی محصولات';
+
+  @override
+  String get filterProducts => 'فیلتر محصولات';
+
+  @override
+  String get sortProducts => 'مرتب‌سازی محصولات';
+
+  @override
+  String get payment => 'پرداخت';
+
+  @override
+  String get total => 'مجموع';
+
+  @override
+  String get subtotal => 'جمع کل';
+
+  @override
+  String get discount => 'تخفیف';
+
+  @override
+  String get tax => 'مالیات';
+
+  @override
+  String get checkout => 'تسویه حساب';
+
+  @override
+  String get paymentMethod => 'روش پرداخت';
+
+  @override
+  String get cash => 'نقدی';
+
+  @override
+  String get card => 'کارت';
+
+  @override
+  String get paymentSuccessful => 'پرداخت موفق';
+
+  @override
+  String get paymentFailed => 'پرداخت ناموفق';
+
+  @override
+  String get invoice => 'فاکتور';
+
+  @override
+  String get printInvoice => 'چاپ فاکتور';
+
+  @override
+  String get reports => 'گزارشات';
+
+  @override
+  String get dailyReport => 'گزارش روزانه';
+
+  @override
+  String get weeklyReport => 'گزارش هفتگی';
+
+  @override
+  String get monthlyReport => 'گزارش ماهانه';
+
+  @override
+  String get yearlyReport => 'گزارش سالانه';
+
+  @override
+  String get customReport => 'گزارش سفارشی';
+
+  @override
+  String get startDate => 'تاریخ شروع';
+
+  @override
+  String get endDate => 'تاریخ پایان';
+
+  @override
+  String get generateReport => 'تولید گزارش';
+
+  @override
+  String get exportReport => 'خروجی گزارش';
+
+  @override
+  String get totalSales => 'مجموع فروش';
+
+  @override
+  String get totalProducts => 'مجموع محصولات';
+
+  @override
+  String get totalCustomers => 'مجموع مشتریان';
+
+  @override
+  String get settings => 'تنظیمات';
+
+  @override
+  String get language => 'زبان';
+
+  @override
+  String get theme => 'تم';
+
+  @override
+  String get darkMode => 'حالت تاریک';
+
+  @override
+  String get lightMode => 'حالت روشن';
+
+  @override
+  String get notifications => 'اعلان‌ها';
+
+  @override
+  String get about => 'درباره';
+
+  @override
+  String get version => 'نسخه';
+
+  @override
+  String get checkForUpdates => 'بررسی بروزرسانی';
+
+  @override
+  String get newUpdateAvailable => 'بروزرسانی جدید موجود است';
+
+  @override
+  String get noUpdateAvailable => 'برنامه به‌روز است';
+
+  @override
+  String get downloading => 'در حال دانلود...';
+
+  @override
+  String get installing => 'در حال نصب...';
+
+  @override
+  String get users => 'کاربران';
+
+  @override
+  String get addUser => 'افزودن کاربر';
+
+  @override
+  String get editUser => 'ویرایش کاربر';
+
+  @override
+  String get deleteUser => 'حذف کاربر';
+
+  @override
+  String get userRole => 'نقش کاربر';
+
+  @override
+  String get admin => 'مدیر کل';
+
+  @override
+  String get manager => 'مدیر';
+
+  @override
+  String get seller => 'فروشنده';
+
+  @override
+  String get active => 'فعال';
+
+  @override
+  String get inactive => 'غیرفعال';
+
+  @override
+  String get lastLogin => 'آخرین ورود';
+
+  @override
+  String get userAdded => 'کاربر با موفقیت اضافه شد';
+
+  @override
+  String get userUpdated => 'کاربر با موفقیت به‌روز شد';
+
+  @override
+  String get userDeleted => 'کاربر با موفقیت حذف شد';
+
+  @override
+  String get scanner => 'اسکنر';
+
+  @override
+  String get enterBarcode => 'لطفاً بارکد را وارد کنید';
+
+  @override
+  String get invalidBarcode => 'بارکد نامعتبر';
+
+  @override
+  String get barcodeNotFound => 'بارکد یافت نشد';
+
+  @override
+  String get tryAgain => 'تلاش مجدد';
+
+  @override
+  String get export => 'خروجی';
+
+  @override
+  String get exportToPdf => 'خروجی PDF';
+
+  @override
+  String get exportToExcel => 'خروجی اکسل';
+
+  @override
+  String get exportSuccessful => 'خروجی با موفقیت انجام شد';
+
+  @override
+  String get exportFailed => 'خروجی ناموفق بود';
+
+  @override
+  String get selectExportFormat => 'انتخاب فرمت خروجی';
+
+  @override
+  String get selectDateRange => 'انتخاب بازه زمانی';
+
+  @override
+  String get errorOccurred => 'خطایی رخ داده است';
+
+  @override
+  String get pleaseWait => 'لطفا صبر کنید';
+
+  @override
+  String get tryAgainLater => 'لطفا بعدا تلاش کنید';
+
+  @override
+  String get connectionError => 'خطای اتصال';
+
+  @override
+  String get sessionExpired => 'نشست منقضی شده است';
+
+  @override
+  String get unauthorized => 'دسترسی غیرمجاز';
+
+  @override
+  String get permissionDenied => 'دسترسی رد شد';
+
+  @override
+  String get requiredField => 'این فیلد الزامی است';
+
+  @override
+  String get invalidInput => 'ورودی نامعتبر';
+
+  @override
+  String get confirmAction => 'آیا از انجام این عملیات اطمینان دارید؟';
+
+  @override
+  String get actionCantBeUndone => 'این عملیات قابل بازگشت نیست';
+
+  @override
+  String get english => 'انگلیسی';
+
+  @override
+  String get persian => 'فارسی';
+
+  @override
+  String get productDetails => 'مشخصات محصول';
+
+  @override
+  String get mainInformation => 'اطلاعات اصلی';
+
+  @override
+  String get additionalInformation => 'اطلاعات تکمیلی';
+
+  @override
+  String get size => 'سایز';
+
+  @override
+  String get enterSize => 'لطفاً سایز را وارد کنید';
+
+  @override
+  String get model => 'مدل';
+
+  @override
+  String get enterModel => 'لطفاً مدل را وارد کنید';
+
+  @override
+  String get color => 'رنگ';
+
+  @override
+  String get enterColor => 'لطفاً رنگ را وارد کنید';
+
+  @override
+  String get material => 'جنس';
+
+  @override
+  String get enterMaterial => 'لطفاً جنس را وارد کنید';
+
+  @override
+  String get currentStock => 'موجودی فعلی';
+
+  @override
+  String get enterCurrentStock => 'لطفاً موجودی فعلی را وارد کنید';
+
+  @override
+  String get brand => 'برند';
+
+  @override
+  String get enterBrand => 'لطفاً برند را وارد کنید';
+
+  @override
+  String get discountedPrice => 'قیمت با تخفیف';
+
+  @override
+  String get enterDiscountedPrice => 'لطفاً قیمت با تخفیف را وارد کنید';
+
+  @override
+  String get reorderPoint => 'نقطه سفارش مجدد';
+
+  @override
+  String get enterReorderPoint => 'لطفاً نقطه سفارش مجدد را وارد کنید';
+
+  @override
+  String get purchaseDate => 'تاریخ خرید';
+
+  @override
+  String get selectPurchaseDate => 'تاریخ خرید را انتخاب کنید';
+
+  @override
+  String get discountStartDate => 'تاریخ شروع تخفیف';
+
+  @override
+  String get selectDiscountStartDate => 'تاریخ شروع تخفیف را انتخاب کنید';
+
+  @override
+  String get discountEndDate => 'تاریخ پایان تخفیف';
+
+  @override
+  String get selectDiscountEndDate => 'تاریخ پایان تخفیف را انتخاب کنید';
+
+  @override
+  String get lastStockUpdate => 'آخرین بروزرسانی موجودی';
+
+  @override
+  String get selectLastStockUpdate =>
+      'تاریخ آخرین بروزرسانی موجودی را انتخاب کنید';
+
+  @override
+  String get productAddError => 'خطا در افزودن محصول';
+
+  @override
+  String get required => 'این فیلد الزامی است';
+
+  @override
+  String get invalidNumber => 'لطفاً یک عدد معتبر وارد کنید';
+
+  @override
+  String get expandAdditionalInfo => 'نمایش اطلاعات تکمیلی';
+
+  @override
+  String get collapseAdditionalInfo => 'پنهان کردن اطلاعات تکمیلی';
+
+  @override
+  String get serialNumber => 'شماره سریال';
+
+  @override
+  String get description => 'توضیحات';
+
+  @override
+  String get enterDescription => 'لطفاً توضیحات را وارد کنید';
+
+  @override
+  String get dimensions => 'ابعاد';
+
+  @override
+  String get enterDimensions => 'لطفاً ابعاد را وارد کنید';
+
+  @override
+  String get weight => 'وزن';
+
+  @override
+  String get enterWeight => 'لطفاً وزن را وارد کنید';
+
+  @override
+  String get category => 'دسته‌بندی';
+
+  @override
+  String get enterCategory => 'لطفاً دسته‌بندی را وارد کنید';
+
+  @override
+  String get supplier => 'تأمین‌کننده';
+
+  @override
+  String get enterSupplier => 'لطفاً تأمین‌کننده را وارد کنید';
+
+  @override
+  String get barcode => 'بارکد';
+
+  @override
+  String get notes => 'یادداشت‌ها';
+
+  @override
+  String get enterNotes => 'لطفاً یادداشت‌ها را وارد کنید';
+
+  @override
+  String get dateFormat => 'yyyy/MM/dd';
+
+  @override
+  String get selectDate => 'انتخاب تاریخ';
+
+  @override
+  String get stockManagement => 'مدیریت موجودی';
+
+  @override
+  String get priceManagement => 'مدیریت قیمت';
+
+  @override
+  String get productInformation => 'اطلاعات محصول';
+
+  @override
+  String get basicInformation => 'اطلاعات پایه';
+
+  @override
+  String get additionalDetails => 'جزئیات تکمیلی';
+
+  @override
+  String get pricingInformation => 'اطلاعات قیمت‌گذاری';
+
+  @override
+  String get stockInformation => 'اطلاعات موجودی';
+
+  @override
+  String get datesInformation => 'اطلاعات تاریخ‌ها';
+
+  @override
+  String get validationError => 'خطای اعتبارسنجی';
+
+  @override
+  String get numberFieldError => 'لطفاً یک عدد معتبر وارد کنید';
+
+  @override
+  String get fieldRequired => 'این فیلد الزامی است';
+
+  @override
+  String get saveChanges => 'ذخیره تغییرات';
+
+  @override
+  String get discardChanges => 'انصراف از تغییرات';
+
+  @override
+  String get confirmDiscard => 'آیا از انصراف از تغییرات اطمینان دارید؟';
+
+  @override
+  String get yes => 'بله';
+
+  @override
+  String get no => 'خیر';
+
+  @override
+  String get originalPrice => 'قیمت اصلی';
+
+  @override
+  String get invalidPrice => 'لطفا یک قیمت معتبر وارد کنید';
+}

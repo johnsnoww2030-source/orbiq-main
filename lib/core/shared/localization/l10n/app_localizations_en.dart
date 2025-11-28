@@ -1,0 +1,625 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appTitle => 'Orbiq';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get success => 'Success';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get noResults => 'No results found';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get username => 'Username';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get enterUsername => 'Enter username';
+
+  @override
+  String get enterPassword => 'Enter password';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get oldPassword => 'Old Password';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get enterOldPassword => 'Enter old password';
+
+  @override
+  String get enterNewPassword => 'Enter new password';
+
+  @override
+  String get confirmNewPassword => 'Confirm new password';
+
+  @override
+  String get passwordsDontMatch => 'Passwords don\'t match';
+
+  @override
+  String get passwordChanged => 'Password changed successfully';
+
+  @override
+  String get invalidCredentials => 'Invalid username or password';
+
+  @override
+  String get managerDashboard => 'Manager Dashboard';
+
+  @override
+  String get welcomeManager => 'Welcome, Dear Manager';
+
+  @override
+  String get addProduct => 'Add Product';
+
+  @override
+  String get sale => 'Sale';
+
+  @override
+  String get userManagement => 'User Management';
+
+  @override
+  String get viewReports => 'View Reports';
+
+  @override
+  String get update => 'Update';
+
+  @override
+  String get sellerDashboard => 'Seller Dashboard';
+
+  @override
+  String get welcomeSeller => 'Welcome, Dear Seller';
+
+  @override
+  String get startSelling => 'Start Selling';
+
+  @override
+  String get viewProducts => 'View Products';
+
+  @override
+  String get scanBarcode => 'Scan Barcode';
+
+  @override
+  String get products => 'Products';
+
+  @override
+  String get productName => 'Product Name';
+
+  @override
+  String get productPrice => 'Product Price';
+
+  @override
+  String get productQuantity => 'Product Quantity';
+
+  @override
+  String get productSerial => 'Product Serial';
+
+  @override
+  String get enterProductName => 'Enter product name';
+
+  @override
+  String get enterProductPrice => 'Enter product price';
+
+  @override
+  String get enterProductQuantity => 'Enter product quantity';
+
+  @override
+  String get enterProductSerial => 'Enter product serial';
+
+  @override
+  String get addNewProduct => 'Add New Product';
+
+  @override
+  String get editProduct => 'Edit Product';
+
+  @override
+  String get deleteProduct => 'Delete Product';
+
+  @override
+  String get productAdded => 'Product added successfully';
+
+  @override
+  String get productUpdated => 'Product updated successfully';
+
+  @override
+  String get productDeleted => 'Product deleted successfully';
+
+  @override
+  String get noProductsFound => 'No products found';
+
+  @override
+  String get searchProducts => 'Search products';
+
+  @override
+  String get filterProducts => 'Filter products';
+
+  @override
+  String get sortProducts => 'Sort products';
+
+  @override
+  String get payment => 'Payment';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get subtotal => 'Subtotal';
+
+  @override
+  String get discount => 'Discount';
+
+  @override
+  String get tax => 'Tax';
+
+  @override
+  String get checkout => 'Checkout';
+
+  @override
+  String get paymentMethod => 'Payment Method';
+
+  @override
+  String get cash => 'Cash';
+
+  @override
+  String get card => 'Card';
+
+  @override
+  String get paymentSuccessful => 'Payment successful';
+
+  @override
+  String get paymentFailed => 'Payment failed';
+
+  @override
+  String get invoice => 'Invoice';
+
+  @override
+  String get printInvoice => 'Print Invoice';
+
+  @override
+  String get reports => 'Reports';
+
+  @override
+  String get dailyReport => 'Daily Report';
+
+  @override
+  String get weeklyReport => 'Weekly Report';
+
+  @override
+  String get monthlyReport => 'Monthly Report';
+
+  @override
+  String get yearlyReport => 'Yearly Report';
+
+  @override
+  String get customReport => 'Custom Report';
+
+  @override
+  String get startDate => 'Start Date';
+
+  @override
+  String get endDate => 'End Date';
+
+  @override
+  String get generateReport => 'Generate Report';
+
+  @override
+  String get exportReport => 'Export Report';
+
+  @override
+  String get totalSales => 'Total Sales';
+
+  @override
+  String get totalProducts => 'Total Products';
+
+  @override
+  String get totalCustomers => 'Total Customers';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get darkMode => 'Dark Mode';
+
+  @override
+  String get lightMode => 'Light Mode';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get checkForUpdates => 'Check for Updates';
+
+  @override
+  String get newUpdateAvailable => 'New update available';
+
+  @override
+  String get noUpdateAvailable => 'No update available';
+
+  @override
+  String get downloading => 'Downloading...';
+
+  @override
+  String get installing => 'Installing...';
+
+  @override
+  String get users => 'Users';
+
+  @override
+  String get addUser => 'Add User';
+
+  @override
+  String get editUser => 'Edit User';
+
+  @override
+  String get deleteUser => 'Delete User';
+
+  @override
+  String get userRole => 'User Role';
+
+  @override
+  String get admin => 'Admin';
+
+  @override
+  String get manager => 'Manager';
+
+  @override
+  String get seller => 'Seller';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
+  String get lastLogin => 'Last Login';
+
+  @override
+  String get userAdded => 'User added successfully';
+
+  @override
+  String get userUpdated => 'User updated successfully';
+
+  @override
+  String get userDeleted => 'User deleted successfully';
+
+  @override
+  String get scanner => 'Scanner';
+
+  @override
+  String get enterBarcode => 'Please enter barcode';
+
+  @override
+  String get invalidBarcode => 'Invalid barcode';
+
+  @override
+  String get barcodeNotFound => 'Barcode not found';
+
+  @override
+  String get tryAgain => 'Try again';
+
+  @override
+  String get export => 'Export';
+
+  @override
+  String get exportToPdf => 'Export to PDF';
+
+  @override
+  String get exportToExcel => 'Export to Excel';
+
+  @override
+  String get exportSuccessful => 'Export successful';
+
+  @override
+  String get exportFailed => 'Export failed';
+
+  @override
+  String get selectExportFormat => 'Select export format';
+
+  @override
+  String get selectDateRange => 'Select date range';
+
+  @override
+  String get errorOccurred => 'An error occurred';
+
+  @override
+  String get pleaseWait => 'Please wait';
+
+  @override
+  String get tryAgainLater => 'Please try again later';
+
+  @override
+  String get connectionError => 'Connection error';
+
+  @override
+  String get sessionExpired => 'Session expired';
+
+  @override
+  String get unauthorized => 'Unauthorized access';
+
+  @override
+  String get permissionDenied => 'Permission denied';
+
+  @override
+  String get requiredField => 'This field is required';
+
+  @override
+  String get invalidInput => 'Invalid input';
+
+  @override
+  String get confirmAction => 'Are you sure you want to proceed?';
+
+  @override
+  String get actionCantBeUndone => 'This action cannot be undone';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get persian => 'Persian';
+
+  @override
+  String get productDetails => 'Product Details';
+
+  @override
+  String get mainInformation => 'Main Information';
+
+  @override
+  String get additionalInformation => 'Additional Information';
+
+  @override
+  String get size => 'Size';
+
+  @override
+  String get enterSize => 'Please enter size';
+
+  @override
+  String get model => 'Model';
+
+  @override
+  String get enterModel => 'Please enter model';
+
+  @override
+  String get color => 'Color';
+
+  @override
+  String get enterColor => 'Please enter color';
+
+  @override
+  String get material => 'Material';
+
+  @override
+  String get enterMaterial => 'Please enter material';
+
+  @override
+  String get currentStock => 'Current Stock';
+
+  @override
+  String get enterCurrentStock => 'Please enter current stock';
+
+  @override
+  String get brand => 'Brand';
+
+  @override
+  String get enterBrand => 'Please enter brand';
+
+  @override
+  String get discountedPrice => 'Discounted Price';
+
+  @override
+  String get enterDiscountedPrice => 'Please enter discounted price';
+
+  @override
+  String get reorderPoint => 'Reorder Point';
+
+  @override
+  String get enterReorderPoint => 'Please enter reorder point';
+
+  @override
+  String get purchaseDate => 'Purchase Date';
+
+  @override
+  String get selectPurchaseDate => 'Select purchase date';
+
+  @override
+  String get discountStartDate => 'Discount Start Date';
+
+  @override
+  String get selectDiscountStartDate => 'Select discount start date';
+
+  @override
+  String get discountEndDate => 'Discount End Date';
+
+  @override
+  String get selectDiscountEndDate => 'Select discount end date';
+
+  @override
+  String get lastStockUpdate => 'Last Stock Update';
+
+  @override
+  String get selectLastStockUpdate => 'Select last stock update';
+
+  @override
+  String get productAddError => 'Error adding product';
+
+  @override
+  String get required => 'This field is required';
+
+  @override
+  String get invalidNumber => 'Please enter a valid number';
+
+  @override
+  String get expandAdditionalInfo => 'Show Additional Information';
+
+  @override
+  String get collapseAdditionalInfo => 'Hide Additional Information';
+
+  @override
+  String get serialNumber => 'SN';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get enterDescription => 'Please enter description';
+
+  @override
+  String get dimensions => 'Dimensions';
+
+  @override
+  String get enterDimensions => 'Please enter dimensions';
+
+  @override
+  String get weight => 'Weight';
+
+  @override
+  String get enterWeight => 'Please enter weight';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get enterCategory => 'Please enter category';
+
+  @override
+  String get supplier => 'Supplier';
+
+  @override
+  String get enterSupplier => 'Please enter supplier';
+
+  @override
+  String get barcode => 'Barcode';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get enterNotes => 'Please enter notes';
+
+  @override
+  String get dateFormat => 'yyyy/MM/dd';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get stockManagement => 'Stock Management';
+
+  @override
+  String get priceManagement => 'Price Management';
+
+  @override
+  String get productInformation => 'Product Information';
+
+  @override
+  String get basicInformation => 'Basic Information';
+
+  @override
+  String get additionalDetails => 'Additional Details';
+
+  @override
+  String get pricingInformation => 'Pricing Information';
+
+  @override
+  String get stockInformation => 'Stock Information';
+
+  @override
+  String get datesInformation => 'Dates Information';
+
+  @override
+  String get validationError => 'Validation Error';
+
+  @override
+  String get numberFieldError => 'Please enter a valid number';
+
+  @override
+  String get fieldRequired => 'This field is required';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get discardChanges => 'Discard Changes';
+
+  @override
+  String get confirmDiscard => 'Are you sure you want to discard changes?';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get originalPrice => 'Original Price';
+
+  @override
+  String get invalidPrice => 'Please enter a valid price';
+}
