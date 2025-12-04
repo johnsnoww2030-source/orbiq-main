@@ -3,12 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import 'package:orbiq/core/shared/product/data/models/product_model.dart';
+import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/features/add_product/presentation/ui/add_product_page.dart';
 import 'package:orbiq/features/add_product/presentation/ui/edit_product_page.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_bloc.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_state.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_bloc.dart';
+import 'package:orbiq/features/payment/presentation/controller/cart_bloc.dart';
+import 'package:orbiq/features/payment/presentation/controller/cart_event.dart';
+import 'package:orbiq/features/payment/presentation/controller/cart_state.dart';
+import 'package:orbiq/features/payment/presentation/ui/payment_page.dart';
+import 'package:orbiq/features/barcode_reader/presentation/controller/chat_bloc.dart';
+import 'package:orbiq/features/barcode_reader/presentation/controller/chat_state.dart';
 
 class ProductsManagementPage extends StatefulWidget {
   const ProductsManagementPage({super.key});
@@ -17,42 +24,110 @@ class ProductsManagementPage extends StatefulWidget {
   State<ProductsManagementPage> createState() => _ProductsManagementPageState();
 }
 
-class _ProductsManagementPageState extends State<ProductsManagementPage> {
+class _ProductsManagementPageState extends State<ProductsManagementPage>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   final NumberFormat currencyFormat = NumberFormat('#,##0');
   String _selectedFilter = 'all';
+  bool _isCartActive = false;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
     context.read<GetProductBloc>().add(LoadProducts());
+
+    // Listen to barcode reader
+    context.read<ChatBloc>().stream.listen((state) {
+      if (state is ChatConnected && state.messages.isNotEmpty) {
+        final message = state.messages.last;
+        if (message.text.isNotEmpty) {
+          _searchController.text = message.text;
+          _onSearchSubmitted(_searchController.text);
+        }
+      }
+    });
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
+    _animationController.dispose();
     super.dispose();
+  }
+
+  void _onSearchSubmitted(String value) {
+    if (value.isNotEmpty) {
+      context.read<GetProductBloc>().add(SearchProductBySerial(value));
+      _searchController.clear();
+      _searchFocusNode.requestFocus();
+    } else {
+      context.read<GetProductBloc>().add(LoadProducts());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    const itemWidth = 200.0;
+    final crossAxisCount = (screenWidth / itemWidth).floor().clamp(1, 6);
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context, l10n),
-            const SizedBox(height: 24),
-            _buildStatsCards(context),
-            const SizedBox(height: 24),
-            _buildSearchAndFilters(context, l10n),
-            const SizedBox(height: 24),
-            Expanded(child: _buildProductsList(context, l10n)),
-          ],
-        ),
+      body: Column(
+        children: [
+          // Header Section
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(context, l10n),
+                const SizedBox(height: 24),
+                _buildStatsCards(context),
+                const SizedBox(height: 24),
+                _buildSearchAndFilters(context, l10n),
+              ],
+            ),
+          ),
+
+          // Products List with BlocListener for cart functionality
+          Expanded(
+            child: BlocListener<GetProductBloc, GetProductState>(
+              listener: (context, state) {
+                // Auto-add to cart when product found and cart is active
+                if (state is ProductFound && _isCartActive) {
+                  context.read<CartBloc>().add(
+                    AddToCartEvent(state.product.toEntity()),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${state.product.name} به سبد اضافه شد'),
+                      backgroundColor: Colors.green,
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                }
+              },
+              child: _buildProductsContent(context, l10n, crossAxisCount),
+            ),
+          ),
+
+          // Cart Section (when active)
+          if (_isCartActive) _buildCartSection(context, crossAxisCount),
+        ],
       ),
     );
   }
@@ -97,22 +172,78 @@ class _ProductsManagementPageState extends State<ProductsManagementPage> {
             ),
           ],
         ),
-        FilledButton.icon(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AddProductPage()),
-            ).then((result) {
-              if (result == true) {
-                context.read<GetProductBloc>().add(LoadProducts());
-              }
-            });
-          },
-          icon: const Icon(Icons.add),
-          label: const Text('محصول جدید'),
-          style: FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          ),
+        Row(
+          children: [
+            // Barcode Reader Button
+            IconButton(
+              onPressed: () => Navigator.pushNamed(context, '/barcode-reader'),
+              icon: const Icon(Icons.qr_code_scanner),
+              tooltip: 'بارکدخوان',
+              style: IconButton.styleFrom(
+                backgroundColor: Theme.of(
+                  context,
+                ).primaryColor.withValues(alpha: 0.1),
+                foregroundColor: Theme.of(context).primaryColor,
+                padding: const EdgeInsets.all(12),
+              ),
+            ),
+            const SizedBox(width: 8),
+            // Cart Button with animation
+            AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) => IconButton(
+                onPressed: () {
+                  setState(() {
+                    _isCartActive = !_isCartActive;
+                    if (_isCartActive) {
+                      _animationController.forward();
+                    } else {
+                      _animationController.reverse();
+                    }
+                  });
+                },
+                icon: Icon(
+                  _isCartActive
+                      ? Icons.shopping_cart
+                      : Icons.shopping_cart_outlined,
+                  size: 24 + (_animation.value * 4),
+                ),
+                tooltip: 'سبد خرید',
+                style: IconButton.styleFrom(
+                  backgroundColor: _isCartActive
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  foregroundColor: _isCartActive
+                      ? Colors.white
+                      : Theme.of(context).primaryColor,
+                  padding: const EdgeInsets.all(12),
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            // Add Product Button
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddProductPage(),
+                  ),
+                ).then((result) {
+                  if (result == true)
+                    context.read<GetProductBloc>().add(LoadProducts());
+                });
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('محصول جدید'),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -145,44 +276,40 @@ class _ProductsManagementPageState extends State<ProductsManagementPage> {
             Expanded(
               child: _buildStatCard(
                 context,
-                icon: Icons.inventory_2,
-                iconColor: Colors.blue,
-                iconBgColor: Colors.blue.withValues(alpha: 0.1),
-                value: totalProducts.toString(),
-                label: 'کل محصولات',
+                Icons.inventory_2,
+                Colors.blue,
+                totalProducts.toString(),
+                'کل محصولات',
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: _buildStatCard(
                 context,
-                icon: Icons.check_circle,
-                iconColor: Colors.green,
-                iconBgColor: Colors.green.withValues(alpha: 0.1),
-                value: availableProducts.toString(),
-                label: 'موجود',
+                Icons.check_circle,
+                Colors.green,
+                availableProducts.toString(),
+                'موجود',
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: _buildStatCard(
                 context,
-                icon: Icons.warning_amber,
-                iconColor: Colors.orange,
-                iconBgColor: Colors.orange.withValues(alpha: 0.1),
-                value: lowStockProducts.toString(),
-                label: 'موجودی کم',
+                Icons.warning_amber,
+                Colors.orange,
+                lowStockProducts.toString(),
+                'موجودی کم',
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: _buildStatCard(
                 context,
-                icon: Icons.error_outline,
-                iconColor: Colors.red,
-                iconBgColor: Colors.red.withValues(alpha: 0.1),
-                value: outOfStockProducts.toString(),
-                label: 'تمام شده',
+                Icons.error_outline,
+                Colors.red,
+                outOfStockProducts.toString(),
+                'تمام شده',
               ),
             ),
           ],
@@ -192,13 +319,12 @@ class _ProductsManagementPageState extends State<ProductsManagementPage> {
   }
 
   Widget _buildStatCard(
-    BuildContext context, {
-    required IconData icon,
-    required Color iconColor,
-    required Color iconBgColor,
-    required String value,
-    required String label,
-  }) {
+    BuildContext context,
+    IconData icon,
+    Color color,
+    String value,
+    String label,
+  ) {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -212,10 +338,10 @@ class _ProductsManagementPageState extends State<ProductsManagementPage> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: iconBgColor,
+                color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: iconColor, size: 24),
+              child: Icon(icon, color: color, size: 24),
             ),
             const SizedBox(width: 16),
             Column(
@@ -256,9 +382,17 @@ class _ProductsManagementPageState extends State<ProductsManagementPage> {
               flex: 2,
               child: TextField(
                 controller: _searchController,
+                focusNode: _searchFocusNode,
                 decoration: InputDecoration(
-                  hintText: 'جستجوی محصولات...',
+                  hintText: 'جستجو با شماره سریال...',
                   prefixIcon: const Icon(Icons.search),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _searchController.clear();
+                      context.read<GetProductBloc>().add(LoadProducts());
+                    },
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -270,15 +404,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage> {
                     vertical: 12,
                   ),
                 ),
-                onSubmitted: (value) {
-                  if (value.isNotEmpty) {
-                    context.read<GetProductBloc>().add(
-                      SearchProductBySerial(value),
-                    );
-                  } else {
-                    context.read<GetProductBloc>().add(LoadProducts());
-                  }
-                },
+                onSubmitted: _onSearchSubmitted,
               ),
             ),
             const SizedBox(width: 16),
@@ -300,74 +426,371 @@ class _ProductsManagementPageState extends State<ProductsManagementPage> {
     return FilterChip(
       selected: isSelected,
       label: Text(label),
-      onSelected: (selected) {
-        setState(() {
-          _selectedFilter = value;
-        });
-      },
+      onSelected: (selected) => setState(() => _selectedFilter = value),
       selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
       checkmarkColor: Theme.of(context).primaryColor,
     );
   }
 
-  Widget _buildProductsList(BuildContext context, AppLocalizations l10n) {
+  Widget _buildProductsContent(
+    BuildContext context,
+    AppLocalizations l10n,
+    int crossAxisCount,
+  ) {
     return BlocBuilder<GetProductBloc, GetProductState>(
       builder: (context, state) {
-        if (state is ProductLoading) {
+        if (state is ProductLoading || state is ProductLoadingPage) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is ProductLoaded) {
           final products = _filterProducts(state.products);
-
-          if (products.isEmpty) {
-            return _buildEmptyState(context);
-          }
-
-          return Card(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
-            ),
+          if (products.isEmpty) return _buildEmptyState(context);
+          return _buildProductsGrid(context, products, crossAxisCount, state);
+        } else if (state is ProductFound) {
+          // Show single found product
+          return _buildProductsGrid(
+            context,
+            [state.product],
+            crossAxisCount,
+            null,
+          );
+        } else if (state is ProductNotFound) {
+          return Center(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    'لیست محصولات',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
+                const SizedBox(height: 16),
+                Text(
+                  'محصولی با این شماره سریال یافت نشد',
+                  style: TextStyle(fontSize: 18, color: Colors.red[400]),
                 ),
-                _buildTableHeader(context),
-                const Divider(height: 1),
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: products.length,
-                    separatorBuilder: (context, index) =>
-                        const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      return _buildProductRow(context, products[index]);
-                    },
-                  ),
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  onPressed: () =>
+                      context.read<GetProductBloc>().add(LoadProducts()),
+                  child: const Text('بازگشت به لیست'),
                 ),
-                if (state.totalPages > 1)
-                  _buildPagination(
-                    context,
-                    state.currentPage,
-                    state.totalPages,
-                    state.hasNextPage,
-                  ),
               ],
             ),
           );
         } else if (state is ProductError) {
-          return Center(child: Text('خطا: ${state.message}'));
-        } else {
-          return _buildEmptyState(context);
+          return Center(
+            child: Text(
+              'خطا: ${state.message}',
+              style: const TextStyle(color: Colors.red),
+            ),
+          );
         }
+        return _buildEmptyState(context);
       },
+    );
+  }
+
+  Widget _buildProductsGrid(
+    BuildContext context,
+    List<ProductModel> products,
+    int crossAxisCount,
+    ProductLoaded? state,
+  ) {
+    final authState = context.read<AuthBloc>().state;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        children: [
+          Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.only(bottom: 16),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: products.length,
+              itemBuilder: (context, index) =>
+                  _buildProductCard(context, products[index], authState),
+            ),
+          ),
+          if (state != null && state.totalPages > 1)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.chevron_right),
+                    onPressed: state.currentPage > 1
+                        ? () => context.read<GetProductBloc>().add(
+                            LoadProductPageEvent(state.currentPage - 1),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 16),
+                  Text('صفحه ${state.currentPage} از ${state.totalPages}'),
+                  const SizedBox(width: 16),
+                  IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: state.hasNextPage
+                        ? () => context.read<GetProductBloc>().add(
+                            LoadProductPageEvent(state.currentPage + 1),
+                          )
+                        : null,
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductCard(
+    BuildContext context,
+    ProductModel product,
+    AuthState authState,
+  ) {
+    final stockStatus = _getStockStatus(product);
+
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: _isCartActive
+            ? () {
+                context.read<CartBloc>().add(
+                  AddToCartEvent(product.toEntity()),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${product.name} به سبد اضافه شد'),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              }
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      product.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  _buildStatusBadge(stockStatus),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'شماره سریال: ${product.serialNumber}',
+                style: const TextStyle(fontSize: 12),
+              ),
+              Text(
+                'مدل: ${product.model}',
+                style: const TextStyle(fontSize: 12),
+              ),
+              Text(
+                'رنگ: ${product.color}',
+                style: const TextStyle(fontSize: 12),
+              ),
+              Text(
+                'موجودی: ${product.currentStock}',
+                style: const TextStyle(fontSize: 12),
+              ),
+              const Spacer(),
+              Text(
+                '${currencyFormat.format(product.originalPrice.toInt())} تومان',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green[700],
+                ),
+              ),
+              if (authState is AuthSuccess && authState.user.role == 'admin')
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    icon: const Icon(Icons.edit_outlined, size: 20),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              EditProductPage(product: product),
+                        ),
+                      ).then((result) {
+                        if (result == true)
+                          context.read<GetProductBloc>().add(LoadProducts());
+                      });
+                    },
+                    tooltip: 'ویرایش',
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCartSection(BuildContext context, int crossAxisCount) {
+    return BlocBuilder<CartBloc, CartState>(
+      builder: (context, cartState) {
+        List<ProductEntity> cartItems = [];
+        double totalPrice = 0.0;
+        if (cartState is CartUpdated) {
+          cartItems = cartState.cartItems;
+          totalPrice = cartItems.fold(
+            0.0,
+            (sum, item) => sum + item.originalPrice,
+          );
+        }
+
+        return Container(
+          height: 250,
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 10,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Cart Header
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(24),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.shopping_cart,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'سبد خرید (${cartItems.length} کالا)',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      '${currencyFormat.format(totalPrice.toInt())} تومان',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    FilledButton(
+                      onPressed: cartItems.isEmpty
+                          ? null
+                          : () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const PaymentPage(),
+                              ),
+                            ),
+                      child: const Text('پرداخت'),
+                    ),
+                  ],
+                ),
+              ),
+              // Cart Items
+              Expanded(
+                child: cartItems.isEmpty
+                    ? Center(
+                        child: Text(
+                          'سبد خرید خالی است',
+                          style: TextStyle(color: Colors.grey[500]),
+                        ),
+                      )
+                    : ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.all(8),
+                        itemCount: cartItems.length,
+                        itemBuilder: (context, index) =>
+                            _buildCartItem(context, cartItems[index]),
+                      ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCartItem(BuildContext context, ProductEntity product) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      child: SizedBox(
+        width: 180,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      product.name,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 18, color: Colors.red),
+                    onPressed: () => context.read<CartBloc>().add(
+                      RemoveFromCartEvent(product),
+                    ),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                product.serialNumber,
+                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+              ),
+              const Spacer(),
+              Text(
+                '${currencyFormat.format(product.originalPrice.toInt())} تومان',
+                style: TextStyle(
+                  color: Colors.green[700],
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -394,112 +817,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage> {
     }
   }
 
-  Widget _buildTableHeader(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Row(
-        children: [
-          Expanded(flex: 1, child: Text('کد', style: _headerStyle(context))),
-          Expanded(
-            flex: 2,
-            child: Text('نام محصول', style: _headerStyle(context)),
-          ),
-          Expanded(flex: 1, child: Text('قیمت', style: _headerStyle(context))),
-          Expanded(
-            flex: 1,
-            child: Text('موجودی', style: _headerStyle(context)),
-          ),
-          Expanded(flex: 1, child: Text('وضعیت', style: _headerStyle(context))),
-          const SizedBox(width: 80, child: Text('عملیات')),
-        ],
-      ),
-    );
-  }
-
-  TextStyle? _headerStyle(BuildContext context) {
-    return Theme.of(context).textTheme.titleSmall?.copyWith(
-      fontWeight: FontWeight.bold,
-      color: Colors.grey[600],
-    );
-  }
-
-  Widget _buildProductRow(BuildContext context, ProductModel product) {
-    final authState = BlocProvider.of<AuthBloc>(context).state;
-    final stockStatus = _getStockStatus(product);
-
-    return InkWell(
-      onTap: () {},
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Expanded(
-              flex: 1,
-              child: Text(
-                product.serialNumber.length > 8
-                    ? '${product.serialNumber.substring(0, 8)}...'
-                    : product.serialNumber,
-                style: const TextStyle(fontFamily: 'monospace'),
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Text(
-                product.name,
-                style: const TextStyle(fontWeight: FontWeight.w500),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Text(
-                '${currencyFormat.format(product.originalPrice.toInt())} تومان',
-                style: TextStyle(
-                  color: Colors.green[700],
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            Expanded(flex: 1, child: Text(product.currentStock.toString())),
-            Expanded(flex: 1, child: _buildStatusBadge(stockStatus)),
-            SizedBox(
-              width: 80,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.visibility_outlined, size: 20),
-                    onPressed: () {},
-                    tooltip: 'مشاهده',
-                  ),
-                  if (authState is AuthSuccess &&
-                      authState.user.role == 'admin')
-                    IconButton(
-                      icon: const Icon(Icons.edit_outlined, size: 20),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                EditProductPage(product: product),
-                          ),
-                        ).then((result) {
-                          if (result == true) {
-                            context.read<GetProductBloc>().add(LoadProducts());
-                          }
-                        });
-                      },
-                      tooltip: 'ویرایش',
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   String _getStockStatus(ProductModel product) {
     if (product.currentStock <= 0) return 'out';
     if (product.currentStock <=
@@ -522,30 +839,30 @@ class _ProductsManagementPageState extends State<ProductsManagementPage> {
       case 'low':
         bgColor = Colors.orange.withValues(alpha: 0.1);
         textColor = Colors.orange;
-        label = 'موجودی کم';
+        label = 'کم';
         break;
       case 'out':
         bgColor = Colors.red.withValues(alpha: 0.1);
         textColor = Colors.red;
-        label = 'تمام شده';
+        label = 'تمام';
         break;
       default:
         bgColor = Colors.grey.withValues(alpha: 0.1);
         textColor = Colors.grey;
-        label = 'نامشخص';
+        label = '?';
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         label,
         style: TextStyle(
           color: textColor,
-          fontSize: 12,
+          fontSize: 10,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -569,41 +886,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage> {
           Text(
             'برای افزودن محصول جدید دکمه "محصول جدید" را بزنید',
             style: TextStyle(color: Colors.grey[500]),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPagination(
-    BuildContext context,
-    int currentPage,
-    int totalPages,
-    bool hasNextPage,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          IconButton(
-            icon: const Icon(Icons.chevron_right),
-            onPressed: currentPage > 1
-                ? () => context.read<GetProductBloc>().add(
-                    LoadProductPageEvent(currentPage - 1),
-                  )
-                : null,
-          ),
-          const SizedBox(width: 16),
-          Text('صفحه $currentPage از $totalPages'),
-          const SizedBox(width: 16),
-          IconButton(
-            icon: const Icon(Icons.chevron_left),
-            onPressed: hasNextPage
-                ? () => context.read<GetProductBloc>().add(
-                    LoadProductPageEvent(currentPage + 1),
-                  )
-                : null,
           ),
         ],
       ),
