@@ -11,6 +11,11 @@ import 'package:orbiq/core/shared/theme/presentation/controller/theme_state.dart
 import 'package:orbiq/features/auth/presentation/ui/widgets/navigation_drawer_widget.dart';
 import 'package:orbiq/features/auth/presentation/ui/widgets/dashboard_content_widget.dart';
 
+import 'package:orbiq/features/payment/presentation/ui/payment_report_page.dart';
+import 'package:orbiq/features/get_product/presentation/ui/get_product_page.dart';
+import 'package:orbiq/features/add_product/presentation/ui/add_product_page.dart';
+import 'package:orbiq/features/auth/presentation/ui/settings_page.dart';
+
 class ManagerPage extends StatefulWidget {
   const ManagerPage({super.key});
 
@@ -80,7 +85,7 @@ class _ManagerPageState extends State<ManagerPage> {
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withAlpha(13),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -149,28 +154,30 @@ class _ManagerPageState extends State<ManagerPage> {
   Widget _buildContent(int index) {
     // Map index to content
     switch (index) {
-      case 0:
+      case 0: // Dashboard
         return const DashboardContentWidget();
       case 1: // Transactions
-        return _buildPlaceholder("Transactions Content");
+        return const PaymentsReportPage();
       case 2: // Invoices
         return _buildPlaceholder("Invoices Content");
       case 3: // Barcode Reader
         return _buildPlaceholder("Barcode Reader Content");
       case 4: // Reports
-        return _buildPlaceholder("Reports Content");
+        return const PaymentsReportPage();
       case 5: // Customers
         return _buildPlaceholder("Customers Content");
       case 6: // Vendors
         return _buildPlaceholder("Vendors Content");
       case 7: // Products
-        return _buildPlaceholder("Products Content");
-      case 8: // Reminders
+        return const ProductListPage();
+      case 8: // Add Product
+        return const AddProductPage();
+      case 9: // Reminders
         return _buildPlaceholder("Reminders Content");
-      case 9: // Support
+      case 10: // Support
         return _buildPlaceholder("Support Content");
-      case 10: // Settings
-        return _buildPlaceholder("Settings Content");
+      case 11: // Settings
+        return const SettingsPage();
       default:
         return const DashboardContentWidget();
     }
@@ -195,13 +202,5 @@ class _ManagerPageState extends State<ManagerPage> {
     setState(() {
       _selectedIndex = index;
     });
-
-    // Handle specific navigation if needed
-    // For example, if some items should open new routes instead of changing content
-    if (index == 3) {
-      // Barcode Reader
-      // Navigator.pushNamed(context, '/barcode');
-      // Uncomment if you want to push to a separate page
-    }
   }
 }
