@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_bloc.dart';
+import 'package:orbiq/features/auth/presentation/controller/auth_event.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_state.dart';
 import 'package:orbiq/features/auth/presentation/ui/user_management_page.dart';
 
@@ -16,6 +17,12 @@ class _SettingsPageState extends State<SettingsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
+  // Password change controllers
+  final _currentPasswordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _passwordFormKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +32,9 @@ class _SettingsPageState extends State<SettingsPage>
   @override
   void dispose() {
     _tabController.dispose();
+    _currentPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -33,68 +43,81 @@ class _SettingsPageState extends State<SettingsPage>
     final l10n = AppLocalizations.of(context);
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Text(
-              l10n.settings,
-              style: Theme.of(
-                context,
-              ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is PasswordUpdateSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('رمز عبور با موفقیت تغییر یافت'),
+              backgroundColor: Colors.green,
             ),
-            const SizedBox(height: 4),
-            Text(
-              'مدیریت حساب کاربری و تنظیمات برنامه',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
-            ),
-            const SizedBox(height: 24),
-
-            // Tab Bar
-            Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TabBar(
-                controller: _tabController,
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicator: BoxDecoration(
-                  color: colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: colorScheme.primary.withValues(alpha: 0.3),
-                  ),
+          );
+          _clearPasswordFields();
+          Navigator.of(context).pop();
+        } else if (state is AuthFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          );
+        }
+      },
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.settings,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-                labelColor: colorScheme.primary,
-                unselectedLabelColor: Colors.grey,
-                dividerColor: Colors.transparent,
-                tabs: [
-                  _buildTab(Icons.person_outline, 'پروفایل'),
-                  _buildTab(Icons.security_outlined, 'امنیت'),
-                  _buildTab(Icons.people_outline, 'کاربران'),
-                ],
               ),
-            ),
-            const SizedBox(height: 24),
-
-            // Tab Content
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildProfileTab(context, l10n),
-                  _buildSecurityTab(context, l10n),
-                  _buildUsersTab(context, l10n),
-                ],
+              const SizedBox(height: 4),
+              Text(
+                'مدیریت حساب کاربری و تنظیمات برنامه',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicator: BoxDecoration(
+                    color: colorScheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: colorScheme.primary.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  labelColor: colorScheme.primary,
+                  unselectedLabelColor: Colors.grey,
+                  dividerColor: Colors.transparent,
+                  tabs: [
+                    _buildTab(Icons.person_outline, 'پروفایل'),
+                    _buildTab(Icons.security_outlined, 'امنیت'),
+                    _buildTab(Icons.people_outline, 'کاربران'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildProfileTab(context, l10n),
+                    _buildSecurityTab(context, l10n),
+                    _buildUsersTab(context, l10n),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -134,7 +157,6 @@ class _SettingsPageState extends State<SettingsPage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Section Header
                   Text(
                     'اطلاعات پروفایل',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -149,8 +171,6 @@ class _SettingsPageState extends State<SettingsPage>
                     ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 24),
-
-                  // Avatar Section
                   Row(
                     children: [
                       CircleAvatar(
@@ -170,9 +190,7 @@ class _SettingsPageState extends State<SettingsPage>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           OutlinedButton.icon(
-                            onPressed: () {
-                              // TODO: Implement photo change
-                            },
+                            onPressed: () {},
                             icon: const Icon(Icons.camera_alt_outlined),
                             label: const Text('تغییر تصویر'),
                           ),
@@ -188,25 +206,18 @@ class _SettingsPageState extends State<SettingsPage>
                     ],
                   ),
                   const SizedBox(height: 32),
-
-                  // Form Fields
                   Row(
                     children: [
                       Expanded(
-                        child: _buildTextField(
-                          context,
-                          label: 'نام',
-                          initialValue: nickname,
-                          enabled: false,
-                        ),
+                        child: _buildTextField(context, 'نام', nickname, false),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: _buildTextField(
                           context,
-                          label: 'نام کاربری',
-                          initialValue: username,
-                          enabled: false,
+                          'نام کاربری',
+                          username,
+                          false,
                         ),
                       ),
                     ],
@@ -217,9 +228,9 @@ class _SettingsPageState extends State<SettingsPage>
                       Expanded(
                         child: _buildTextField(
                           context,
-                          label: 'نقش',
-                          initialValue: _getRoleLabel(role),
-                          enabled: false,
+                          'نقش',
+                          _getRoleLabel(role),
+                          false,
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -227,14 +238,10 @@ class _SettingsPageState extends State<SettingsPage>
                     ],
                   ),
                   const SizedBox(height: 24),
-
-                  // Save Button
                   Align(
                     alignment: Alignment.centerLeft,
                     child: FilledButton(
-                      onPressed: () {
-                        // TODO: Implement save
-                      },
+                      onPressed: () {},
                       child: const Text('ذخیره تغییرات'),
                     ),
                   ),
@@ -249,71 +256,56 @@ class _SettingsPageState extends State<SettingsPage>
 
   Widget _buildSecurityTab(BuildContext context, AppLocalizations l10n) {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Security Card
-          Card(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'امنیت',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'رمز عبور و تنظیمات امنیتی خود را مدیریت کنید',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Password Section
-                  _buildSecurityItem(
-                    context,
-                    icon: Icons.lock_outline,
-                    title: 'رمز عبور',
-                    subtitle: 'آخرین تغییر: 30 روز پیش',
-                    actionLabel: 'تغییر رمز عبور',
-                    onAction: () {
-                      // TODO: Implement password change
-                      _showChangePasswordDialog(context);
-                    },
-                  ),
-                  const Divider(height: 32),
-
-                  // Two-Factor Auth Section
-                  _buildSecurityItem(
-                    context,
-                    icon: Icons.security_outlined,
-                    title: 'احراز هویت دو مرحله‌ای',
-                    subtitle: 'امنیت بیشتر برای حساب شما',
-                    actionLabel: 'فعال‌سازی',
-                    onAction: () {
-                      // TODO: Implement 2FA
-                    },
-                  ),
-                ],
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'امنیت',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
-            ),
+              const SizedBox(height: 8),
+              Text(
+                'رمز عبور و تنظیمات امنیتی خود را مدیریت کنید',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+              ),
+              const SizedBox(height: 24),
+              _buildSecurityItem(
+                context,
+                icon: Icons.lock_outline,
+                title: 'رمز عبور',
+                subtitle: 'آخرین تغییر: 30 روز پیش',
+                actionLabel: 'تغییر رمز عبور',
+                onAction: () => _showChangePasswordDialog(context),
+              ),
+              const Divider(height: 32),
+              _buildSecurityItem(
+                context,
+                icon: Icons.security_outlined,
+                title: 'احراز هویت دو مرحله‌ای',
+                subtitle: 'امنیت بیشتر برای حساب شما',
+                actionLabel: 'فعال‌سازی',
+                onAction: () {},
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   Widget _buildUsersTab(BuildContext context, AppLocalizations l10n) {
-    // Embed the existing UserManagementPage functionality
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -356,13 +348,11 @@ class _SettingsPageState extends State<SettingsPage>
                     );
                   },
                   icon: const Icon(Icons.person_add),
-                  label: const Text('افزودن کاربر'),
+                  label: const Text('مدیریت کاربران'),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-
-            // Users List Header
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
@@ -401,8 +391,6 @@ class _SettingsPageState extends State<SettingsPage>
               ),
             ),
             const SizedBox(height: 8),
-
-            // Placeholder for users list
             Expanded(
               child: Center(
                 child: Column(
@@ -415,7 +403,7 @@ class _SettingsPageState extends State<SettingsPage>
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'لیست کاربران به زودی نمایش داده می‌شود',
+                      'برای مدیریت کاربران دکمه بالا را بزنید',
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                   ],
@@ -429,13 +417,13 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   Widget _buildTextField(
-    BuildContext context, {
-    required String label,
-    required String initialValue,
-    bool enabled = true,
-  }) {
+    BuildContext context,
+    String label,
+    String value,
+    bool enabled,
+  ) {
     return TextFormField(
-      initialValue: initialValue,
+      initialValue: value,
       enabled: enabled,
       decoration: InputDecoration(
         labelText: label,
@@ -493,57 +481,111 @@ class _SettingsPageState extends State<SettingsPage>
   void _showChangePasswordDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('تغییر رمز عبور'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'رمز عبور فعلی',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+      builder: (dialogContext) => BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          final isLoading = state is AuthLoading;
+          String? username;
+          if (state is AuthSuccess) {
+            username = state.user.username;
+          }
+
+          return AlertDialog(
+            title: const Text('تغییر رمز عبور'),
+            content: Form(
+              key: _passwordFormKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: _currentPasswordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'رمز عبور فعلی',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'لطفاً رمز عبور فعلی را وارد کنید'
+                        : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _newPasswordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'رمز عبور جدید',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty)
+                        return 'لطفاً رمز عبور جدید را وارد کنید';
+                      if (value.length < 6)
+                        return 'رمز عبور باید حداقل 6 کاراکتر باشد';
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'تکرار رمز عبور جدید',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value != _newPasswordController.text)
+                        return 'رمز عبور تکرار شده مطابقت ندارد';
+                      return null;
+                    },
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'رمز عبور جدید',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+            actions: [
+              TextButton(
+                onPressed: isLoading
+                    ? null
+                    : () => Navigator.pop(dialogContext),
+                child: const Text('انصراف'),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'تکرار رمز عبور جدید',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+              FilledButton(
+                onPressed: isLoading
+                    ? null
+                    : () {
+                        if (_passwordFormKey.currentState!.validate() &&
+                            username != null) {
+                          context.read<AuthBloc>().add(
+                            UpdatePasswordRequested(
+                              username: username,
+                              newPassword: _newPasswordController.text,
+                            ),
+                          );
+                        }
+                      },
+                child: isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('ذخیره'),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('انصراف'),
-          ),
-          FilledButton(
-            onPressed: () {
-              // TODO: Implement password change
-              Navigator.pop(context);
-            },
-            child: const Text('ذخیره'),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
+  }
+
+  void _clearPasswordFields() {
+    _currentPasswordController.clear();
+    _newPasswordController.clear();
+    _confirmPasswordController.clear();
   }
 
   String _getRoleLabel(String role) {
