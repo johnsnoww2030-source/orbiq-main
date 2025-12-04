@@ -496,150 +496,309 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        children: [
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.only(bottom: 16),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.75,
-              ),
-              itemCount: products.length,
-              itemBuilder: (context, index) =>
-                  _buildProductCard(context, products[index], authState),
-            ),
-          ),
-          if (state != null && state.totalPages > 1)
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+        ),
+        child: Column(
+          children: [
+            // Table Header
             Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.chevron_right),
-                    onPressed: state.currentPage > 1
-                        ? () => context.read<GetProductBloc>().add(
-                            LoadProductPageEvent(state.currentPage - 1),
-                          )
-                        : null,
+                  Text(
+                    'لیست محصولات',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(width: 16),
-                  Text('صفحه ${state.currentPage} از ${state.totalPages}'),
-                  const SizedBox(width: 16),
-                  IconButton(
-                    icon: const Icon(Icons.chevron_left),
-                    onPressed: state.hasNextPage
-                        ? () => context.read<GetProductBloc>().add(
-                            LoadProductPageEvent(state.currentPage + 1),
-                          )
-                        : null,
+                  if (state != null)
+                    Text(
+                      '${products.length} محصول',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                ],
+              ),
+            ),
+            // Table Column Headers
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                border: Border(
+                  top: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+                  bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text('کد محصول', style: _headerStyle(context)),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Text('نام محصول', style: _headerStyle(context)),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text('قیمت', style: _headerStyle(context)),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Text('موجودی', style: _headerStyle(context)),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Text('وضعیت', style: _headerStyle(context)),
+                  ),
+                  const SizedBox(
+                    width: 100,
+                    child: Text(
+                      'عملیات',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
             ),
-        ],
+            // Table Body
+            Expanded(
+              child: ListView.separated(
+                itemCount: products.length,
+                separatorBuilder: (context, index) => Divider(
+                  height: 1,
+                  color: Colors.grey.withValues(alpha: 0.2),
+                ),
+                itemBuilder: (context, index) =>
+                    _buildProductRow(context, products[index], authState),
+              ),
+            ),
+            // Pagination - always show when state is available
+            if (state != null) _buildPaginationControls(context, state),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildProductCard(
+  TextStyle _headerStyle(BuildContext context) {
+    return TextStyle(
+      fontWeight: FontWeight.bold,
+      color: Colors.grey[600],
+      fontSize: 13,
+    );
+  }
+
+  Widget _buildProductRow(
     BuildContext context,
     ProductModel product,
     AuthState authState,
   ) {
     final stockStatus = _getStockStatus(product);
 
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: _isCartActive
-            ? () {
-                context.read<CartBloc>().add(
-                  AddToCartEvent(product.toEntity()),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('${product.name} به سبد اضافه شد'),
-                    duration: const Duration(seconds: 1),
-                  ),
-                );
-              }
-            : null,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return InkWell(
+      onTap: _isCartActive
+          ? () {
+              context.read<CartBloc>().add(AddToCartEvent(product.toEntity()));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('${product.name} به سبد اضافه شد'),
+                  duration: const Duration(seconds: 1),
+                ),
+              );
+            }
+          : null,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            // Serial Number
+            Expanded(
+              flex: 2,
+              child: Text(
+                product.serialNumber,
+                style: TextStyle(
+                  fontFamily: 'monospace',
+                  fontSize: 13,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            ),
+            // Product Name with details
+            Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Text(
-                      product.name,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  Text(
+                    product.name,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  _buildStatusBadge(stockStatus),
+                  const SizedBox(height: 2),
+                  Text(
+                    'مدل: ${product.model} | رنگ: ${product.color}',
+                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                'شماره سریال: ${product.serialNumber}',
-                style: const TextStyle(fontSize: 12),
-              ),
-              Text(
-                'مدل: ${product.model}',
-                style: const TextStyle(fontSize: 12),
-              ),
-              Text(
-                'رنگ: ${product.color}',
-                style: const TextStyle(fontSize: 12),
-              ),
-              Text(
-                'موجودی: ${product.currentStock}',
-                style: const TextStyle(fontSize: 12),
-              ),
-              const Spacer(),
-              Text(
+            ),
+            // Price
+            Expanded(
+              flex: 2,
+              child: Text(
                 '${currencyFormat.format(product.originalPrice.toInt())} تومان',
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                   color: Colors.green[700],
                 ),
               ),
-              if (authState is AuthSuccess && authState.user.role == 'admin')
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                    icon: const Icon(Icons.edit_outlined, size: 20),
+            ),
+            // Stock
+            Expanded(
+              flex: 1,
+              child: Text(
+                product.currentStock.toString(),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: stockStatus == 'out'
+                      ? Colors.red
+                      : stockStatus == 'low'
+                      ? Colors.orange
+                      : null,
+                ),
+              ),
+            ),
+            // Status Badge
+            Expanded(flex: 1, child: _buildStatusBadge(stockStatus)),
+            // Actions
+            SizedBox(
+              width: 100,
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.visibility_outlined, size: 20),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              EditProductPage(product: product),
-                        ),
-                      ).then((result) {
-                        if (result == true)
-                          context.read<GetProductBloc>().add(LoadProducts());
-                      });
+                      // Show product details
                     },
-                    tooltip: 'ویرایش',
+                    tooltip: 'مشاهده',
+                    iconSize: 20,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(
+                      minWidth: 36,
+                      minHeight: 36,
+                    ),
+                  ),
+                  if (authState is AuthSuccess &&
+                      authState.user.role == 'admin')
+                    IconButton(
+                      icon: const Icon(Icons.edit_outlined, size: 20),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                EditProductPage(product: product),
+                          ),
+                        ).then((result) {
+                          if (result == true)
+                            context.read<GetProductBloc>().add(LoadProducts());
+                        });
+                      },
+                      tooltip: 'ویرایش',
+                      iconSize: 20,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 36,
+                        minHeight: 36,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaginationControls(BuildContext context, ProductLoaded state) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'نمایش ${((state.currentPage - 1) * 20) + 1} تا ${state.currentPage * 20} ',
+            style: TextStyle(color: Colors.grey[600], fontSize: 13),
+          ),
+          Row(
+            children: [
+              OutlinedButton.icon(
+                onPressed: state.currentPage > 1
+                    ? () => context.read<GetProductBloc>().add(
+                        LoadProductPageEvent(state.currentPage - 1),
+                      )
+                    : null,
+                icon: const Icon(Icons.chevron_right, size: 18),
+                label: const Text('قبلی'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
                   ),
                 ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${state.currentPage} / ${state.totalPages}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              OutlinedButton.icon(
+                onPressed: state.hasNextPage
+                    ? () => context.read<GetProductBloc>().add(
+                        LoadProductPageEvent(state.currentPage + 1),
+                      )
+                    : null,
+                icon: const Icon(Icons.chevron_left, size: 18),
+                label: const Text('بعدی'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                ),
+              ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
