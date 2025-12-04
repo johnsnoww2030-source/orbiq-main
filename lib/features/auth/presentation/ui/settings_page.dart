@@ -520,10 +520,12 @@ class _SettingsPageState extends State<SettingsPage>
                       ),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty)
+                      if (value == null || value.isEmpty) {
                         return 'لطفاً رمز عبور جدید را وارد کنید';
-                      if (value.length < 6)
+                      }
+                      if (value.length < 6) {
                         return 'رمز عبور باید حداقل 6 کاراکتر باشد';
+                      }
                       return null;
                     },
                   ),
@@ -538,8 +540,9 @@ class _SettingsPageState extends State<SettingsPage>
                       ),
                     ),
                     validator: (value) {
-                      if (value != _newPasswordController.text)
+                      if (value != _newPasswordController.text) {
                         return 'رمز عبور تکرار شده مطابقت ندارد';
+                      }
                       return null;
                     },
                   ),

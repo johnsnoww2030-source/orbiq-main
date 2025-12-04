@@ -224,14 +224,16 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
             // Add Product Button
             FilledButton.icon(
               onPressed: () {
+                final bloc = context.read<GetProductBloc>();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const AddProductPage(),
                   ),
                 ).then((result) {
-                  if (result == true)
-                    context.read<GetProductBloc>().add(LoadProducts());
+                  if (result == true && mounted) {
+                    bloc.add(LoadProducts());
+                  }
                 });
               },
               icon: const Icon(Icons.add),
@@ -702,6 +704,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                     IconButton(
                       icon: const Icon(Icons.edit_outlined, size: 20),
                       onPressed: () {
+                        final bloc = context.read<GetProductBloc>();
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -709,8 +712,9 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                                 EditProductPage(product: product),
                           ),
                         ).then((result) {
-                          if (result == true)
-                            context.read<GetProductBloc>().add(LoadProducts());
+                          if (result == true && mounted) {
+                            bloc.add(LoadProducts());
+                          }
                         });
                       },
                       tooltip: 'ویرایش',
@@ -979,8 +983,9 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
   String _getStockStatus(ProductModel product) {
     if (product.currentStock <= 0) return 'out';
     if (product.currentStock <=
-        (product.reorderPoint > 0 ? product.reorderPoint : 5))
+        (product.reorderPoint > 0 ? product.reorderPoint : 5)) {
       return 'low';
+    }
     return 'available';
   }
 
