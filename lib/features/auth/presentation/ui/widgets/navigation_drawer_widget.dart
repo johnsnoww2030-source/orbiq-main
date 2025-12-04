@@ -97,20 +97,13 @@ class NavigationDrawerWidget extends StatelessWidget {
                 _buildNavItem(
                   context,
                   index: 8,
-                  icon: Icons.add_box_outlined,
-                  selectedIcon: Icons.add_box,
-                  label: l10n.addProduct,
-                ),
-                _buildNavItem(
-                  context,
-                  index: 9,
                   icon: Icons.notifications_none_outlined,
                   selectedIcon: Icons.notifications,
                   label: l10n.reminders,
                 ),
                 _buildNavItem(
                   context,
-                  index: 10,
+                  index: 9,
                   icon: Icons.support_agent_outlined,
                   selectedIcon: Icons.support_agent,
                   label: l10n.support,
@@ -123,7 +116,7 @@ class NavigationDrawerWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             child: _buildNavItem(
               context,
-              index: 11,
+              index: 10,
               icon: Icons.settings_outlined,
               selectedIcon: Icons.settings,
               label: l10n.settings,

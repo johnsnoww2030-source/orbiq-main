@@ -12,8 +12,7 @@ import 'package:orbiq/features/auth/presentation/ui/widgets/navigation_drawer_wi
 import 'package:orbiq/features/auth/presentation/ui/widgets/dashboard_content_widget.dart';
 
 import 'package:orbiq/features/payment/presentation/ui/payment_report_page.dart';
-import 'package:orbiq/features/get_product/presentation/ui/get_product_page.dart';
-import 'package:orbiq/features/add_product/presentation/ui/add_product_page.dart';
+import 'package:orbiq/features/get_product/presentation/ui/products_management_page.dart';
 import 'package:orbiq/features/auth/presentation/ui/settings_page.dart';
 
 class ManagerPage extends StatefulWidget {
@@ -168,15 +167,13 @@ class _ManagerPageState extends State<ManagerPage> {
         return _buildPlaceholder("Customers Content");
       case 6: // Vendors
         return _buildPlaceholder("Vendors Content");
-      case 7: // Products
-        return const ProductListPage();
-      case 8: // Add Product
-        return const AddProductPage();
-      case 9: // Reminders
+      case 7: // Products (includes Add Product)
+        return const ProductsManagementPage();
+      case 8: // Reminders
         return _buildPlaceholder("Reminders Content");
-      case 10: // Support
+      case 9: // Support
         return _buildPlaceholder("Support Content");
-      case 11: // Settings
+      case 10: // Settings
         return const SettingsPage();
       default:
         return const DashboardContentWidget();
