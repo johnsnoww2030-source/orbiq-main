@@ -213,5 +213,9 @@
   "customers": "Customers",
   "vendors": "Vendors",
   "reminders": "Reminders",
-  "support": "Support"
+  "support": "Support",
+  "welcomeMessage": "Welcome back to your workspace",
+  "enterCredentials": "Please enter your details",
+  "usernameRequired": "Username is required",
+  "passwordRequired": "Password is required"
 }

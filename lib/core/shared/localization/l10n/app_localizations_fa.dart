@@ -647,4 +647,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get support => 'پشتیبانی';
+
+  @override
+  String get welcomeMessage => 'به فضای کاری خود خوش آمدید';
+
+  @override
+  String get enterCredentials => 'لطفاً مشخصات خود را وارد کنید';
+
+  @override
+  String get usernameRequired => 'نام کاربری الزامی است';
+
+  @override
+  String get passwordRequired => 'رمز عبور الزامی است';
 }

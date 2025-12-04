@@ -216,5 +216,9 @@
   "customers": "مشتریان",
   "vendors": "فروشندگان",
   "reminders": "یادآوری‌ها",
-  "support": "پشتیبانی"
+  "support": "پشتیبانی",
+  "welcomeMessage": "به فضای کاری خود خوش آمدید",
+  "enterCredentials": "لطفاً مشخصات خود را وارد کنید",
+  "usernameRequired": "نام کاربری الزامی است",
+  "passwordRequired": "رمز عبور الزامی است"
 }

@@ -1375,6 +1375,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Support'**
   String get support;
+
+  /// No description provided for @welcomeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back to your workspace'**
+  String get welcomeMessage;
+
+  /// No description provided for @enterCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your details'**
+  String get enterCredentials;
+
+  /// No description provided for @usernameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Username is required'**
+  String get usernameRequired;
+
+  /// No description provided for @passwordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get passwordRequired;
 }
 
 class _AppLocalizationsDelegate

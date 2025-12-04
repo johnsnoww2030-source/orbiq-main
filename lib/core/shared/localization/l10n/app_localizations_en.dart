@@ -646,4 +646,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get support => 'Support';
+
+  @override
+  String get welcomeMessage => 'Welcome back to your workspace';
+
+  @override
+  String get enterCredentials => 'Please enter your details';
+
+  @override
+  String get usernameRequired => 'Username is required';
+
+  @override
+  String get passwordRequired => 'Password is required';
 }

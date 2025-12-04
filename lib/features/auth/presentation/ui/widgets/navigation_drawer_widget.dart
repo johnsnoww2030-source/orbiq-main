@@ -150,11 +150,13 @@ class NavigationDrawerWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
               color: isSelected
-                  ? colorScheme.primary.withOpacity(0.1)
+                  ? colorScheme.primary.withValues(alpha: 0.1)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(12),
               border: isSelected
-                  ? Border.all(color: colorScheme.primary.withOpacity(0.2))
+                  ? Border.all(
+                      color: colorScheme.primary.withValues(alpha: 0.2),
+                    )
                   : null,
             ),
             child: Column(
