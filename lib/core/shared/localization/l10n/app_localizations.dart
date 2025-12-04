@@ -1327,6 +1327,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter a valid price'**
   String get invalidPrice;
+
+  /// No description provided for @dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboard;
+
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
+
+  /// No description provided for @invoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices'**
+  String get invoices;
+
+  /// No description provided for @barcodeReader.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode Reader'**
+  String get barcodeReader;
+
+  /// No description provided for @customers.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get customers;
+
+  /// No description provided for @vendors.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendors'**
+  String get vendors;
+
+  /// No description provided for @reminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminders'**
+  String get reminders;
+
+  /// No description provided for @support.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get support;
 }
 
 class _AppLocalizationsDelegate

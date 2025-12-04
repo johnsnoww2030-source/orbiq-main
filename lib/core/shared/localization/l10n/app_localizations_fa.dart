@@ -623,4 +623,28 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get invalidPrice => 'لطفا یک قیمت معتبر وارد کنید';
+
+  @override
+  String get dashboard => 'داشبورد';
+
+  @override
+  String get transactions => 'تراکنش‌ها';
+
+  @override
+  String get invoices => 'فاکتورها';
+
+  @override
+  String get barcodeReader => 'بارکدخوان';
+
+  @override
+  String get customers => 'مشتریان';
+
+  @override
+  String get vendors => 'فروشندگان';
+
+  @override
+  String get reminders => 'یادآوری‌ها';
+
+  @override
+  String get support => 'پشتیبانی';
 }

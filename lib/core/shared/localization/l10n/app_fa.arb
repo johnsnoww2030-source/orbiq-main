@@ -208,5 +208,13 @@
   "confirmDiscard": "آیا از انصراف از تغییرات اطمینان دارید؟",
   "yes": "بله",
   "no": "خیر",
-  "invalidPrice": "لطفا یک قیمت معتبر وارد کنید"
+  "invalidPrice": "لطفا یک قیمت معتبر وارد کنید",
+  "dashboard": "داشبورد",
+  "transactions": "تراکنش‌ها",
+  "invoices": "فاکتورها",
+  "barcodeReader": "بارکدخوان",
+  "customers": "مشتریان",
+  "vendors": "فروشندگان",
+  "reminders": "یادآوری‌ها",
+  "support": "پشتیبانی"
 }

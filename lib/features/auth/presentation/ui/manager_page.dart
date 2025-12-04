@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
-
 import 'package:orbiq/core/shared/theme/domain/entities/theme_entity.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_bloc.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_state.dart';
@@ -9,6 +8,8 @@ import 'package:orbiq/features/auth/presentation/ui/widgets/logout_button.dart';
 import 'package:orbiq/core/shared/theme/presentation/controller/theme_bloc.dart';
 import 'package:orbiq/core/shared/theme/presentation/controller/theme_event.dart';
 import 'package:orbiq/core/shared/theme/presentation/controller/theme_state.dart';
+import 'package:orbiq/features/auth/presentation/ui/widgets/navigation_drawer_widget.dart';
+import 'package:orbiq/features/auth/presentation/ui/widgets/dashboard_content_widget.dart';
 
 class ManagerPage extends StatefulWidget {
   const ManagerPage({super.key});
@@ -18,6 +19,8 @@ class ManagerPage extends StatefulWidget {
 }
 
 class _ManagerPageState extends State<ManagerPage> {
+  int _selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -32,149 +35,173 @@ class _ManagerPageState extends State<ManagerPage> {
         }
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              l10n.managerDashboard,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            actions: [
-              BlocBuilder<ThemeBloc, ThemeState>(
-                builder: (context, themeState) {
-                  final isDarkMode = themeState is ThemeLoaded &&
-                      themeState.theme.type == ThemeType.dark;
+          body: Row(
+            children: [
+              // Sidebar for Desktop/Tablet
+              if (MediaQuery.of(context).size.width > 800)
+                NavigationDrawerWidget(
+                  selectedIndex: _selectedIndex,
+                  onDestinationSelected: _onDestinationSelected,
+                ),
 
-                  return IconButton(
-                    icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
-                    onPressed: () {
-                      context.read<ThemeBloc>().add(ToggleThemeEvent());
-                    },
-                    tooltip: isDarkMode ? l10n.lightMode : l10n.darkMode,
-                  );
-                },
-              ),
-              const LogoutButton(),
-              IconButton(
-                icon: const Icon(Icons.language),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/settings/language');
-                },
-                tooltip: l10n.language,
+              // Main Content
+              Expanded(
+                child: Column(
+                  children: [
+                    // Top Bar
+                    _buildTopBar(context, l10n),
+
+                    // Content Area
+                    Expanded(child: _buildContent(_selectedIndex)),
+                  ],
+                ),
               ),
             ],
           ),
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n.welcomeManager,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  Expanded(
-                    child: GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: MediaQuery.of(context).size.width > 1000
-                            ? 5
-                            : MediaQuery.of(context).size.width > 600
-                                ? 3
-                                : 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        final List<Map<String, dynamic>> items = [
-                          {
-                            'title': l10n.addProduct,
-                            'icon': Icons.add_box,
-                            'color': Colors.green,
-                            'route': '/add-product'
-                          },
-                          {
-                            'title': l10n.sale,
-                            'icon': Icons.shopping_cart,
-                            'color': Colors.orange,
-                            'route': '/products'
-                          },
-                          {
-                            'title': l10n.userManagement,
-                            'icon': Icons.people,
-                            'color': Colors.purple,
-                            'route': '/userManagement'
-                          },
-                          {
-                            'title': l10n.viewReports,
-                            'icon': Icons.bar_chart,
-                            'color': Colors.red,
-                            'route': '/paymentsReport'
-                          },
-                          {
-                            'title': l10n.update,
-                            'icon': Icons.update,
-                            'color': Colors.teal,
-                            'route': '/update'
-                          },
-                        ];
-                        final Map<String, dynamic> item = items[index];
-                        return _buildDashboardCard(
-                          context,
-                          item['title'] as String,
-                          item['icon'] as IconData,
-                          item['color'] as Color,
-                          () => _navigateTo(context, item['route'] as String),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          // Drawer for Mobile
+          drawer: MediaQuery.of(context).size.width <= 800
+              ? NavigationDrawerWidget(
+                  selectedIndex: _selectedIndex,
+                  onDestinationSelected: (index) {
+                    Navigator.pop(context); // Close drawer
+                    _onDestinationSelected(index);
+                  },
+                )
+              : null,
         );
       },
     );
   }
 
-  Widget _buildDashboardCard(
-    BuildContext context,
-    String title,
-    IconData icon,
-    Color color,
-    VoidCallback onPressed,
-  ) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        onTap: onPressed,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 48, color: color),
-              const SizedBox(height: 8),
-              Text(
-                title,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-            ],
+  Widget _buildTopBar(BuildContext context, AppLocalizations l10n) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
-        ),
+        ],
+      ),
+      child: Row(
+        children: [
+          if (MediaQuery.of(context).size.width <= 800)
+            Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
+            ),
+
+          // Search Bar (Visual only for now)
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              height: 40,
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.search, color: Colors.grey),
+                  const SizedBox(width: 8),
+                  Text(l10n.search, style: const TextStyle(color: Colors.grey)),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+
+          // Actions
+          BlocBuilder<ThemeBloc, ThemeState>(
+            builder: (context, themeState) {
+              final isDarkMode =
+                  themeState is ThemeLoaded &&
+                  themeState.theme.type == ThemeType.dark;
+
+              return IconButton(
+                icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
+                onPressed: () {
+                  context.read<ThemeBloc>().add(ToggleThemeEvent());
+                },
+                tooltip: isDarkMode ? l10n.lightMode : l10n.darkMode,
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.language),
+            onPressed: () {
+              Navigator.pushNamed(context, '/settings/language');
+            },
+            tooltip: l10n.language,
+          ),
+          const SizedBox(width: 8),
+          const LogoutButton(),
+        ],
       ),
     );
   }
 
-  void _navigateTo(BuildContext context, String route) {
-    Navigator.of(context).pushNamed(route);
+  Widget _buildContent(int index) {
+    // Map index to content
+    switch (index) {
+      case 0:
+        return const DashboardContentWidget();
+      case 1: // Transactions
+        return _buildPlaceholder("Transactions Content");
+      case 2: // Invoices
+        return _buildPlaceholder("Invoices Content");
+      case 3: // Barcode Reader
+        return _buildPlaceholder("Barcode Reader Content");
+      case 4: // Reports
+        return _buildPlaceholder("Reports Content");
+      case 5: // Customers
+        return _buildPlaceholder("Customers Content");
+      case 6: // Vendors
+        return _buildPlaceholder("Vendors Content");
+      case 7: // Products
+        return _buildPlaceholder("Products Content");
+      case 8: // Reminders
+        return _buildPlaceholder("Reminders Content");
+      case 9: // Support
+        return _buildPlaceholder("Support Content");
+      case 10: // Settings
+        return _buildPlaceholder("Settings Content");
+      default:
+        return const DashboardContentWidget();
+    }
+  }
+
+  Widget _buildPlaceholder(String title) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.construction, size: 64, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(title, style: TextStyle(fontSize: 24, color: Colors.grey[600])),
+          const SizedBox(height: 8),
+          const Text("Coming Soon"),
+        ],
+      ),
+    );
+  }
+
+  void _onDestinationSelected(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    // Handle specific navigation if needed
+    // For example, if some items should open new routes instead of changing content
+    if (index == 3) {
+      // Barcode Reader
+      // Navigator.pushNamed(context, '/barcode');
+      // Uncomment if you want to push to a separate page
+    }
   }
 }

@@ -622,4 +622,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidPrice => 'Please enter a valid price';
+
+  @override
+  String get dashboard => 'Dashboard';
+
+  @override
+  String get transactions => 'Transactions';
+
+  @override
+  String get invoices => 'Invoices';
+
+  @override
+  String get barcodeReader => 'Barcode Reader';
+
+  @override
+  String get customers => 'Customers';
+
+  @override
+  String get vendors => 'Vendors';
+
+  @override
+  String get reminders => 'Reminders';
+
+  @override
+  String get support => 'Support';
 }

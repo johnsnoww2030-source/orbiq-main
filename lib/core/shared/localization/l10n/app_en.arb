@@ -205,5 +205,13 @@
   "yes": "Yes",
   "no": "No",
   "originalPrice": "Original Price",
-  "invalidPrice": "Please enter a valid price"
+  "invalidPrice": "Please enter a valid price",
+  "dashboard": "Dashboard",
+  "transactions": "Transactions",
+  "invoices": "Invoices",
+  "barcodeReader": "Barcode Reader",
+  "customers": "Customers",
+  "vendors": "Vendors",
+  "reminders": "Reminders",
+  "support": "Support"
 }
