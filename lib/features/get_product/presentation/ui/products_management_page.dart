@@ -33,13 +33,18 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
   bool _isCartActive = false;
   late AnimationController _animationController;
   late Animation<double> _animation;
+  final PageController _statsPageController = PageController(
+    viewportFraction: 0.85,
+  );
+
+  bool _isMobile(BuildContext context) =>
+      MediaQuery.of(context).size.width < 600;
 
   @override
   void initState() {
     super.initState();
     context.read<GetProductBloc>().add(LoadProducts());
 
-    // Listen to barcode reader
     context.read<ChatBloc>().stream.listen((state) {
       if (state is ChatConnected && state.messages.isNotEmpty) {
         final message = state.messages.last;
@@ -65,6 +70,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
     _searchController.dispose();
     _searchFocusNode.dispose();
     _animationController.dispose();
+    _statsPageController.dispose();
     super.dispose();
   }
 
@@ -81,6 +87,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final isMobile = _isMobile(context);
     final screenWidth = MediaQuery.of(context).size.width;
     const itemWidth = 200.0;
     final crossAxisCount = (screenWidth / itemWidth).floor().clamp(1, 6);
@@ -88,26 +95,22 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
     return Scaffold(
       body: Column(
         children: [
-          // Header Section
           Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(isMobile ? 16.0 : 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildHeader(context, l10n),
-                const SizedBox(height: 24),
-                _buildStatsCards(context),
-                const SizedBox(height: 24),
-                _buildSearchAndFilters(context, l10n),
+                _buildHeader(context, l10n, isMobile),
+                SizedBox(height: isMobile ? 16 : 24),
+                _buildStatsCards(context, isMobile),
+                SizedBox(height: isMobile ? 16 : 24),
+                _buildSearchAndFilters(context, l10n, isMobile),
               ],
             ),
           ),
-
-          // Products List with BlocListener for cart functionality
           Expanded(
             child: BlocListener<GetProductBloc, GetProductState>(
               listener: (context, state) {
-                // Auto-add to cart when product found and cart is active
                 if (state is ProductFound && _isCartActive) {
                   context.read<CartBloc>().add(
                     AddToCartEvent(state.product.toEntity()),
@@ -121,18 +124,111 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                   );
                 }
               },
-              child: _buildProductsContent(context, l10n, crossAxisCount),
+              child: _buildProductsContent(
+                context,
+                l10n,
+                crossAxisCount,
+                isMobile,
+              ),
             ),
           ),
-
-          // Cart Section (when active)
-          if (_isCartActive) _buildCartSection(context, crossAxisCount),
+          if (_isCartActive)
+            _buildCartSection(context, crossAxisCount, isMobile),
         ],
       ),
+      floatingActionButton: isMobile ? _buildMobileFAB(context) : null,
     );
   }
 
-  Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
+  Widget _buildMobileFAB(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        FloatingActionButton.small(
+          heroTag: 'cart',
+          onPressed: () {
+            setState(() {
+              _isCartActive = !_isCartActive;
+              if (_isCartActive) {
+                _animationController.forward();
+              } else {
+                _animationController.reverse();
+              }
+            });
+          },
+          backgroundColor: _isCartActive
+              ? Theme.of(context).primaryColor
+              : null,
+          child: Icon(
+            _isCartActive ? Icons.shopping_cart : Icons.shopping_cart_outlined,
+          ),
+        ),
+        const SizedBox(height: 8),
+        FloatingActionButton(
+          heroTag: 'add',
+          onPressed: () {
+            final bloc = context.read<GetProductBloc>();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddProductPage()),
+            ).then((result) {
+              if (result == true && mounted) {
+                bloc.add(LoadProducts());
+              }
+            });
+          },
+          child: const Icon(Icons.add),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(
+    BuildContext context,
+    AppLocalizations l10n,
+    bool isMobile,
+  ) {
+    if (isMobile) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.inventory_2_outlined,
+                  color: Theme.of(context).primaryColor,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                'مدیریت محصولات',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          IconButton(
+            onPressed: () => Navigator.pushNamed(context, '/barcode-reader'),
+            icon: const Icon(Icons.qr_code_scanner),
+            style: IconButton.styleFrom(
+              backgroundColor: Theme.of(
+                context,
+              ).primaryColor.withValues(alpha: 0.1),
+              foregroundColor: Theme.of(context).primaryColor,
+            ),
+          ),
+        ],
+      );
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -174,7 +270,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
         ),
         Row(
           children: [
-            // Barcode Reader Button
             IconButton(
               onPressed: () => Navigator.pushNamed(context, '/barcode-reader'),
               icon: const Icon(Icons.qr_code_scanner),
@@ -188,7 +283,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
               ),
             ),
             const SizedBox(width: 8),
-            // Cart Button with animation
             AnimatedBuilder(
               animation: _animation,
               builder: (context, child) => IconButton(
@@ -221,7 +315,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
               ),
             ),
             const SizedBox(width: 16),
-            // Add Product Button
             FilledButton.icon(
               onPressed: () {
                 final bloc = context.read<GetProductBloc>();
@@ -251,13 +344,13 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
     );
   }
 
-  Widget _buildStatsCards(BuildContext context) {
+  Widget _buildStatsCards(BuildContext context, bool isMobile) {
     return BlocBuilder<GetProductBloc, GetProductState>(
       builder: (context, state) {
-        int totalProducts = 0;
-        int availableProducts = 0;
-        int lowStockProducts = 0;
-        int outOfStockProducts = 0;
+        int totalProducts = 0,
+            availableProducts = 0,
+            lowStockProducts = 0,
+            outOfStockProducts = 0;
 
         if (state is ProductLoaded) {
           totalProducts = state.products.length;
@@ -273,48 +366,73 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
           }
         }
 
+        final stats = [
+          {
+            'icon': Icons.inventory_2,
+            'color': Colors.blue,
+            'value': totalProducts.toString(),
+            'label': 'کل محصولات',
+          },
+          {
+            'icon': Icons.check_circle,
+            'color': Colors.green,
+            'value': availableProducts.toString(),
+            'label': 'موجود',
+          },
+          {
+            'icon': Icons.warning_amber,
+            'color': Colors.orange,
+            'value': lowStockProducts.toString(),
+            'label': 'موجودی کم',
+          },
+          {
+            'icon': Icons.error_outline,
+            'color': Colors.red,
+            'value': outOfStockProducts.toString(),
+            'label': 'تمام شده',
+          },
+        ];
+
+        if (isMobile) {
+          return SizedBox(
+            height: 100,
+            child: PageView.builder(
+              controller: _statsPageController,
+              itemCount: stats.length,
+              itemBuilder: (context, index) {
+                final stat = stats[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: _buildStatCard(
+                    context,
+                    stat['icon'] as IconData,
+                    stat['color'] as Color,
+                    stat['value'] as String,
+                    stat['label'] as String,
+                  ),
+                );
+              },
+            ),
+          );
+        }
+
         return Row(
-          children: [
-            Expanded(
-              child: _buildStatCard(
-                context,
-                Icons.inventory_2,
-                Colors.blue,
-                totalProducts.toString(),
-                'کل محصولات',
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildStatCard(
-                context,
-                Icons.check_circle,
-                Colors.green,
-                availableProducts.toString(),
-                'موجود',
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildStatCard(
-                context,
-                Icons.warning_amber,
-                Colors.orange,
-                lowStockProducts.toString(),
-                'موجودی کم',
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildStatCard(
-                context,
-                Icons.error_outline,
-                Colors.red,
-                outOfStockProducts.toString(),
-                'تمام شده',
-              ),
-            ),
-          ],
+          children: stats
+              .map(
+                (stat) => Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: _buildStatCard(
+                      context,
+                      stat['icon'] as IconData,
+                      stat['color'] as Color,
+                      stat['value'] as String,
+                      stat['label'] as String,
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
         );
       },
     );
@@ -334,34 +452,37 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
         side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: color, size: 24),
+              child: Icon(icon, color: color, size: 22),
             ),
-            const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    value,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  label,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.grey),
-                ),
-              ],
+                  Text(
+                    label,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -369,7 +490,55 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
     );
   }
 
-  Widget _buildSearchAndFilters(BuildContext context, AppLocalizations l10n) {
+  Widget _buildSearchAndFilters(
+    BuildContext context,
+    AppLocalizations l10n,
+    bool isMobile,
+  ) {
+    if (isMobile) {
+      return Column(
+        children: [
+          TextField(
+            controller: _searchController,
+            focusNode: _searchFocusNode,
+            decoration: InputDecoration(
+              hintText: 'جستجو با شماره سریال...',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _searchController.clear();
+                  context.read<GetProductBloc>().add(LoadProducts());
+                },
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: Theme.of(context).cardColor,
+            ),
+            onSubmitted: _onSearchSubmitted,
+          ),
+          const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildFilterChip(context, 'all', 'همه'),
+                const SizedBox(width: 8),
+                _buildFilterChip(context, 'available', 'موجود'),
+                const SizedBox(width: 8),
+                _buildFilterChip(context, 'low', 'موجودی کم'),
+                const SizedBox(width: 8),
+                _buildFilterChip(context, 'out', 'تمام شده'),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -401,10 +570,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                   ),
                   filled: true,
                   fillColor: Theme.of(context).scaffoldBackgroundColor,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
                 ),
                 onSubmitted: _onSearchSubmitted,
               ),
@@ -438,6 +603,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
     BuildContext context,
     AppLocalizations l10n,
     int crossAxisCount,
+    bool isMobile,
   ) {
     return BlocBuilder<GetProductBloc, GetProductState>(
       builder: (context, state) {
@@ -446,15 +612,13 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
         } else if (state is ProductLoaded) {
           final products = _filterProducts(state.products);
           if (products.isEmpty) return _buildEmptyState(context);
-          return _buildProductsGrid(context, products, crossAxisCount, state);
+          return isMobile
+              ? _buildMobileProductsList(context, products, state)
+              : _buildDesktopProductsTable(context, products, state);
         } else if (state is ProductFound) {
-          // Show single found product
-          return _buildProductsGrid(
-            context,
-            [state.product],
-            crossAxisCount,
-            null,
-          );
+          return isMobile
+              ? _buildMobileProductsList(context, [state.product], null)
+              : _buildDesktopProductsTable(context, [state.product], null);
         } else if (state is ProductNotFound) {
           return Center(
             child: Column(
@@ -488,14 +652,214 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
     );
   }
 
-  Widget _buildProductsGrid(
+  Widget _buildMobileProductsList(
     BuildContext context,
     List<ProductModel> products,
-    int crossAxisCount,
     ProductLoaded? state,
   ) {
     final authState = context.read<AuthBloc>().state;
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: products.length,
+            itemBuilder: (context, index) =>
+                _buildMobileProductCard(context, products[index], authState),
+          ),
+        ),
+        if (state != null) _buildMobilePagination(context, state),
+      ],
+    );
+  }
 
+  Widget _buildMobileProductCard(
+    BuildContext context,
+    ProductModel product,
+    AuthState authState,
+  ) {
+    final stockStatus = _getStockStatus(product);
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: _isCartActive
+            ? () {
+                context.read<CartBloc>().add(
+                  AddToCartEvent(product.toEntity()),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${product.name} به سبد اضافه شد'),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              }
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      product.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  _buildStatusBadge(stockStatus),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'کد: ${product.serialNumber}',
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 12,
+                  fontFamily: 'monospace',
+                ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'مدل: ${product.model}',
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'رنگ: ${product.color}',
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.inventory_2_outlined,
+                        size: 16,
+                        color: Colors.grey[600],
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'موجودی: ${product.currentStock}',
+                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    '${currencyFormat.format(product.originalPrice.toInt())} تومان',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[700],
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+              if (authState is AuthSuccess && authState.user.role == 'admin')
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      final bloc = context.read<GetProductBloc>();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              EditProductPage(product: product),
+                        ),
+                      ).then((result) {
+                        if (result == true && mounted) {
+                          bloc.add(LoadProducts());
+                        }
+                      });
+                    },
+                    icon: const Icon(Icons.edit_outlined, size: 18),
+                    label: const Text('ویرایش'),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobilePagination(BuildContext context, ProductLoaded state) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: state.currentPage > 1
+                ? () => context.read<GetProductBloc>().add(
+                    LoadProductPageEvent(state.currentPage - 1),
+                  )
+                : null,
+            icon: const Icon(Icons.chevron_right),
+            style: IconButton.styleFrom(
+              backgroundColor: Theme.of(context).cardColor,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              '${state.currentPage} / ${state.totalPages}',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          IconButton(
+            onPressed: state.hasNextPage
+                ? () => context.read<GetProductBloc>().add(
+                    LoadProductPageEvent(state.currentPage + 1),
+                  )
+                : null,
+            icon: const Icon(Icons.chevron_left),
+            style: IconButton.styleFrom(
+              backgroundColor: Theme.of(context).cardColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesktopProductsTable(
+    BuildContext context,
+    List<ProductModel> products,
+    ProductLoaded? state,
+  ) {
+    final authState = context.read<AuthBloc>().state;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Card(
@@ -506,7 +870,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
         ),
         child: Column(
           children: [
-            // Table Header
             Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -526,7 +889,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                 ],
               ),
             ),
-            // Table Column Headers
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
@@ -568,7 +930,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                 ],
               ),
             ),
-            // Table Body
             Expanded(
               child: ListView.separated(
                 itemCount: products.length,
@@ -580,21 +941,18 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                     _buildProductRow(context, products[index], authState),
               ),
             ),
-            // Pagination - always show when state is available
-            if (state != null) _buildPaginationControls(context, state),
+            if (state != null) _buildDesktopPagination(context, state),
           ],
         ),
       ),
     );
   }
 
-  TextStyle _headerStyle(BuildContext context) {
-    return TextStyle(
-      fontWeight: FontWeight.bold,
-      color: Colors.grey[600],
-      fontSize: 13,
-    );
-  }
+  TextStyle _headerStyle(BuildContext context) => TextStyle(
+    fontWeight: FontWeight.bold,
+    color: Colors.grey[600],
+    fontSize: 13,
+  );
 
   Widget _buildProductRow(
     BuildContext context,
@@ -602,7 +960,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
     AuthState authState,
   ) {
     final stockStatus = _getStockStatus(product);
-
     return InkWell(
       onTap: _isCartActive
           ? () {
@@ -619,7 +976,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            // Serial Number
             Expanded(
               flex: 2,
               child: Text(
@@ -631,7 +987,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                 ),
               ),
             ),
-            // Product Name with details
             Expanded(
               flex: 3,
               child: Column(
@@ -653,7 +1008,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                 ],
               ),
             ),
-            // Price
             Expanded(
               flex: 2,
               child: Text(
@@ -664,7 +1018,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                 ),
               ),
             ),
-            // Stock
             Expanded(
               flex: 1,
               child: Text(
@@ -679,18 +1032,14 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                 ),
               ),
             ),
-            // Status Badge
             Expanded(flex: 1, child: _buildStatusBadge(stockStatus)),
-            // Actions
             SizedBox(
               width: 100,
               child: Row(
                 children: [
                   IconButton(
                     icon: const Icon(Icons.visibility_outlined, size: 20),
-                    onPressed: () {
-                      // Show product details
-                    },
+                    onPressed: () {},
                     tooltip: 'مشاهده',
                     iconSize: 20,
                     padding: EdgeInsets.zero,
@@ -734,7 +1083,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
     );
   }
 
-  Widget _buildPaginationControls(BuildContext context, ProductLoaded state) {
+  Widget _buildDesktopPagination(BuildContext context, ProductLoaded state) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -746,7 +1095,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'نمایش ${((state.currentPage - 1) * 20) + 1} تا ${state.currentPage * 20} ',
+            'نمایش ${((state.currentPage - 1) * 20) + 1} تا ${state.currentPage * 20}',
             style: TextStyle(color: Colors.grey[600], fontSize: 13),
           ),
           Row(
@@ -759,12 +1108,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                     : null,
                 icon: const Icon(Icons.chevron_right, size: 18),
                 label: const Text('قبلی'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                ),
               ),
               const SizedBox(width: 8),
               Container(
@@ -793,12 +1136,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                     : null,
                 icon: const Icon(Icons.chevron_left, size: 18),
                 label: const Text('بعدی'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                ),
               ),
             ],
           ),
@@ -807,7 +1144,11 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
     );
   }
 
-  Widget _buildCartSection(BuildContext context, int crossAxisCount) {
+  Widget _buildCartSection(
+    BuildContext context,
+    int crossAxisCount,
+    bool isMobile,
+  ) {
     return BlocBuilder<CartBloc, CartState>(
       builder: (context, cartState) {
         List<ProductEntity> cartItems = [];
@@ -821,7 +1162,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
         }
 
         return Container(
-          height: 250,
+          height: isMobile ? 200 : 250,
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -835,9 +1176,8 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
           ),
           child: Column(
             children: [
-              // Cart Header
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(isMobile ? 12 : 16),
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                   borderRadius: const BorderRadius.vertical(
@@ -852,18 +1192,22 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                         Icon(
                           Icons.shopping_cart,
                           color: Theme.of(context).primaryColor,
+                          size: isMobile ? 20 : 24,
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'سبد خرید (${cartItems.length} کالا)',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          'سبد (${cartItems.length})',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isMobile ? 14 : 16,
+                          ),
                         ),
                       ],
                     ),
                     Text(
                       '${currencyFormat.format(totalPrice.toInt())} تومان',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: isMobile ? 14 : 18,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).primaryColor,
                       ),
@@ -877,12 +1221,17 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                                 builder: (context) => const PaymentPage(),
                               ),
                             ),
+                      style: FilledButton.styleFrom(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isMobile ? 12 : 16,
+                          vertical: 8,
+                        ),
+                      ),
                       child: const Text('پرداخت'),
                     ),
                   ],
                 ),
               ),
-              // Cart Items
               Expanded(
                 child: cartItems.isEmpty
                     ? Center(
@@ -896,7 +1245,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                         padding: const EdgeInsets.all(8),
                         itemCount: cartItems.length,
                         itemBuilder: (context, index) =>
-                            _buildCartItem(context, cartItems[index]),
+                            _buildCartItem(context, cartItems[index], isMobile),
                       ),
               ),
             ],
@@ -906,13 +1255,17 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
     );
   }
 
-  Widget _buildCartItem(BuildContext context, ProductEntity product) {
+  Widget _buildCartItem(
+    BuildContext context,
+    ProductEntity product,
+    bool isMobile,
+  ) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 6),
       child: SizedBox(
-        width: 180,
+        width: isMobile ? 150 : 180,
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -922,32 +1275,37 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                   Expanded(
                     child: Text(
                       product.name,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: isMobile ? 12 : 14,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close, size: 18, color: Colors.red),
-                    onPressed: () => context.read<CartBloc>().add(
+                  GestureDetector(
+                    onTap: () => context.read<CartBloc>().add(
                       RemoveFromCartEvent(product),
                     ),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
+                    child: const Icon(Icons.close, size: 16, color: Colors.red),
                   ),
                 ],
               ),
               const SizedBox(height: 4),
               Text(
                 product.serialNumber,
-                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+                style: TextStyle(
+                  fontSize: isMobile ? 9 : 10,
+                  color: Colors.grey[600],
+                ),
               ),
               const Spacer(),
               Text(
-                '${currencyFormat.format(product.originalPrice.toInt())} تومان',
+                '${currencyFormat.format(product.originalPrice.toInt())} ت',
                 style: TextStyle(
                   color: Colors.green[700],
                   fontWeight: FontWeight.w500,
+                  fontSize: isMobile ? 11 : 12,
                 ),
               ),
             ],
@@ -990,8 +1348,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
   }
 
   Widget _buildStatusBadge(String status) {
-    Color bgColor;
-    Color textColor;
+    Color bgColor, textColor;
     String label;
 
     switch (status) {
@@ -1034,11 +1391,16 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
   }
 
   Widget _buildEmptyState(BuildContext context) {
+    final isMobile = _isMobile(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.inventory_2_outlined, size: 80, color: Colors.grey[400]),
+          Icon(
+            Icons.inventory_2_outlined,
+            size: isMobile ? 60 : 80,
+            color: Colors.grey[400],
+          ),
           const SizedBox(height: 16),
           Text(
             'هیچ محصولی یافت نشد',
@@ -1048,7 +1410,9 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
           ),
           const SizedBox(height: 8),
           Text(
-            'برای افزودن محصول جدید دکمه "محصول جدید" را بزنید',
+            isMobile
+                ? 'برای افزودن محصول دکمه + را بزنید'
+                : 'برای افزودن محصول جدید دکمه "محصول جدید" را بزنید',
             style: TextStyle(color: Colors.grey[500]),
           ),
         ],

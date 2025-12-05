@@ -50,14 +50,16 @@ class _ManagerPageState extends State<ManagerPage> {
 
               // Main Content
               Expanded(
-                child: Column(
-                  children: [
-                    // Top Bar
-                    _buildTopBar(context, l10n),
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      // Top Bar
+                      _buildTopBar(context, l10n),
 
-                    // Content Area
-                    Expanded(child: _buildContent(_selectedIndex)),
-                  ],
+                      // Content Area
+                      Expanded(child: _buildContent(_selectedIndex)),
+                    ],
+                  ),
                 ),
               ),
             ],
