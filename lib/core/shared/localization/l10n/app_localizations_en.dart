@@ -165,6 +165,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addNewProduct => 'Add New Product';
 
   @override
+  String get fillProductInfo => 'Enter product information';
+
+  @override
   String get editProduct => 'Edit Product';
 
   @override

@@ -410,6 +410,12 @@ abstract class AppLocalizations {
   /// **'Add New Product'**
   String get addNewProduct;
 
+  /// No description provided for @fillProductInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter product information'**
+  String get fillProductInfo;
+
   /// No description provided for @editProduct.
   ///
   /// In en, this message translates to:

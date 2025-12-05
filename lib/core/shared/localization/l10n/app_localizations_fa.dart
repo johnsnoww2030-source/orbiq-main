@@ -165,6 +165,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get addNewProduct => 'افزودن محصول جدید';
 
   @override
+  String get fillProductInfo => 'اطلاعات محصول را وارد نمایید';
+
+  @override
   String get editProduct => 'ویرایش محصول';
 
   @override

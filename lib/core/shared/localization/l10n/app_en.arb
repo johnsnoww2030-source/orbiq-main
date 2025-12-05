@@ -52,6 +52,7 @@
   "enterProductQuantity": "Enter product quantity",
   "enterProductSerial": "Enter product serial",
   "addNewProduct": "Add New Product",
+  "fillProductInfo": "Enter product information",
   "editProduct": "Edit Product",
   "deleteProduct": "Delete Product",
   "productAdded": "Product added successfully",

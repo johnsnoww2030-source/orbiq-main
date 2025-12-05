@@ -52,6 +52,7 @@
   "enterProductQuantity": "تعداد محصول را وارد کنید",
   "enterProductSerial": "سریال محصول را وارد کنید",
   "addNewProduct": "افزودن محصول جدید",
+  "fillProductInfo": "اطلاعات محصول را وارد نمایید",
   "editProduct": "ویرایش محصول",
   "deleteProduct": "حذف محصول",
   "productAdded": "محصول با موفقیت اضافه شد",

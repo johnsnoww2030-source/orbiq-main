@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/core/shared/product/data/models/product_model.dart';
 import 'package:orbiq/features/add_product/presentation/controllers/bloc/product_bloc.dart';
 import 'package:orbiq/features/add_product/presentation/controllers/bloc/product_event.dart';
@@ -16,8 +18,8 @@ class EditProductPage extends StatefulWidget {
 
 class _EditProductPageState extends State<EditProductPage> {
   final _formKey = GlobalKey<FormState>();
+  bool _showAdditionalInfo = false;
 
-  // کنترلرهای فیلدها
   late TextEditingController _nameController;
   late TextEditingController _serialNumberController;
   late TextEditingController _originalPriceController;
@@ -33,20 +35,25 @@ class _EditProductPageState extends State<EditProductPage> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.product.name);
-    _serialNumberController =
-        TextEditingController(text: widget.product.serialNumber);
-    _originalPriceController =
-        TextEditingController(text: widget.product.originalPrice.toString());
+    _serialNumberController = TextEditingController(
+      text: widget.product.serialNumber,
+    );
+    _originalPriceController = TextEditingController(
+      text: widget.product.originalPrice.toString(),
+    );
     _modelController = TextEditingController(text: widget.product.model);
     _colorController = TextEditingController(text: widget.product.color);
     _materialController = TextEditingController(text: widget.product.material);
-    _currentStockController =
-        TextEditingController(text: widget.product.currentStock.toString());
-    _descriptionController =
-        TextEditingController(text: widget.product.description);
+    _currentStockController = TextEditingController(
+      text: widget.product.currentStock.toString(),
+    );
+    _descriptionController = TextEditingController(
+      text: widget.product.description,
+    );
     _brandController = TextEditingController(text: widget.product.brand);
-    _reorderPointController =
-        TextEditingController(text: widget.product.reorderPoint.toString());
+    _reorderPointController = TextEditingController(
+      text: widget.product.reorderPoint.toString(),
+    );
   }
 
   @override
@@ -66,43 +73,544 @@ class _EditProductPageState extends State<EditProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ProductBloc, ProductState>(
-      listener: (context, state) {
-        if (state is ProductUpdatedSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('محصول با موفقیت به‌روزرسانی شد!'),
-              // backgroundColor: Colors.green,
-            ),
-          );
-          Navigator.of(context).pop(true);
-        } else if (state is ProductError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('خطا در به‌روزرسانی محصول: ${state.message}'),
-              // backgroundColor: Colors.red,
-            ),
-          );
+    final l10n = AppLocalizations.of(context);
+
+    return PopScope<bool>(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, bool? result) async {
+        if (didPop) return;
+
+        final shouldPop = await _onWillPop();
+        if (shouldPop && context.mounted) {
+          Navigator.of(context).pop();
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('ویرایش محصول'),
-          centerTitle: true,
-          elevation: 0,
-          // backgroundColor: Colors.deepPurple,
+      child: BlocListener<ProductBloc, ProductState>(
+        listener: (context, state) {
+          if (state is ProductUpdatedSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l10n.productUpdated),
+                backgroundColor: Colors.green,
+              ),
+            );
+            Navigator.of(context).pop(true);
+          } else if (state is ProductError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${l10n.error}: ${state.message}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        child: Scaffold(
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth > 800;
+              return CustomScrollView(
+                slivers: [
+                  _buildAppBar(context, l10n, isDesktop),
+                  SliverPadding(
+                    padding: EdgeInsets.all(isDesktop ? 32 : 16),
+                    sliver: SliverToBoxAdapter(
+                      child: Form(
+                        key: _formKey,
+                        child: isDesktop
+                            ? _buildDesktopLayout(l10n)
+                            : _buildMobileLayout(l10n),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
+      ),
+    );
+  }
+
+  Widget _buildAppBar(
+    BuildContext context,
+    AppLocalizations l10n,
+    bool isDesktop,
+  ) {
+    return SliverAppBar(
+      expandedHeight: isDesktop ? 120 : 80,
+      pinned: true,
+      flexibleSpace: FlexibleSpaceBar(
+        title: Text(
+          l10n.editProduct,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+    );
+  }
+
+  Widget _buildDesktopLayout(AppLocalizations l10n) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1000),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildHeaderSection(l10n),
+            const SizedBox(height: 24),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildMainInfoCard(),
-                const SizedBox(height: 16),
-                _buildAdditionalInfoCard(),
-                const SizedBox(height: 24),
-                _buildSubmitButton(),
+                Expanded(child: _buildMainInfoCard(l10n, isDesktop: true)),
+                const SizedBox(width: 24),
+                Expanded(
+                  child: _buildAdditionalInfoCard(l10n, isDesktop: true),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+            _buildSubmitButton(l10n),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobileLayout(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildHeaderSection(l10n),
+        const SizedBox(height: 16),
+        _buildMainInfoCard(l10n, isDesktop: false),
+        const SizedBox(height: 16),
+        _buildAdditionalInfoCard(l10n, isDesktop: false),
+        const SizedBox(height: 24),
+        _buildSubmitButton(l10n),
+      ],
+    );
+  }
+
+  Widget _buildHeaderSection(AppLocalizations l10n) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.edit_note_rounded,
+                color: Theme.of(context).primaryColor,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.editProduct,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.product.name,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                widget.product.serialNumber,
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // اطلاعات پایه: نام، سریال، قیمت، موجودی فعلی، توضیحات
+  Widget _buildMainInfoCard(AppLocalizations l10n, {required bool isDesktop}) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle(l10n.basicInformation, Icons.info_outline),
+            const SizedBox(height: 20),
+            _buildTextField(
+              controller: _nameController,
+              label: l10n.productName,
+              icon: Icons.inventory_2_outlined,
+              isRequired: true,
+            ),
+            const SizedBox(height: 16),
+            _buildTextField(
+              controller: _serialNumberController,
+              label: l10n.serialNumber,
+              icon: Icons.qr_code,
+              isRequired: true,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+            const SizedBox(height: 16),
+            _buildTextField(
+              controller: _originalPriceController,
+              label: l10n.originalPrice,
+              icon: Icons.attach_money,
+              isRequired: true,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+              ],
+              validator: (value) {
+                if (value?.isEmpty ?? true) return l10n.fieldRequired;
+                final price = double.tryParse(value!);
+                if (price == null || price <= 0) {
+                  return l10n.invalidPrice;
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            // موجودی فعلی - منتقل شده به بخش اطلاعات پایه
+            _buildTextField(
+              controller: _currentStockController,
+              label: l10n.currentStock,
+              icon: Icons.numbers,
+              isRequired: true,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              validator: (value) {
+                if (value?.isEmpty ?? true) return l10n.fieldRequired;
+                if (int.tryParse(value!) == null) {
+                  return l10n.numberFieldError;
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            _buildTextField(
+              controller: _descriptionController,
+              label: l10n.description,
+              icon: Icons.description_outlined,
+              isRequired: false,
+              maxLines: 3,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // جزئیات تکمیلی: مدل، رنگ، جنس، برند، نقطه سفارش
+  Widget _buildAdditionalInfoCard(
+    AppLocalizations l10n, {
+    required bool isDesktop,
+  }) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: () {
+              setState(() {
+                _showAdditionalInfo = !_showAdditionalInfo;
+              });
+            },
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.tune,
+                      color: Theme.of(context).primaryColor,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      l10n.additionalDetails,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  AnimatedRotation(
+                    turns: _showAdditionalInfo ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          AnimatedCrossFade(
+            firstChild: const SizedBox.shrink(),
+            secondChild: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Divider(),
+                  const SizedBox(height: 16),
+                  // مدل و رنگ
+                  if (isDesktop)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildTextField(
+                            controller: _modelController,
+                            label: l10n.model,
+                            icon: Icons.category_outlined,
+                            isRequired: false,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildTextField(
+                            controller: _colorController,
+                            label: l10n.color,
+                            icon: Icons.palette_outlined,
+                            isRequired: false,
+                          ),
+                        ),
+                      ],
+                    )
+                  else ...[
+                    _buildTextField(
+                      controller: _modelController,
+                      label: l10n.model,
+                      icon: Icons.category_outlined,
+                      isRequired: false,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: _colorController,
+                      label: l10n.color,
+                      icon: Icons.palette_outlined,
+                      isRequired: false,
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+                  // جنس و برند
+                  if (isDesktop)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildTextField(
+                            controller: _materialController,
+                            label: l10n.material,
+                            icon: Icons.texture,
+                            isRequired: false,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildTextField(
+                            controller: _brandController,
+                            label: l10n.brand,
+                            icon: Icons.business,
+                            isRequired: false,
+                          ),
+                        ),
+                      ],
+                    )
+                  else ...[
+                    _buildTextField(
+                      controller: _materialController,
+                      label: l10n.material,
+                      icon: Icons.texture,
+                      isRequired: false,
+                    ),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                      controller: _brandController,
+                      label: l10n.brand,
+                      icon: Icons.business,
+                      isRequired: false,
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+                  _buildSectionTitle(
+                    l10n.stockInformation,
+                    Icons.inventory_outlined,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildTextField(
+                    controller: _reorderPointController,
+                    label: l10n.reorderPoint,
+                    icon: Icons.low_priority,
+                    isRequired: false,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    validator: (value) {
+                      if (value?.isNotEmpty ?? false) {
+                        if (int.tryParse(value!) == null) {
+                          return l10n.numberFieldError;
+                        }
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
+            crossFadeState: _showAdditionalInfo
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 200),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Theme.of(context).primaryColor),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required bool isRequired,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+    int? maxLines,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        filled: true,
+        fillColor: Theme.of(context).scaffoldBackgroundColor,
+      ),
+      validator: validator ?? _defaultValidator(isRequired),
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
+      maxLines: maxLines ?? 1,
+    );
+  }
+
+  String? Function(String?) _defaultValidator(bool isRequired) {
+    if (!isRequired) return (value) => null;
+
+    return (value) {
+      if (value?.isEmpty ?? true) {
+        return AppLocalizations.of(context).fieldRequired;
+      }
+      return null;
+    };
+  }
+
+  // دکمه ذخیره بهبود یافته
+  Widget _buildSubmitButton(AppLocalizations l10n) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).primaryColor,
+            Theme.of(context).primaryColor.withValues(alpha: 0.8),
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _submitForm,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 18),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.save_rounded, color: Colors.white, size: 24),
+                const SizedBox(width: 12),
+                Text(
+                  l10n.saveChanges,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ],
             ),
           ),
@@ -111,266 +619,74 @@ class _EditProductPageState extends State<EditProductPage> {
     );
   }
 
-  Widget _buildMainInfoCard() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'اطلاعات اصلی محصول',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            const SizedBox(height: 16),
-            _buildTripleTextField(
-              controller1: _nameController,
-              label1: 'نام محصول',
-              validator1: (value) =>
-                  value!.isEmpty ? 'لطفاً نام محصول را وارد کنید' : null,
-              controller2: _serialNumberController,
-              label2: 'شماره سریال',
-              validator2: (value) =>
-                  value!.isEmpty ? 'لطفاً شماره سریال را وارد کنید' : null,
-              keyboardType2: TextInputType.number,
-              controller3: _originalPriceController,
-              label3: 'قیمت (تومان)',
-              validator3: (value) =>
-                  value!.isEmpty ? 'لطفاً قیمت را وارد کنید' : null,
-              keyboardType3: TextInputType.number,
-            ),
-            const SizedBox(height: 16),
-            _buildDoubleTextField(
-              controller1: _modelController,
-              label1: 'مدل',
-              validator1: (value) =>
-                  value!.isEmpty ? 'لطفاً مدل را وارد کنید' : null,
-              controller2: _colorController,
-              label2: 'رنگ',
-              validator2: (value) =>
-                  value!.isEmpty ? 'لطفاً رنگ را وارد کنید' : null,
-            ),
-            const SizedBox(height: 16),
-            _buildDoubleTextField(
-              controller1: _materialController,
-              label1: 'جنس',
-              validator1: (value) =>
-                  value!.isEmpty ? 'لطفاً جنس را وارد کنید' : null,
-              controller2: _currentStockController,
-              label2: 'موجودی فعلی',
-              validator2: (value) =>
-                  value!.isEmpty ? 'لطفاً موجودی را وارد کنید' : null,
-              keyboardType2: TextInputType.number,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Future<bool> _onWillPop() async {
+    if (!mounted) return false;
 
-  Widget _buildAdditionalInfoCard() {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: ExpansionTile(
-          title: Text(
-            'اطلاعات تکمیلی',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.deepPurple,
-                  fontWeight: FontWeight.bold,
+    if (_formHasChanges()) {
+      final l10n = AppLocalizations.of(context);
+      return await showDialog<bool>(
+            context: context,
+            builder: (dialogContext) => AlertDialog(
+              title: Text(l10n.discardChanges),
+              content: Text(l10n.confirmDiscard),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  child: Text(l10n.no),
                 ),
-          ),
-          children: [
-            _buildSingleTextField(
-              controller: _descriptionController,
-              label: 'سایز',
-              validator: (value) =>
-                  value!.isEmpty ? 'لطفاً سایز را وارد کنید' : null,
+                FilledButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(true),
+                  child: Text(l10n.yes),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            _buildSingleTextField(
-              controller: _brandController,
-              label: 'برند',
-              validator: (value) =>
-                  value!.isEmpty ? 'لطفاً برند را وارد کنید' : null,
-            ),
-            const SizedBox(height: 16),
-            _buildSingleTextField(
-              controller: _reorderPointController,
-              label: 'نقطه سفارش مجدد',
-              validator: (value) =>
-                  value!.isEmpty ? 'لطفاً نقطه سفارش مجدد را وارد کنید' : null,
-              keyboardType: TextInputType.number,
-            ),
-          ],
-        ),
-      ),
-    );
+          ) ??
+          false;
+    }
+    return true;
   }
 
-  Widget _buildTripleTextField({
-    required TextEditingController controller1,
-    required String label1,
-    required String? Function(String?)? validator1,
-    TextInputType? keyboardType1,
-    required TextEditingController controller2,
-    required String label2,
-    required String? Function(String?)? validator2,
-    TextInputType? keyboardType2,
-    required TextEditingController controller3,
-    required String label3,
-    required String? Function(String?)? validator3,
-    TextInputType? keyboardType3,
-  }) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildTextField(
-            controller: controller1,
-            label: label1,
-            validator: validator1,
-            keyboardType: keyboardType1,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _buildTextField(
-            controller: controller2,
-            label: label2,
-            validator: validator2,
-            keyboardType: keyboardType2,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _buildTextField(
-            controller: controller3,
-            label: label3,
-            validator: validator3,
-            keyboardType: keyboardType3,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDoubleTextField({
-    required TextEditingController controller1,
-    required String label1,
-    required String? Function(String?)? validator1,
-    TextInputType? keyboardType1,
-    required TextEditingController controller2,
-    required String label2,
-    required String? Function(String?)? validator2,
-    TextInputType? keyboardType2,
-  }) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildTextField(
-            controller: controller1,
-            label: label1,
-            validator: validator1,
-            keyboardType: keyboardType1,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _buildTextField(
-            controller: controller2,
-            label: label2,
-            validator: validator2,
-            keyboardType: keyboardType2,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSingleTextField({
-    required TextEditingController controller,
-    required String label,
-    required String? Function(String?)? validator,
-    TextInputType? keyboardType,
-  }) {
-    return _buildTextField(
-      controller: controller,
-      label: label,
-      validator: validator,
-      keyboardType: keyboardType,
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String? Function(String?)? validator,
-    TextInputType? keyboardType,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-          filled: true,
-          fillColor: Colors.grey.shade100,
-        ),
-        validator: validator,
-        keyboardType: keyboardType,
-      ),
-    );
-  }
-
-  Widget _buildSubmitButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: _submitForm,
-        style: ElevatedButton.styleFrom(
-          // backgroundColor: Colors.deepPurple,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
-        child: const Text(
-          'ذخیره تغییرات',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            // color: Colors.white,
-          ),
-        ),
-      ),
-    );
+  bool _formHasChanges() {
+    return _nameController.text != widget.product.name ||
+        _serialNumberController.text != widget.product.serialNumber ||
+        _originalPriceController.text !=
+            widget.product.originalPrice.toString() ||
+        _modelController.text != widget.product.model ||
+        _colorController.text != widget.product.color ||
+        _materialController.text != widget.product.material ||
+        _currentStockController.text !=
+            widget.product.currentStock.toString() ||
+        _descriptionController.text != widget.product.description ||
+        _brandController.text != widget.product.brand ||
+        _reorderPointController.text != widget.product.reorderPoint.toString();
   }
 
   void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      final updatedProduct = widget.product.copyWith(
-        name: _nameController.text,
-        serialNumber: _serialNumberController.text,
-        originalPrice: double.parse(_originalPriceController.text),
-        model: _modelController.text,
-        color: _colorController.text,
-        material: _materialController.text,
-        currentStock: int.parse(_currentStockController.text),
-        description: _descriptionController.text,
-        brand: _brandController.text,
-        reorderPoint: int.parse(_reorderPointController.text),
-      );
+    final l10n = AppLocalizations.of(context);
 
-      context
-          .read<ProductBloc>()
-          .add(UpdateProductEvent(updatedProduct.toEntity()));
+    if (_formKey.currentState!.validate()) {
+      try {
+        final updatedProduct = widget.product.copyWith(
+          name: _nameController.text,
+          serialNumber: _serialNumberController.text,
+          originalPrice: double.parse(_originalPriceController.text),
+          model: _modelController.text,
+          color: _colorController.text,
+          material: _materialController.text,
+          currentStock: int.parse(_currentStockController.text),
+          description: _descriptionController.text,
+          brand: _brandController.text,
+          reorderPoint: int.parse(_reorderPointController.text),
+        );
+
+        context.read<ProductBloc>().add(
+          UpdateProductEvent(updatedProduct.toEntity()),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.error), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 }
