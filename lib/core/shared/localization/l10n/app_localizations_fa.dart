@@ -662,4 +662,89 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get passwordRequired => 'رمز عبور الزامی است';
+
+  @override
+  String get productManagement => 'مدیریت محصولات';
+
+  @override
+  String get inventoryManagement => 'مدیریت انبار و موجودی محصولات';
+
+  @override
+  String get newProduct => 'محصول جدید';
+
+  @override
+  String get productList => 'لیست محصولات';
+
+  @override
+  String get productCode => 'کد محصول';
+
+  @override
+  String get price => 'قیمت';
+
+  @override
+  String get stock => 'موجودی';
+
+  @override
+  String get status => 'وضعیت';
+
+  @override
+  String get actions => 'عملیات';
+
+  @override
+  String get allProducts => 'همه';
+
+  @override
+  String get available => 'موجود';
+
+  @override
+  String get lowStock => 'موجودی کم';
+
+  @override
+  String get outOfStock => 'تمام شده';
+
+  @override
+  String get searchBySerial => 'جستجو با شماره سریال...';
+
+  @override
+  String get addedToCart => 'به سبد اضافه شد';
+
+  @override
+  String get productNotFoundBySerial => 'محصولی با این شماره سریال یافت نشد';
+
+  @override
+  String get backToList => 'بازگشت به لیست';
+
+  @override
+  String get view => 'مشاهده';
+
+  @override
+  String get previous => 'قبلی';
+
+  @override
+  String get showing => 'نمایش';
+
+  @override
+  String get to => 'تا';
+
+  @override
+  String get cart => 'سبد';
+
+  @override
+  String get cartEmpty => 'سبد خرید خالی است';
+
+  @override
+  String get pay => 'پرداخت';
+
+  @override
+  String get currency => 'تومان';
+
+  @override
+  String get pressAddButton => 'برای افزودن محصول دکمه + را بزنید';
+
+  @override
+  String get pressNewProductButton =>
+      'برای افزودن محصول جدید دکمه \"محصول جدید\" را بزنید';
+
+  @override
+  String get arabic => 'عربی';
 }

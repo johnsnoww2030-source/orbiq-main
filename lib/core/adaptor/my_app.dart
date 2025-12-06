@@ -43,9 +43,17 @@ class MyApp extends StatelessWidget {
 
               // اگر زبان بارگذاری شده باشد، از آن استفاده می‌کنیم
               if (languageState is LanguageLoaded) {
-                locale = Locale(
-                  languageState.language.code == LanguageCode.en ? 'en' : 'fa',
-                );
+                switch (languageState.language.code) {
+                  case LanguageCode.en:
+                    locale = const Locale('en');
+                    break;
+                  case LanguageCode.ar:
+                    locale = const Locale('ar');
+                    break;
+                  case LanguageCode.fa:
+                  default:
+                    locale = const Locale('fa');
+                }
               }
 
               return MaterialApp(
@@ -59,10 +67,16 @@ class MyApp extends StatelessWidget {
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
                 ],
-                supportedLocales: const [Locale('en'), Locale('fa')],
+                supportedLocales: const [
+                  Locale('en'),
+                  Locale('fa'),
+                  Locale('ar'),
+                ],
                 builder: (context, child) {
-                  // تنظیم جهت متن بر اساس زبان
-                  final textDirection = locale.languageCode == 'fa'
+                  // تنظیم جهت متن بر اساس زبان (RTL برای فارسی و عربی)
+                  final textDirection =
+                      (locale.languageCode == 'fa' ||
+                          locale.languageCode == 'ar')
                       ? TextDirection.rtl
                       : TextDirection.ltr;
 

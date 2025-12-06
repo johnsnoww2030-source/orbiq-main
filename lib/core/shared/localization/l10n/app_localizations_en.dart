@@ -661,4 +661,90 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordRequired => 'Password is required';
+
+  @override
+  String get productManagement => 'Product Management';
+
+  @override
+  String get inventoryManagement => 'Inventory and stock management';
+
+  @override
+  String get newProduct => 'New Product';
+
+  @override
+  String get productList => 'Product List';
+
+  @override
+  String get productCode => 'Product Code';
+
+  @override
+  String get price => 'Price';
+
+  @override
+  String get stock => 'Stock';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get allProducts => 'All';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get lowStock => 'Low Stock';
+
+  @override
+  String get outOfStock => 'Out of Stock';
+
+  @override
+  String get searchBySerial => 'Search by serial number...';
+
+  @override
+  String get addedToCart => 'added to cart';
+
+  @override
+  String get productNotFoundBySerial =>
+      'No product found with this serial number';
+
+  @override
+  String get backToList => 'Back to list';
+
+  @override
+  String get view => 'View';
+
+  @override
+  String get previous => 'Previous';
+
+  @override
+  String get showing => 'Showing';
+
+  @override
+  String get to => 'to';
+
+  @override
+  String get cart => 'Cart';
+
+  @override
+  String get cartEmpty => 'Cart is empty';
+
+  @override
+  String get pay => 'Pay';
+
+  @override
+  String get currency => 'USD';
+
+  @override
+  String get pressAddButton => 'Press + button to add product';
+
+  @override
+  String get pressNewProductButton =>
+      'Press \"New Product\" button to add product';
+
+  @override
+  String get arabic => 'Arabic';
 }
