@@ -51,8 +51,8 @@ class MyApp extends StatelessWidget {
                     locale = const Locale('ar');
                     break;
                   case LanguageCode.fa:
-                  default:
                     locale = const Locale('fa');
+                    break;
                 }
               }
 

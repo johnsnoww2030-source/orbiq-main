@@ -133,7 +133,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
             ),
           ),
           if (_isCartActive)
-            _buildCartSection(context, crossAxisCount, isMobile),
+            _buildCartSection(context, l10n, crossAxisCount, isMobile),
         ],
       ),
       floatingActionButton: isMobile ? _buildMobileFAB(context) : null,
@@ -736,7 +736,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  _buildStatusBadge(stockStatus),
+                  _buildStatusBadge(l10n, stockStatus),
                 ],
               ),
               const SizedBox(height: 8),
@@ -905,7 +905,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                   ),
                   if (state != null)
                     Text(
-                      '${products.length} محصول',
+                      '${products.length} ${l10n.products}',
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                 ],
@@ -924,29 +924,29 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                 children: [
                   Expanded(
                     flex: 2,
-                    child: Text('کد محصول', style: _headerStyle(context)),
+                    child: Text(l10n.productCode, style: _headerStyle(context)),
                   ),
                   Expanded(
                     flex: 3,
-                    child: Text('نام محصول', style: _headerStyle(context)),
+                    child: Text(l10n.productName, style: _headerStyle(context)),
                   ),
                   Expanded(
                     flex: 2,
-                    child: Text('قیمت', style: _headerStyle(context)),
+                    child: Text(l10n.price, style: _headerStyle(context)),
                   ),
                   Expanded(
                     flex: 1,
-                    child: Text('موجودی', style: _headerStyle(context)),
+                    child: Text(l10n.stock, style: _headerStyle(context)),
                   ),
                   Expanded(
                     flex: 1,
-                    child: Text('وضعیت', style: _headerStyle(context)),
+                    child: Text(l10n.status, style: _headerStyle(context)),
                   ),
-                  const SizedBox(
+                  SizedBox(
                     width: 100,
                     child: Text(
-                      'عملیات',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      l10n.actions,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -960,10 +960,10 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                   color: Colors.grey.withValues(alpha: 0.2),
                 ),
                 itemBuilder: (context, index) =>
-                    _buildProductRow(context, products[index], authState),
+                    _buildProductRow(context, l10n, products[index], authState),
               ),
             ),
-            if (state != null) _buildDesktopPagination(context, state),
+            if (state != null) _buildDesktopPagination(context, l10n, state),
           ],
         ),
       ),
@@ -978,6 +978,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
 
   Widget _buildProductRow(
     BuildContext context,
+    AppLocalizations l10n,
     ProductModel product,
     AuthState authState,
   ) {
@@ -988,7 +989,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
               context.read<CartBloc>().add(AddToCartEvent(product.toEntity()));
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('${product.name} به سبد اضافه شد'),
+                  content: Text('${product.name} ${l10n.addedToCart}'),
                   duration: const Duration(seconds: 1),
                 ),
               );
@@ -1022,7 +1023,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'مدل: ${product.model} | رنگ: ${product.color}',
+                    '${l10n.model}: ${product.model} | ${l10n.color}: ${product.color}',
                     style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -1033,7 +1034,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
             Expanded(
               flex: 2,
               child: Text(
-                '${currencyFormat.format(product.originalPrice.toInt())} تومان',
+                '${currencyFormat.format(product.originalPrice.toInt())} ${l10n.currency}',
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: Colors.green[700],
@@ -1054,7 +1055,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                 ),
               ),
             ),
-            Expanded(flex: 1, child: _buildStatusBadge(stockStatus)),
+            Expanded(flex: 1, child: _buildStatusBadge(l10n, stockStatus)),
             SizedBox(
               width: 100,
               child: Row(
@@ -1062,7 +1063,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                   IconButton(
                     icon: const Icon(Icons.visibility_outlined, size: 20),
                     onPressed: () {},
-                    tooltip: 'مشاهده',
+                    tooltip: l10n.view,
                     iconSize: 20,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(
@@ -1088,7 +1089,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                           }
                         });
                       },
-                      tooltip: 'ویرایش',
+                      tooltip: l10n.edit,
                       iconSize: 20,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(
@@ -1105,7 +1106,11 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
     );
   }
 
-  Widget _buildDesktopPagination(BuildContext context, ProductLoaded state) {
+  Widget _buildDesktopPagination(
+    BuildContext context,
+    AppLocalizations l10n,
+    ProductLoaded state,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1117,7 +1122,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'نمایش ${((state.currentPage - 1) * 20) + 1} تا ${state.currentPage * 20}',
+            '${l10n.showing} ${((state.currentPage - 1) * 20) + 1} ${l10n.to} ${state.currentPage * 20}',
             style: TextStyle(color: Colors.grey[600], fontSize: 13),
           ),
           Row(
@@ -1129,7 +1134,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                       )
                     : null,
                 icon: const Icon(Icons.chevron_right, size: 18),
-                label: const Text('قبلی'),
+                label: Text(l10n.previous),
               ),
               const SizedBox(width: 8),
               Container(
@@ -1157,7 +1162,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                       )
                     : null,
                 icon: const Icon(Icons.chevron_left, size: 18),
-                label: const Text('بعدی'),
+                label: Text(l10n.next),
               ),
             ],
           ),
@@ -1168,6 +1173,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
 
   Widget _buildCartSection(
     BuildContext context,
+    AppLocalizations l10n,
     int crossAxisCount,
     bool isMobile,
   ) {
@@ -1218,7 +1224,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'سبد (${cartItems.length})',
+                          '${l10n.cart} (${cartItems.length})',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: isMobile ? 14 : 16,
@@ -1227,7 +1233,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                       ],
                     ),
                     Text(
-                      '${currencyFormat.format(totalPrice.toInt())} تومان',
+                      '${currencyFormat.format(totalPrice.toInt())} ${l10n.currency}',
                       style: TextStyle(
                         fontSize: isMobile ? 14 : 18,
                         fontWeight: FontWeight.bold,
@@ -1249,7 +1255,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                           vertical: 8,
                         ),
                       ),
-                      child: const Text('پرداخت'),
+                      child: Text(l10n.pay),
                     ),
                   ],
                 ),
@@ -1258,7 +1264,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                 child: cartItems.isEmpty
                     ? Center(
                         child: Text(
-                          'سبد خرید خالی است',
+                          l10n.cartEmpty,
                           style: TextStyle(color: Colors.grey[500]),
                         ),
                       )
@@ -1266,8 +1272,12 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.all(8),
                         itemCount: cartItems.length,
-                        itemBuilder: (context, index) =>
-                            _buildCartItem(context, cartItems[index], isMobile),
+                        itemBuilder: (context, index) => _buildCartItem(
+                          context,
+                          l10n,
+                          cartItems[index],
+                          isMobile,
+                        ),
                       ),
               ),
             ],
@@ -1279,6 +1289,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
 
   Widget _buildCartItem(
     BuildContext context,
+    AppLocalizations l10n,
     ProductEntity product,
     bool isMobile,
   ) {
@@ -1323,7 +1334,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
               ),
               const Spacer(),
               Text(
-                '${currencyFormat.format(product.originalPrice.toInt())} ت',
+                '${currencyFormat.format(product.originalPrice.toInt())} ${l10n.currency}',
                 style: TextStyle(
                   color: Colors.green[700],
                   fontWeight: FontWeight.w500,
@@ -1369,7 +1380,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
     return 'available';
   }
 
-  Widget _buildStatusBadge(String status) {
+  Widget _buildStatusBadge(AppLocalizations l10n, String status) {
     Color bgColor, textColor;
     String label;
 
@@ -1377,17 +1388,17 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
       case 'available':
         bgColor = Colors.green.withValues(alpha: 0.1);
         textColor = Colors.green;
-        label = 'موجود';
+        label = l10n.available;
         break;
       case 'low':
         bgColor = Colors.orange.withValues(alpha: 0.1);
         textColor = Colors.orange;
-        label = 'کم';
+        label = l10n.lowStock;
         break;
       case 'out':
         bgColor = Colors.red.withValues(alpha: 0.1);
         textColor = Colors.red;
-        label = 'تمام';
+        label = l10n.outOfStock;
         break;
       default:
         bgColor = Colors.grey.withValues(alpha: 0.1);

@@ -16,9 +16,7 @@ class LanguageSettingsPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.language),
-      ),
+      appBar: AppBar(title: Text(l10n.language)),
       body: BlocBuilder<LanguageBloc, LanguageState>(
         builder: (context, state) {
           if (state is LanguageLoading) {
@@ -40,6 +38,12 @@ class LanguageSettingsPage extends StatelessWidget {
                   currentLanguage,
                   l10n.english,
                 ),
+                _buildLanguageItem(
+                  context,
+                  LanguageEntity.arabic(),
+                  currentLanguage,
+                  l10n.arabic,
+                ),
               ],
             );
           } else {
@@ -57,6 +61,12 @@ class LanguageSettingsPage extends StatelessWidget {
                   LanguageEntity.english(),
                   LanguageEntity.persian(),
                   'English',
+                ),
+                _buildLanguageItem(
+                  context,
+                  LanguageEntity.arabic(),
+                  LanguageEntity.persian(),
+                  'العربية',
                 ),
               ],
             );
