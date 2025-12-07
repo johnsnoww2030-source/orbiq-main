@@ -72,21 +72,25 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
                   ),
                   const SizedBox(height: 8),
                   Card(
-                    child: Column(
-                      children: CurrencyCode.values.map((currency) {
-                        return RadioListTile<CurrencyCode>(
-                          title: Text('${currency.name} (${currency.symbol})'),
-                          value: currency,
-                          groupValue: state.selectedCurrency,
-                          onChanged: (value) {
-                            if (value != null) {
-                              context.read<CurrencyBloc>().add(
-                                ChangeCurrency(value),
-                              );
-                            }
-                          },
-                        );
-                      }).toList(),
+                    child: RadioGroup<CurrencyCode>(
+                      groupValue: state.selectedCurrency,
+                      onChanged: (value) {
+                        if (value != null) {
+                          context.read<CurrencyBloc>().add(
+                            ChangeCurrency(value),
+                          );
+                        }
+                      },
+                      child: Column(
+                        children: CurrencyCode.values.map((currency) {
+                          return RadioListTile<CurrencyCode>(
+                            title: Text(
+                              '${currency.name} (${currency.symbol})',
+                            ),
+                            value: currency,
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -105,11 +109,10 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         children: CurrencyCode.values.map((currency) {
-                          // Skip Toman as it is base (1.0)
-                          if (currency == CurrencyCode.toman)
+                          if (currency == CurrencyCode.toman) {
                             return const SizedBox.shrink();
+                          }
 
-                          // Ensure controller exists
                           if (!_controllers.containsKey(currency)) {
                             _controllers[currency] = TextEditingController(
                               text: state.rates[currency]?.toString() ?? '1.0',
