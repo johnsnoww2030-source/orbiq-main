@@ -17,6 +17,9 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
   // To keep track of text controllers for rates
   final Map<CurrencyCode, TextEditingController> _controllers = {};
 
+  // The currency currently being edited in the rate input section
+  CurrencyCode _rateEditingCurrency = CurrencyCode.dollar;
+
   @override
   void dispose() {
     for (var controller in _controllers.values) {
@@ -28,14 +31,8 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
   @override
   Widget build(BuildContext context) {
     // We assume Toman is the Base currency for stored values.
-    // Rate meaning: 1 Unit = X Tomans.
-    // e.g. Dollar Rate = 60000 => 1 Dollar = 60000 Tomans.
-    // final l10n = AppLocalizations.of(context);
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('تنظیمات واحد پول'), // Localize if possible
-      ),
+      appBar: AppBar(title: const Text('تنظیمات واحد پول')),
       body: BlocConsumer<CurrencyBloc, CurrencyState>(
         listener: (context, state) {
           if (state is CurrencyLoaded) {
@@ -44,15 +41,11 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
               if (!_controllers.containsKey(code)) {
                 _controllers[code] = TextEditingController();
               }
-              // Only update text if not focused to avoid cursor jumps?
-              // Or simplified: Just set it if different to avoid loop.
-              if (_controllers[code]!.text != rate.toString()) {
-                // check if it's mostly integer
-                if (rate % 1 == 0) {
-                  _controllers[code]!.text = rate.toInt().toString();
-                } else {
-                  _controllers[code]!.text = rate.toString();
-                }
+              final textVal = rate % 1 == 0
+                  ? rate.toInt().toString()
+                  : rate.toString();
+              if (_controllers[code]!.text != textVal) {
+                _controllers[code]!.text = textVal;
               }
             });
           }
@@ -61,151 +54,302 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
           if (state is CurrencyLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is CurrencyLoaded) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'واحد پول نمایش',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      child: DropdownButtonFormField<CurrencyCode>(
-                        key: ValueKey(state.selectedCurrency),
-                        initialValue: state.selectedCurrency,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          labelText: 'واحد پول پیش‌فرض',
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        onChanged: (CurrencyCode? newValue) {
-                          if (newValue != null) {
-                            context.read<CurrencyBloc>().add(
-                              ChangeCurrency(newValue),
-                            );
-                          }
-                        },
-                        items: CurrencyCode.values
-                            .map<DropdownMenuItem<CurrencyCode>>((
-                              CurrencyCode currency,
-                            ) {
-                              return DropdownMenuItem<CurrencyCode>(
-                                value: currency,
-                                child: Text(
-                                  '${currency.name} (${currency.symbol})',
-                                ),
-                              );
-                            })
-                            .toList(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'نرخ تبدیل (نسبت به تومان)',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'مشخص کنید هر واحد ارز خارجی معادل چند تومان است.',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                  const SizedBox(height: 16),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: CurrencyCode.values.map((currency) {
-                          if (currency == CurrencyCode.toman) {
-                            return const SizedBox.shrink();
-                          }
+            // Ensure controller exists for current selection
+            if (!_controllers.containsKey(_rateEditingCurrency)) {
+              _controllers[_rateEditingCurrency] = TextEditingController(
+                text: state.rates[_rateEditingCurrency]?.toString() ?? '1.0',
+              );
+            }
 
-                          if (!_controllers.containsKey(currency)) {
-                            _controllers[currency] = TextEditingController(
-                              text: state.rates[currency]?.toString() ?? '1.0',
-                            );
-                          }
-
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(
-                                    '${currency.name} (${currency.symbol}) :',
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 3,
-                                  child: TextField(
-                                    controller: _controllers[currency],
-                                    keyboardType:
-                                        const TextInputType.numberWithOptions(
-                                          decimal: true,
-                                        ),
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.allow(
-                                        RegExp(r'^\d*\.?\d*'),
-                                      ),
-                                    ],
-                                    decoration: const InputDecoration(
-                                      isDense: true,
-                                      border: OutlineInputBorder(),
-                                      suffixText: 'تومان',
-                                    ),
-                                    onChanged: (value) {
-                                      // We can save on submit or use a debounce or separate save button.
-                                      // For better UX, let's use a "Save Rates" button at bottom.
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: () {
-                        final Map<CurrencyCode, double> newRates = {};
-                        // Always keep Toman as 1
-                        newRates[CurrencyCode.toman] = 1.0;
-
-                        _controllers.forEach((code, controller) {
-                          if (code != CurrencyCode.toman) {
-                            final val = double.tryParse(controller.text) ?? 1.0;
-                            newRates[code] = val;
-                          }
-                        });
-
-                        context.read<CurrencyBloc>().add(
-                          UpdateCurrencyRates(newRates),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('نرخ‌ها ذخیره شدند')),
-                        );
-                      },
-                      child: const Text('ذخیره نرخ‌ها'),
-                    ),
-                  ),
-                ],
-              ),
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth > 1000) {
+                  return _buildDesktopLayout(context, state);
+                } else if (constraints.maxWidth > 700) {
+                  return _buildTabletLayout(context, state);
+                } else {
+                  return _buildMobileLayout(context, state);
+                }
+              },
             );
           }
           return const Center(child: Text('Error loading settings'));
         },
+      ),
+    );
+  }
+
+  Widget _buildMobileLayout(BuildContext context, CurrencyLoaded state) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildDisplayCurrencySection(context, state),
+          const SizedBox(height: 24),
+          _buildConversionRateSection(context, state),
+          const SizedBox(height: 24),
+          _buildSaveButton(context, state, isFullWidth: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabletLayout(BuildContext context, CurrencyLoaded state) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: _buildDisplayCurrencySection(context, state)),
+              const SizedBox(width: 24),
+              Expanded(child: _buildConversionRateSection(context, state)),
+            ],
+          ),
+          const SizedBox(height: 32),
+          // Constrained button, centered
+          Center(
+            child: SizedBox(
+              width: 300,
+              child: _buildSaveButton(context, state, isFullWidth: true),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesktopLayout(BuildContext context, CurrencyLoaded state) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(child: _buildDisplayCurrencySection(context, state)),
+          const SizedBox(width: 24),
+          Expanded(child: _buildConversionRateSection(context, state)),
+          const SizedBox(width: 24),
+          Expanded(
+            child: Align(
+              alignment:
+                  Alignment.bottomCenter, // Align to bottom to match inputs?
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: _buildSaveButton(context, state, isFullWidth: true),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDisplayCurrencySection(
+    BuildContext context,
+    CurrencyLoaded state,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('واحد پول نمایش', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<CurrencyCode>(
+              value: state.selectedCurrency,
+              icon: const Icon(Icons.arrow_drop_down),
+              dropdownColor: Theme.of(context).colorScheme.surfaceContainer,
+              onChanged: (CurrencyCode? newValue) {
+                if (newValue != null) {
+                  context.read<CurrencyBloc>().add(ChangeCurrency(newValue));
+                }
+              },
+              items: CurrencyCode.values.map<DropdownMenuItem<CurrencyCode>>((
+                CurrencyCode currency,
+              ) {
+                return DropdownMenuItem<CurrencyCode>(
+                  value: currency,
+                  child: Text('${currency.name} (${currency.symbol})'),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildConversionRateSection(
+    BuildContext context,
+    CurrencyLoaded state,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'نرخ تبدیل (نسبت به تومان)',
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'نرخ ارز مورد نظر را انتخاب و مقدار معادل تومانی آن را وارد کنید.',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontSize: 12,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              DropdownButtonHideUnderline(
+                child: DropdownButton<CurrencyCode>(
+                  value: _rateEditingCurrency,
+                  icon: const Icon(Icons.arrow_drop_down),
+                  dropdownColor: Theme.of(context).colorScheme.surfaceContainer,
+                  onChanged: (CurrencyCode? newValue) {
+                    if (newValue != null && newValue != CurrencyCode.toman) {
+                      setState(() {
+                        _rateEditingCurrency = newValue;
+                      });
+                    }
+                  },
+                  items: CurrencyCode.values
+                      .where((c) => c != CurrencyCode.toman)
+                      .map<DropdownMenuItem<CurrencyCode>>((
+                        CurrencyCode value,
+                      ) {
+                        return DropdownMenuItem<CurrencyCode>(
+                          value: value,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _rateEditingCurrency == value
+                                  ? Theme.of(
+                                      context,
+                                    ).colorScheme.primaryContainer
+                                  : Theme.of(
+                                      context,
+                                    ).colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              value.symbol,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                                color: _rateEditingCurrency == value
+                                    ? Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimaryContainer
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        );
+                      })
+                      .toList(),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Container(
+                width: 1,
+                height: 24,
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  key: ValueKey(_rateEditingCurrency),
+                  controller: _controllers[_rateEditingCurrency],
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                  ],
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'مقدار به تومان',
+                    hintStyle: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurfaceVariant.withOpacity(0.5),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      onPressed: () {
+                        _controllers[_rateEditingCurrency]?.clear();
+                      },
+                    ),
+                  ),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSaveButton(
+    BuildContext context,
+    CurrencyLoaded state, {
+    bool isFullWidth = false,
+  }) {
+    return SizedBox(
+      width: isFullWidth ? double.infinity : null,
+      height: 48, // Consistent height
+      child: FilledButton(
+        onPressed: () {
+          final Map<CurrencyCode, double> newRates = {};
+          newRates[CurrencyCode.toman] = 1.0;
+
+          for (var code in CurrencyCode.values) {
+            if (code == CurrencyCode.toman) continue;
+
+            if (_controllers.containsKey(code) &&
+                _controllers[code]!.text.isNotEmpty) {
+              final val =
+                  double.tryParse(_controllers[code]!.text) ??
+                  state.rates[code] ??
+                  1.0;
+              newRates[code] = val;
+            } else {
+              newRates[code] = state.rates[code] ?? 1.0;
+            }
+          }
+
+          context.read<CurrencyBloc>().add(UpdateCurrencyRates(newRates));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('نرخ‌ها ذخیره شدند')));
+        },
+        child: const Text('ذخیره نرخ‌ها'),
       ),
     );
   }
