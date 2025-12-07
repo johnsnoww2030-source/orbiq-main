@@ -72,24 +72,38 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
                   ),
                   const SizedBox(height: 8),
                   Card(
-                    child: RadioGroup<CurrencyCode>(
-                      groupValue: state.selectedCurrency,
-                      onChanged: (value) {
-                        if (value != null) {
-                          context.read<CurrencyBloc>().add(
-                            ChangeCurrency(value),
-                          );
-                        }
-                      },
-                      child: Column(
-                        children: CurrencyCode.values.map((currency) {
-                          return RadioListTile<CurrencyCode>(
-                            title: Text(
-                              '${currency.name} (${currency.symbol})',
-                            ),
-                            value: currency,
-                          );
-                        }).toList(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      child: DropdownButtonFormField<CurrencyCode>(
+                        key: ValueKey(state.selectedCurrency),
+                        initialValue: state.selectedCurrency,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          labelText: 'واحد پول پیش‌فرض',
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        onChanged: (CurrencyCode? newValue) {
+                          if (newValue != null) {
+                            context.read<CurrencyBloc>().add(
+                              ChangeCurrency(newValue),
+                            );
+                          }
+                        },
+                        items: CurrencyCode.values
+                            .map<DropdownMenuItem<CurrencyCode>>((
+                              CurrencyCode currency,
+                            ) {
+                              return DropdownMenuItem<CurrencyCode>(
+                                value: currency,
+                                child: Text(
+                                  '${currency.name} (${currency.symbol})',
+                                ),
+                              );
+                            })
+                            .toList(),
                       ),
                     ),
                   ),
