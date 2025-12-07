@@ -12,6 +12,9 @@ import 'package:orbiq/features/payment/presentation/controller/payment_bloc.dart
 import 'package:orbiq/features/payment/presentation/controller/payment_event.dart';
 import 'package:orbiq/features/payment/presentation/controller/payment_state.dart';
 import 'package:orbiq/features/payment/domain/entities/payment_entity.dart';
+import 'package:orbiq/core/shared/currency/presentation/controller/currency_bloc.dart';
+import 'package:orbiq/core/shared/currency/presentation/controller/currency_state.dart';
+import 'package:orbiq/core/shared/currency/domain/entities/currency_code.dart';
 
 class PaymentPage extends StatelessWidget {
   const PaymentPage({super.key});
@@ -32,6 +35,21 @@ class PaymentPage extends StatelessWidget {
     }
 
     final NumberFormat currencyFormat = NumberFormat('#,##0');
+
+    String formatPrice(double price) {
+      final state = context.watch<CurrencyBloc>().state;
+      if (state is CurrencyLoaded) {
+        final rate = state.rates[state.selectedCurrency] ?? 1.0;
+        final converted = price / rate;
+        final isInt =
+            state.selectedCurrency == CurrencyCode.toman ||
+            state.selectedCurrency == CurrencyCode.rial ||
+            state.selectedCurrency == CurrencyCode.dinar;
+        final formatter = NumberFormat(isInt ? '#,##0' : '#,##0.##');
+        return '${formatter.format(converted)} ${state.selectedCurrency.symbol}';
+      }
+      return '${currencyFormat.format(price)} تومان';
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -85,7 +103,7 @@ class PaymentPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'مبلغ کل: ${currencyFormat.format(totalPrice.toInt())} تومان',
+                      'مبلغ کل: ${formatPrice(totalPrice)}',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -116,18 +134,20 @@ class PaymentPage extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'قیمت: ${currencyFormat.format(product.originalPrice.toInt())} تومان',
+                                    'قیمت: ${formatPrice(product.originalPrice)}',
                                   ),
                                   Text('شماره سریال: ${product.serialNumber}'),
                                 ],
                               ),
                               trailing: IconButton(
-                                icon:
-                                    const Icon(Icons.delete, color: Colors.red),
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
                                 onPressed: () {
-                                  context
-                                      .read<CartBloc>()
-                                      .add(RemoveFromCartEvent(product));
+                                  context.read<CartBloc>().add(
+                                    RemoveFromCartEvent(product),
+                                  );
                                 },
                               ),
                             ),
@@ -142,8 +162,13 @@ class PaymentPage extends StatelessWidget {
                         onPressed: cartItems.isEmpty
                             ? null
                             : () {
-                                _handlePayment(context, userNickname, userId,
-                                    cartItems, totalPrice);
+                                _handlePayment(
+                                  context,
+                                  userNickname,
+                                  userId,
+                                  cartItems,
+                                  totalPrice,
+                                );
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.deepPurple,
@@ -172,13 +197,20 @@ class PaymentPage extends StatelessWidget {
     );
   }
 
-  void _handlePayment(BuildContext context, String userNickname, int userId,
-      List<ProductEntity> cartItems, double totalPrice) {
+  void _handlePayment(
+    BuildContext context,
+    String userNickname,
+    int userId,
+    List<ProductEntity> cartItems,
+    double totalPrice,
+  ) {
     final productDetails = cartItems
-        .map((product) => {
-              'name': product.name,
-              'serialNumber': product.serialNumber,
-            })
+        .map(
+          (product) => {
+            'name': product.name,
+            'serialNumber': product.serialNumber,
+          },
+        )
         .toList();
 
     final paymentEntity = PaymentEntity(

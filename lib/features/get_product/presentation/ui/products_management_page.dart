@@ -16,6 +16,9 @@ import 'package:orbiq/features/payment/presentation/controller/cart_state.dart';
 import 'package:orbiq/features/payment/presentation/ui/payment_page.dart';
 import 'package:orbiq/features/barcode_reader/presentation/controller/chat_bloc.dart';
 import 'package:orbiq/features/barcode_reader/presentation/controller/chat_state.dart';
+import 'package:orbiq/core/shared/currency/presentation/controller/currency_bloc.dart';
+import 'package:orbiq/core/shared/currency/presentation/controller/currency_state.dart';
+import 'package:orbiq/core/shared/currency/domain/entities/currency_code.dart';
 
 class ProductsManagementPage extends StatefulWidget {
   const ProductsManagementPage({super.key});
@@ -39,6 +42,22 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
 
   bool _isMobile(BuildContext context) =>
       MediaQuery.of(context).size.width < 600;
+
+  String _formatPrice(BuildContext context, double price) {
+    final state = context.watch<CurrencyBloc>().state;
+    if (state is CurrencyLoaded) {
+      final rate = state.rates[state.selectedCurrency] ?? 1.0;
+      final converted = price / rate;
+      final isInt =
+          state.selectedCurrency == CurrencyCode.toman ||
+          state.selectedCurrency == CurrencyCode.rial ||
+          state.selectedCurrency ==
+              CurrencyCode.dinar; // Dinar usually no decimal?
+      final formatter = NumberFormat(isInt ? '#,##0' : '#,##0.##');
+      return '${formatter.format(converted)} ${state.selectedCurrency.symbol}';
+    }
+    return '${NumberFormat('#,##0').format(price)} تومان';
+  }
 
   @override
   void initState() {
@@ -784,7 +803,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                     ],
                   ),
                   Text(
-                    '${currencyFormat.format(product.originalPrice.toInt())} ${l10n.currency}',
+                    _formatPrice(context, product.originalPrice),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.green[700],
@@ -1034,7 +1053,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
             Expanded(
               flex: 2,
               child: Text(
-                '${currencyFormat.format(product.originalPrice.toInt())} ${l10n.currency}',
+                _formatPrice(context, product.originalPrice),
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   color: Colors.green[700],
@@ -1233,7 +1252,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                       ],
                     ),
                     Text(
-                      '${currencyFormat.format(totalPrice.toInt())} ${l10n.currency}',
+                      _formatPrice(context, totalPrice),
                       style: TextStyle(
                         fontSize: isMobile ? 14 : 18,
                         fontWeight: FontWeight.bold,
@@ -1334,7 +1353,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
               ),
               const Spacer(),
               Text(
-                '${currencyFormat.format(product.originalPrice.toInt())} ${l10n.currency}',
+                _formatPrice(context, product.originalPrice),
                 style: TextStyle(
                   color: Colors.green[700],
                   fontWeight: FontWeight.w500,

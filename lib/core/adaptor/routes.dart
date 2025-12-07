@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:orbiq/core/adaptor/routes_constants.dart';
 import 'package:orbiq/core/shared/localization/presentation/pages/language_setting_page.dart';
+import 'package:orbiq/core/shared/currency/presentation/pages/currency_settings_page.dart';
 import 'package:orbiq/core/shared/product/data/models/product_model.dart';
 import 'package:orbiq/features/auth/presentation/ui/login_page.dart';
 import 'package:orbiq/features/auth/presentation/ui/change_pass_page.dart';
@@ -34,4 +35,5 @@ Map<String, WidgetBuilder> appRoutes = {
   ),
   Routes.barcodeReader: (context) => const DataTransferScreen(),
   Routes.languageSettings: (context) => const LanguageSettingsPage(),
+  Routes.currencySettings: (context) => const CurrencySettingsPage(),
 };

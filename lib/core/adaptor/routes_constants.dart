@@ -19,4 +19,5 @@ class Routes {
   // Shared routes
   static const String barcodeReader = '/barcode-reader';
   static const String languageSettings = '/settings/language';
+  static const String currencySettings = '/settings/currency';
 }

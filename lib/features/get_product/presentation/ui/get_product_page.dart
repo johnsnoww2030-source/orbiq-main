@@ -11,7 +11,11 @@ import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_pro
 import 'package:orbiq/features/payment/presentation/controller/cart_bloc.dart';
 import 'package:orbiq/features/payment/presentation/controller/cart_event.dart';
 import 'package:orbiq/features/payment/presentation/controller/cart_state.dart';
+
 import 'package:orbiq/features/payment/presentation/ui/payment_page.dart';
+import 'package:orbiq/core/shared/currency/presentation/controller/currency_bloc.dart';
+import 'package:orbiq/core/shared/currency/presentation/controller/currency_state.dart';
+import 'package:orbiq/core/shared/currency/domain/entities/currency_code.dart';
 
 import '../../../barcode_reader/presentation/controller/chat_bloc.dart';
 import '../../../barcode_reader/presentation/controller/chat_state.dart';
@@ -33,6 +37,22 @@ class ProductListPageState extends State<ProductListPage>
   late Animation<double> _animation;
 
   final NumberFormat currencyFormat = NumberFormat('#,##0');
+
+  String _formatPrice(double price) {
+    // Check if context is mounted just in case, though watch should be used in build
+    final state = context.watch<CurrencyBloc>().state;
+    if (state is CurrencyLoaded) {
+      final rate = state.rates[state.selectedCurrency] ?? 1.0;
+      final converted = price / rate;
+      final isInt =
+          state.selectedCurrency == CurrencyCode.toman ||
+          state.selectedCurrency == CurrencyCode.rial ||
+          state.selectedCurrency == CurrencyCode.dinar;
+      final formatter = NumberFormat(isInt ? '#,##0' : '#,##0.##');
+      return '${formatter.format(converted)} ${state.selectedCurrency.symbol}';
+    }
+    return '${NumberFormat('#,##0').format(price)} تومان';
+  }
 
   @override
   void initState() {
@@ -66,9 +86,7 @@ class ProductListPageState extends State<ProductListPage>
     const double minScreenWidth = 400.0;
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minWidth: minScreenWidth,
-      ),
+      constraints: const BoxConstraints(minWidth: minScreenWidth),
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -121,9 +139,9 @@ class ProductListPageState extends State<ProductListPage>
                   if (state is ProductFound) {
                     final foundProduct = state.product;
                     if (_isCartActive) {
-                      BlocProvider.of<CartBloc>(context).add(
-                        AddToCartEvent(foundProduct.toEntity()),
-                      );
+                      BlocProvider.of<CartBloc>(
+                        context,
+                      ).add(AddToCartEvent(foundProduct.toEntity()));
                     }
                   }
                 },
@@ -135,9 +153,11 @@ class ProductListPageState extends State<ProductListPage>
                           color: Colors.deepPurple,
                         ),
                       );
-                    } else if (state is ProductLoadingPage) { // Handle new state
+                    } else if (state is ProductLoadingPage) {
+                      // Handle new state
                       return const Center(
-                        child: CircularProgressIndicator( // Or a different indicator
+                        child: CircularProgressIndicator(
+                          // Or a different indicator
                           color: Colors.amber,
                         ),
                       );
@@ -148,17 +168,26 @@ class ProductListPageState extends State<ProductListPage>
                         children: [
                           Expanded(
                             child: _buildProductGrid(
-                                _products, crossAxisCount, authState),
+                              _products,
+                              crossAxisCount,
+                              authState,
+                            ),
                           ),
-                          _buildPaginationControls(state.currentPage,
-                              state.totalPages, state.hasNextPage),
+                          _buildPaginationControls(
+                            state.currentPage,
+                            state.totalPages,
+                            state.hasNextPage,
+                          ),
                         ],
                       );
                     } else if (state is ProductFound) {
                       _products = [state.product];
                       // When a single product is found, no pagination controls needed
                       return _buildProductGrid(
-                          _products, crossAxisCount, authState);
+                        _products,
+                        crossAxisCount,
+                        authState,
+                      );
                     } else if (state is ProductNotFound) {
                       return const Center(
                         child: Text(
@@ -206,7 +235,9 @@ class ProductListPageState extends State<ProductListPage>
                     if (cartState is CartUpdated) {
                       cartItems = cartState.cartItems;
                       totalPrice = cartItems.fold(
-                          0.0, (sum, item) => sum + item.originalPrice);
+                        0.0,
+                        (sum, item) => sum + item.originalPrice,
+                      );
                     }
 
                     return Column(
@@ -216,7 +247,7 @@ class ProductListPageState extends State<ProductListPage>
                           color: Colors.deepPurple.shade50,
                           padding: const EdgeInsets.all(16),
                           child: Text(
-                            'قیمت کل: ${currencyFormat.format(totalPrice.toInt())} تومان',
+                            'قیمت کل: ${_formatPrice(totalPrice)}',
                             style: const TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -227,7 +258,9 @@ class ProductListPageState extends State<ProductListPage>
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                           child: ElevatedButton(
                             onPressed: cartItems.isEmpty
                                 ? null
@@ -258,7 +291,10 @@ class ProductListPageState extends State<ProductListPage>
                         ),
                         Expanded(
                           child: _buildCartGrid(
-                              cartItems, crossAxisCount, screenWidth),
+                            cartItems,
+                            crossAxisCount,
+                            screenWidth,
+                          ),
                         ),
                       ],
                     );
@@ -279,9 +315,7 @@ class ProductListPageState extends State<ProductListPage>
         focusNode: _searchFocusNode,
         decoration: InputDecoration(
           labelText: 'جستجو با شماره سریال',
-          prefixIcon: const Icon(
-            Icons.search,
-          ),
+          prefixIcon: const Icon(Icons.search),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30),
             // borderSide: const BorderSide(color: Colors.deepPurple),
@@ -290,8 +324,10 @@ class ProductListPageState extends State<ProductListPage>
             borderRadius: BorderRadius.circular(30),
             // borderSide: const BorderSide(color: Colors.deepPurple, width: 2),
           ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 15,
+          ),
           // fillColor: Colors.deepPurple.shade50,
           // filled: true,
         ),
@@ -302,7 +338,10 @@ class ProductListPageState extends State<ProductListPage>
   }
 
   Widget _buildCartGrid(
-      List<ProductEntity> cartItems, int crossAxisCount, double screenWidth) {
+    List<ProductEntity> cartItems,
+    int crossAxisCount,
+    double screenWidth,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: GridView.builder(
@@ -360,7 +399,7 @@ class ProductListPageState extends State<ProductListPage>
                       ),
                       const Spacer(),
                       Text(
-                        'قیمت: ${currencyFormat.format(product.originalPrice.toInt())} تومان',
+                        'قیمت: ${_formatPrice(product.originalPrice)}',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -376,8 +415,9 @@ class ProductListPageState extends State<ProductListPage>
                   child: IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () {
-                      BlocProvider.of<CartBloc>(context)
-                          .add(RemoveFromCartEvent(product));
+                      BlocProvider.of<CartBloc>(
+                        context,
+                      ).add(RemoveFromCartEvent(product));
                     },
                   ),
                 ),
@@ -390,7 +430,10 @@ class ProductListPageState extends State<ProductListPage>
   }
 
   Widget _buildProductGrid(
-      List<ProductModel> products, int crossAxisCount, AuthState authState) {
+    List<ProductModel> products,
+    int crossAxisCount,
+    AuthState authState,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GridView.builder(
@@ -447,7 +490,7 @@ class ProductListPageState extends State<ProductListPage>
                   ),
                   const Spacer(),
                   Text(
-                    'قیمت: ${currencyFormat.format(product.originalPrice.toInt())} تومان',
+                    'قیمت: ${_formatPrice(product.originalPrice)}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -459,10 +502,7 @@ class ProductListPageState extends State<ProductListPage>
                     Align(
                       alignment: Alignment.bottomRight,
                       child: IconButton(
-                        icon: const Icon(
-                          Icons.edit,
-                          size: 14,
-                        ),
+                        icon: const Icon(Icons.edit, size: 14),
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -501,7 +541,10 @@ class ProductListPageState extends State<ProductListPage>
   }
 
   Widget _buildPaginationControls(
-      int currentPage, int totalPages, bool hasNextPage) {
+    int currentPage,
+    int totalPages,
+    bool hasNextPage,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
       child: Row(
@@ -510,9 +553,9 @@ class ProductListPageState extends State<ProductListPage>
           ElevatedButton(
             onPressed: currentPage > 1
                 ? () {
-                    context
-                        .read<GetProductBloc>()
-                        .add(LoadProductPageEvent(currentPage - 1));
+                    context.read<GetProductBloc>().add(
+                      LoadProductPageEvent(currentPage - 1),
+                    );
                   }
                 : null,
             child: const Text(' قبلی'),
@@ -521,9 +564,9 @@ class ProductListPageState extends State<ProductListPage>
           ElevatedButton(
             onPressed: hasNextPage
                 ? () {
-                    context
-                        .read<GetProductBloc>()
-                        .add(LoadProductPageEvent(currentPage + 1));
+                    context.read<GetProductBloc>().add(
+                      LoadProductPageEvent(currentPage + 1),
+                    );
                   }
                 : null,
             child: const Text('بعدی '),

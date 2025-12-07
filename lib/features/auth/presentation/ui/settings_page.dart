@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:orbiq/core/adaptor/routes_constants.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_bloc.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_event.dart';
@@ -26,7 +27,7 @@ class _SettingsPageState extends State<SettingsPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -99,6 +100,7 @@ class _SettingsPageState extends State<SettingsPage>
                   unselectedLabelColor: Colors.grey,
                   dividerColor: Colors.transparent,
                   tabs: [
+                    _buildTab(Icons.settings, 'عمومی'),
                     _buildTab(Icons.person_outline, 'پروفایل'),
                     _buildTab(Icons.security_outlined, 'امنیت'),
                     _buildTab(Icons.people_outline, 'کاربران'),
@@ -110,6 +112,7 @@ class _SettingsPageState extends State<SettingsPage>
                 child: TabBarView(
                   controller: _tabController,
                   children: [
+                    _buildGeneralTab(context, l10n),
                     _buildProfileTab(context, l10n),
                     _buildSecurityTab(context, l10n),
                     _buildUsersTab(context, l10n),
@@ -128,6 +131,59 @@ class _SettingsPageState extends State<SettingsPage>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [Icon(icon, size: 20), const SizedBox(width: 8), Text(label)],
+      ),
+    );
+  }
+
+  Widget _buildGeneralTab(BuildContext context, AppLocalizations l10n) {
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'تنظیمات عمومی',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'تنظیمات زبان و واحد پول برنامه',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+              ),
+              const SizedBox(height: 24),
+              _buildSecurityItem(
+                context,
+                icon: Icons.language,
+                title: l10n.language,
+                subtitle: 'زبان برنامه را انتخاب کنید',
+                actionLabel: 'تغییر',
+                onAction: () =>
+                    Navigator.pushNamed(context, Routes.languageSettings),
+              ),
+              const Divider(height: 32),
+              _buildSecurityItem(
+                context,
+                icon: Icons.attach_money,
+                title: 'واحد پول',
+                subtitle: 'واحد پول و نرخ تبدیل را مدیریت کنید',
+                actionLabel: 'تغییر',
+                onAction: () =>
+                    Navigator.pushNamed(context, Routes.currencySettings),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
