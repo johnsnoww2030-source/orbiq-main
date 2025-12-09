@@ -246,5 +246,11 @@
   "currency": "USD",
   "pressAddButton": "Press + button to add product",
   "pressNewProductButton": "Press \"New Product\" button to add product",
-  "arabic": "Arabic"
+  "arabic": "Arabic",
+  "sales": "Sales",
+  "salesInvoices": "Sales Invoices",
+  "inventoryAndProcurement": "Inventory & Procurement",
+  "purchaseInvoices": "Purchase Invoices",
+  "suppliers": "Suppliers",
+  "stocktaking": "Stocktaking"
 }

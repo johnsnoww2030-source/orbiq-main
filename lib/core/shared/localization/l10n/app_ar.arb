@@ -247,5 +247,11 @@
   "currency": "ريال",
   "pressAddButton": "اضغط على + لإضافة منتج",
   "pressNewProductButton": "اضغط على \"منتج جديد\" لإضافة منتج",
-  "arabic": "العربية"
+  "arabic": "العربية",
+  "sales": "المبيعات",
+  "salesInvoices": "فواتير المبيعات",
+  "inventoryAndProcurement": "المخزون والمشتريات",
+  "purchaseInvoices": "فواتير المشتريات",
+  "suppliers": "الموردون",
+  "stocktaking": "جرد المخزون"
 }

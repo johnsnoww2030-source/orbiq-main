@@ -747,4 +747,22 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get arabic => 'عربی';
+
+  @override
+  String get sales => 'فروش';
+
+  @override
+  String get salesInvoices => 'فاکتورهای فروش';
+
+  @override
+  String get inventoryAndProcurement => 'انبار و تدارکات';
+
+  @override
+  String get purchaseInvoices => 'فاکتورهای خرید';
+
+  @override
+  String get suppliers => 'تأمین‌کنندگان';
+
+  @override
+  String get stocktaking => 'انبارگردانی';
 }

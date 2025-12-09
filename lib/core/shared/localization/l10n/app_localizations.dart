@@ -1575,6 +1575,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Arabic'**
   String get arabic;
+
+  /// No description provided for @sales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get sales;
+
+  /// No description provided for @salesInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales Invoices'**
+  String get salesInvoices;
+
+  /// No description provided for @inventoryAndProcurement.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory & Procurement'**
+  String get inventoryAndProcurement;
+
+  /// No description provided for @purchaseInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase Invoices'**
+  String get purchaseInvoices;
+
+  /// No description provided for @suppliers.
+  ///
+  /// In en, this message translates to:
+  /// **'Suppliers'**
+  String get suppliers;
+
+  /// No description provided for @stocktaking.
+  ///
+  /// In en, this message translates to:
+  /// **'Stocktaking'**
+  String get stocktaking;
 }
 
 class _AppLocalizationsDelegate

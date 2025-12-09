@@ -249,5 +249,11 @@
   "currency": "تومان",
   "pressAddButton": "برای افزودن محصول دکمه + را بزنید",
   "pressNewProductButton": "برای افزودن محصول جدید دکمه \"محصول جدید\" را بزنید",
-  "arabic": "عربی"
+  "arabic": "عربی",
+  "sales": "فروش",
+  "salesInvoices": "فاکتورهای فروش",
+  "inventoryAndProcurement": "انبار و تدارکات",
+  "purchaseInvoices": "فاکتورهای خرید",
+  "suppliers": "تأمین‌کنندگان",
+  "stocktaking": "انبارگردانی"
 }

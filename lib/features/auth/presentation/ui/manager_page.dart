@@ -153,29 +153,34 @@ class _ManagerPageState extends State<ManagerPage> {
   }
 
   Widget _buildContent(int index) {
-    // Map index to content
+    // Map index to content based on new nested menu structure:
+    // 0: Dashboard
+    // 1: Sales Invoices (Sales)
+    // 2: Customers (Sales)
+    // 3: Product List (Inventory & Procurement)
+    // 4: Purchase Invoices (Inventory & Procurement)
+    // 5: Suppliers (Inventory & Procurement)
+    // 6: Stocktaking (Inventory & Procurement)
+    // 7: Reports
+    // 8: Settings
     switch (index) {
       case 0: // Dashboard
         return const DashboardContentWidget();
-      case 1: // Transactions
-        return const PaymentsReportPage();
-      case 2: // Invoices
-        return _buildPlaceholder("Invoices Content");
-      case 3: // Barcode Reader
-        return _buildPlaceholder("Barcode Reader Content");
-      case 4: // Reports
-        return const PaymentsReportPage();
-      case 5: // Customers
-        return _buildPlaceholder("Customers Content");
-      case 6: // Vendors
-        return _buildPlaceholder("Vendors Content");
-      case 7: // Products (includes Add Product)
+      case 1: // Sales Invoices
+        return _buildPlaceholder("Sales Invoices");
+      case 2: // Customers
+        return _buildPlaceholder("Customers");
+      case 3: // Product List
         return const ProductsManagementPage();
-      case 8: // Reminders
-        return _buildPlaceholder("Reminders Content");
-      case 9: // Support
-        return _buildPlaceholder("Support Content");
-      case 10: // Settings
+      case 4: // Purchase Invoices
+        return _buildPlaceholder("Purchase Invoices");
+      case 5: // Suppliers
+        return _buildPlaceholder("Suppliers");
+      case 6: // Stocktaking
+        return _buildPlaceholder("Stocktaking");
+      case 7: // Reports
+        return const PaymentsReportPage();
+      case 8: // Settings
         return const SettingsPage();
       default:
         return const DashboardContentWidget();

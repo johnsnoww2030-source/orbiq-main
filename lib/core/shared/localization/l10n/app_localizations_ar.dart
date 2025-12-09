@@ -746,4 +746,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get arabic => 'العربية';
+
+  @override
+  String get sales => 'المبيعات';
+
+  @override
+  String get salesInvoices => 'فواتير المبيعات';
+
+  @override
+  String get inventoryAndProcurement => 'المخزون والمشتريات';
+
+  @override
+  String get purchaseInvoices => 'فواتير المشتريات';
+
+  @override
+  String get suppliers => 'الموردون';
+
+  @override
+  String get stocktaking => 'جرد المخزون';
 }

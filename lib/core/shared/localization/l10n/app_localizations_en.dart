@@ -747,4 +747,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get arabic => 'Arabic';
+
+  @override
+  String get sales => 'Sales';
+
+  @override
+  String get salesInvoices => 'Sales Invoices';
+
+  @override
+  String get inventoryAndProcurement => 'Inventory & Procurement';
+
+  @override
+  String get purchaseInvoices => 'Purchase Invoices';
+
+  @override
+  String get suppliers => 'Suppliers';
+
+  @override
+  String get stocktaking => 'Stocktaking';
 }
