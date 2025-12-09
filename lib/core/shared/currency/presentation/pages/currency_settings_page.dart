@@ -85,10 +85,10 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDisplayCurrencySection(context, state),
-          const SizedBox(height: 24),
           _buildConversionRateSection(context, state),
-          const SizedBox(height: 24),
+          const SizedBox(height: 48),
+          _buildDisplayCurrencySection(context, state),
+          const SizedBox(height: 48),
           _buildSaveButton(context, state, isFullWidth: true),
         ],
       ),
@@ -124,24 +124,40 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
   Widget _buildDesktopLayout(BuildContext context, CurrencyLoaded state) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(child: _buildDisplayCurrencySection(context, state)),
-          const SizedBox(width: 24),
-          Expanded(child: _buildConversionRateSection(context, state)),
-          const SizedBox(width: 24),
-          Expanded(
-            child: Align(
-              alignment:
-                  Alignment.bottomCenter, // Align to bottom to match inputs?
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
-                child: _buildSaveButton(context, state, isFullWidth: true),
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [_buildConversionRateSection(context, state)],
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 24),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [_buildDisplayCurrencySection(context, state)],
+              ),
+            ),
+
+            const SizedBox(width: 24),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 400),
+                    child: _buildSaveButton(context, state, isFullWidth: true),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -153,8 +169,16 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('واحد پول نمایش', style: Theme.of(context).textTheme.titleMedium),
+        Text('واحد پول ', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
+        Text(
+          'با تغییر واحد پولی قیمت ها نیز بصورت خودکار بروز خواهد شد',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontSize: 12,
+          ),
+        ),
+        const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
@@ -291,7 +315,7 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
                     hintStyle: TextStyle(
                       color: Theme.of(
                         context,
-                      ).colorScheme.onSurfaceVariant.withOpacity(0.5),
+                      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
