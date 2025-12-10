@@ -1,9 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/shared/localization/domain/usecases/get_language_usecase.dart';
 import 'package:orbiq/core/shared/localization/domain/usecases/save_language_usecase.dart';
 import 'package:orbiq/core/shared/localization/presentation/controller/language_event.dart';
 import 'package:orbiq/core/shared/localization/presentation/controller/language_state.dart';
 
+@injectable
 class LanguageBloc extends Bloc<LanguageEvent, LanguageState> {
   final GetLanguageUseCase getLanguageUseCase;
   final SaveLanguageUseCase saveLanguageUseCase;

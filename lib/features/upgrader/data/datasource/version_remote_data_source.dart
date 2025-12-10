@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/env/env_config.dart';
 import 'package:orbiq/features/upgrader/data/model/version_info_model.dart';
 
@@ -8,6 +9,7 @@ abstract class VersionRemoteDataSource {
   Future<VersionInfoModel> getVersionInfo();
 }
 
+@LazySingleton(as: VersionRemoteDataSource)
 class VersionRemoteDataSourceImpl implements VersionRemoteDataSource {
   final Dio dio;
 

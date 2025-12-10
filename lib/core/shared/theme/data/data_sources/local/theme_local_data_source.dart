@@ -1,7 +1,9 @@
+import 'package:injectable/injectable.dart';
 import '../../models/theme_model.dart';
 import 'theme_dao.dart';
 import '../../../domain/entities/theme_entity.dart';
 
+@lazySingleton
 class ThemeLocalDataSource {
   final ThemeDao themeDao;
 

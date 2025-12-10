@@ -1,3 +1,4 @@
+import 'package:injectable/injectable.dart';
 import 'package:orbiq/features/add_product/domain/usecases/add_product_usecase.dart';
 import 'package:orbiq/features/add_product/domain/usecases/update_product_usecase.dart'; // اضافه شده
 import 'package:orbiq/features/get_product/domain/usecases/get_products_usecase.dart';
@@ -8,11 +9,12 @@ import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_pro
 import 'product_event.dart';
 import 'product_state.dart';
 
+@injectable
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
   final AddProduct addProduct;
   final UpdateProductUseCase updateProduct;
   final GetProductsUseCase
-      getProductsUseCase; // استفاده از یوزکیس دریافت محصولات
+  getProductsUseCase; // استفاده از یوزکیس دریافت محصولات
 
   ProductBloc({
     required this.addProduct,
@@ -22,7 +24,8 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<AddProductEvent>(_onAddProduct);
     on<UpdateProductEvent>(_onUpdateProduct);
     on<LoadProductsEvent>(
-        _onLoadProducts); // اضافه کردن مدیریت رویداد LoadProductsEvent
+      _onLoadProducts,
+    ); // اضافه کردن مدیریت رویداد LoadProductsEvent
   }
 
   Future<void> _onAddProduct(
@@ -59,17 +62,17 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     emit(ProductLoading());
     try {
       final products = await getProductsUseCase(
-        GetProductsUseCaseParams(
-          page: 1,
-          limit: 10,
-        ),
+        GetProductsUseCaseParams(page: 1, limit: 10),
       );
-      emit(get_products.ProductLoaded(
-        products: products.products,
-        currentPage: 1,
-        totalPages: 1,
-        hasNextPage: false,
-      ) as ProductState); // ارسال لیست محصولات
+      emit(
+        get_products.ProductLoaded(
+              products: products.products,
+              currentPage: 1,
+              totalPages: 1,
+              hasNextPage: false,
+            )
+            as ProductState,
+      ); // ارسال لیست محصولات
     } catch (e) {
       emit(const ProductError('خطا در بارگذاری محصولات'));
     }

@@ -1,6 +1,7 @@
-
+import 'package:injectable/injectable.dart';
 import 'package:orbiq/features/exports/domain/repositories/export_repository.dart';
 
+@injectable
 class ExportToPDFUseCase {
   final ExportRepository repository;
 

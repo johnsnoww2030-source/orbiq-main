@@ -1,7 +1,9 @@
 import 'package:orbiq/features/auth/data/mappers/user_mapper.dart';
 import 'package:orbiq/features/auth/data/models/user_model.dart';
+import 'package:injectable/injectable.dart';
 import 'user_dao.dart';
 
+@lazySingleton
 class AuthLocalDataSource {
   final UserDao userDao;
 
@@ -46,7 +48,9 @@ class AuthLocalDataSource {
         isFirstLogin: true,
         loggedin: false,
       );
-      await userDao.insertUser(adminUser); // اگر کاربر مدیر وجود نداشت، اضافه شود
+      await userDao.insertUser(
+        adminUser,
+      ); // اگر کاربر مدیر وجود نداشت، اضافه شود
     }
   }
 }

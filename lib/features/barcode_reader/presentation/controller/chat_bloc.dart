@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../domain/usecases/get_clients.dart';
 import '../../domain/usecases/get_massage.dart';
@@ -15,6 +16,7 @@ import '../../domain/usecases/disconnect.dart';
 import '../../domain/entities/message.dart';
 import '../../domain/entities/client_info.dart';
 
+@injectable
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final SendMessageUseCase sendMessageUseCase;
   final StartServerUseCase startServerUseCase;

@@ -1,11 +1,13 @@
 // data/repositories/chat_repository_impl.dart
 
+import 'package:injectable/injectable.dart';
 import '../../domain/entities/message.dart';
 import '../../domain/entities/client_info.dart';
 import '../../domain/repositories/chat_repository.dart';
 import '../datasources/socket_data_source.dart';
 import '../mappers/data_mapper.dart';
 
+@LazySingleton(as: ChatRepository)
 class ChatRepositoryImpl implements ChatRepository {
   final SocketDataSource dataSource;
 
@@ -14,9 +16,7 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Stream<List<Message>> getMessages() {
     return dataSource.messageStream.map((messageModel) {
-      return [
-        DataMappers.messageModelToEntity(messageModel)
-      ];
+      return [DataMappers.messageModelToEntity(messageModel)];
     });
   }
 
@@ -43,9 +43,7 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Stream<List<ClientInfo>> getClientConnections() {
     return dataSource.clientStream.map((clientModel) {
-      return [
-        DataMappers.clientInfoModelToEntity(clientModel)
-      ];
+      return [DataMappers.clientInfoModelToEntity(clientModel)];
     }).asBroadcastStream();
   }
 
@@ -57,7 +55,9 @@ class ChatRepositoryImpl implements ChatRepository {
   // متد جدید برای مدیریت قطع ارتباط کلاینت‌ها
   @override
   Future<void> handleClientDisconnection(String clientId) async {
-    final clientInfo = dataSource.clients.firstWhere((client) => client.address == clientId);
+    final clientInfo = dataSource.clients.firstWhere(
+      (client) => client.address == clientId,
+    );
     dataSource.handleClientDisconnection(clientInfo);
   }
 }

@@ -1,8 +1,10 @@
 // lib/features/add_product/domain/usecases/update_product_usecase.dart
 
+import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 import 'package:orbiq/features/add_product/domain/repository/product_repository.dart';
 
+@injectable
 class UpdateProductUseCase {
   final ProductRepository repository;
 

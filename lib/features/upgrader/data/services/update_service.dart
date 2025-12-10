@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'update_strategy.dart';
 import 'linux_update_strategy.dart';
 // import 'windows_update_strategy.dart';
 // import 'android_update_strategy.dart';
 
+@lazySingleton
 class UpdateService {
   final Dio _dio;
   late UpdateStrategy _strategy;

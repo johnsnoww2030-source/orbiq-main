@@ -1,9 +1,11 @@
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
 import '../entities/theme_entity.dart';
 import '../repositories/theme_repository.dart';
 import '../../../../utils/error/failures.dart';
 import '../../../../utils/usecase/usecase.dart';
 
+@injectable
 class GetThemeUseCase implements UseCase<ThemeEntity, NoParams> {
   final ThemeRepository repository;
 

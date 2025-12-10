@@ -1,9 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 import 'package:orbiq/features/payment/presentation/controller/cart_event.dart';
 import 'package:orbiq/features/payment/presentation/controller/cart_state.dart';
 
+@injectable
 class CartBloc extends Bloc<CartEvent, CartState> {
   final List<ProductEntity> _cartItems = [];
 

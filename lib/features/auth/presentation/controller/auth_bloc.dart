@@ -204,6 +204,7 @@
 // }
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:orbiq/features/auth/domain/failures/failure.dart';
 import 'package:orbiq/features/auth/domain/usecases/add_user_usecase.dart';
 import 'package:orbiq/features/auth/domain/usecases/update_password_usecase.dart';
@@ -212,6 +213,7 @@ import 'package:orbiq/features/auth/presentation/controller/auth_state.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart'; // اضافه کردن logoutUseCase
 
+@injectable
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;
   final UpdatePasswordUseCase updatePasswordUseCase;
@@ -227,7 +229,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginRequested>(_onLoginRequested);
     on<UpdatePasswordRequested>(_onUpdatePasswordRequested);
     on<LogoutRequested>(_onLogoutRequested); // اضافه کردن رویداد Logout
-    on<AddUserRequested>(_onAddUserRequested); // اضافه کردن رویداد AddUserRequested
+    on<AddUserRequested>(
+      _onAddUserRequested,
+    ); // اضافه کردن رویداد AddUserRequested
   }
 
   Future<void> _onLoginRequested(

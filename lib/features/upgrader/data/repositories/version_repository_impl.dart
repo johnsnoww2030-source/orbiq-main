@@ -1,8 +1,10 @@
+import 'package:injectable/injectable.dart';
 import 'package:orbiq/features/upgrader/data/datasource/version_remote_data_source.dart';
 import 'package:orbiq/features/upgrader/data/model/version_info_model.dart';
 import 'package:orbiq/features/upgrader/data/services/update_service.dart';
 import 'package:orbiq/features/upgrader/domain/repositories/version_repository.dart';
 
+@LazySingleton(as: VersionRepository)
 class VersionRepositoryImpl implements VersionRepository {
   final VersionRemoteDataSource remoteDataSource;
   final UpdateService updateService;

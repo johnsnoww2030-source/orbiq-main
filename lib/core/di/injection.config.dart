@@ -1,0 +1,367 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
+
+// **************************************************************************
+// InjectableConfigGenerator
+// **************************************************************************
+
+// ignore_for_file: type=lint
+// coverage:ignore-file
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:dio/dio.dart' as _i361;
+import 'package:get_it/get_it.dart' as _i174;
+import 'package:injectable/injectable.dart' as _i526;
+
+import '../../features/add_product/data/repository/product_repository_impl.dart'
+    as _i651;
+import '../../features/add_product/domain/repository/product_repository.dart'
+    as _i567;
+import '../../features/add_product/domain/usecases/add_product_usecase.dart'
+    as _i161;
+import '../../features/add_product/domain/usecases/update_product_usecase.dart'
+    as _i1056;
+import '../../features/add_product/presentation/controllers/bloc/product_bloc.dart'
+    as _i640;
+import '../../features/auth/data/data_sources/local/auth_local_data_source.dart'
+    as _i485;
+import '../../features/auth/data/data_sources/local/user_dao.dart' as _i555;
+import '../../features/auth/data/repositories/auth_repository_impl.dart'
+    as _i153;
+import '../../features/auth/domain/repositories/auth_repository.dart' as _i787;
+import '../../features/auth/domain/usecases/add_user_usecase.dart' as _i816;
+import '../../features/auth/domain/usecases/login_usecase.dart' as _i188;
+import '../../features/auth/domain/usecases/logout_usecase.dart' as _i48;
+import '../../features/auth/domain/usecases/update_password_usecase.dart'
+    as _i387;
+import '../../features/auth/presentation/controller/auth_bloc.dart' as _i954;
+import '../../features/barcode_reader/data/datasources/socket_data_source.dart'
+    as _i200;
+import '../../features/barcode_reader/data/repositories/chat_repository_impl.dart'
+    as _i769;
+import '../../features/barcode_reader/data/repositories/socket_repository_impl.dart'
+    as _i199;
+import '../../features/barcode_reader/domain/repositories/chat_repository.dart'
+    as _i774;
+import '../../features/barcode_reader/domain/repositories/socket_repository.dart'
+    as _i98;
+import '../../features/barcode_reader/domain/usecases/auto_connect_to_server.dart'
+    as _i391;
+import '../../features/barcode_reader/domain/usecases/connect_to_server.dart'
+    as _i362;
+import '../../features/barcode_reader/domain/usecases/disconnect.dart' as _i3;
+import '../../features/barcode_reader/domain/usecases/get_clients.dart'
+    as _i856;
+import '../../features/barcode_reader/domain/usecases/get_massage.dart'
+    as _i495;
+import '../../features/barcode_reader/domain/usecases/handle_client_disconnect.dart'
+    as _i587;
+import '../../features/barcode_reader/domain/usecases/send_message.dart'
+    as _i603;
+import '../../features/barcode_reader/domain/usecases/start_server.dart'
+    as _i36;
+import '../../features/barcode_reader/presentation/controller/chat_bloc.dart'
+    as _i673;
+import '../../features/exports/data/repositories/export_repository_impl.dart'
+    as _i1053;
+import '../../features/exports/domain/repositories/export_repository.dart'
+    as _i36;
+import '../../features/exports/domain/usecases/export_to_excel_usecase.dart'
+    as _i1021;
+import '../../features/exports/domain/usecases/export_to_pdf_usecase.dart'
+    as _i566;
+import '../../features/exports/presentation/controller/export_bloc.dart'
+    as _i689;
+import '../../features/get_product/data/repository/product_repository_impl.dart'
+    as _i675;
+import '../../features/get_product/domain/repository/product_repository.dart'
+    as _i85;
+import '../../features/get_product/domain/usecases/get_product_usecase.dart'
+    as _i830;
+import '../../features/get_product/domain/usecases/get_products_usecase.dart'
+    as _i642;
+import '../../features/get_product/presentation/controllers/bloc/get_product_bloc.dart'
+    as _i295;
+import '../../features/payment/data/data_sources/local/payment_dao.dart'
+    as _i968;
+import '../../features/payment/data/repositories/payment_repositroy_impl.dart'
+    as _i1070;
+import '../../features/payment/domain/repositories/payment_repositroy.dart'
+    as _i150;
+import '../../features/payment/domain/usecases/get_all_payments_usecase.dart'
+    as _i822;
+import '../../features/payment/domain/usecases/get_payment_by_nickname_usecase.dart'
+    as _i159;
+import '../../features/payment/domain/usecases/save_payment_usecase.dart'
+    as _i202;
+import '../../features/payment/presentation/controller/cart_bloc.dart' as _i201;
+import '../../features/payment/presentation/controller/payment_bloc.dart'
+    as _i217;
+import '../../features/upgrader/data/datasource/version_remote_data_source.dart'
+    as _i863;
+import '../../features/upgrader/data/repositories/version_repository_impl.dart'
+    as _i171;
+import '../../features/upgrader/data/services/update_service.dart' as _i22;
+import '../../features/upgrader/domain/repositories/version_repository.dart'
+    as _i85;
+import '../../features/upgrader/domain/usecases/check_for_update.dart' as _i701;
+import '../../features/upgrader/domain/usecases/download_and_install_update.dart'
+    as _i418;
+import '../../features/upgrader/presentation/controllers/bloc/update_bloc.dart'
+    as _i169;
+import '../shared/database/database.dart' as _i865;
+import '../shared/localization/data/data_sources/local/language_dao.dart'
+    as _i123;
+import '../shared/localization/data/data_sources/local/language_local_data_source.dart'
+    as _i149;
+import '../shared/localization/data/repositories/language_repository_impl.dart'
+    as _i789;
+import '../shared/localization/domain/repositories/language_repository.dart'
+    as _i645;
+import '../shared/localization/domain/usecases/get_language_usecase.dart'
+    as _i924;
+import '../shared/localization/domain/usecases/save_language_usecase.dart'
+    as _i383;
+import '../shared/localization/presentation/controller/language_bloc.dart'
+    as _i32;
+import '../shared/product/data/data_source/local/product_dao.dart' as _i887;
+import '../shared/theme/data/data_sources/local/theme_dao.dart' as _i976;
+import '../shared/theme/data/data_sources/local/theme_local_data_source.dart'
+    as _i222;
+import '../shared/theme/data/repositories/theme_repository_impl.dart' as _i107;
+import '../shared/theme/domain/repositories/theme_repository.dart' as _i1012;
+import '../shared/theme/domain/usecases/get_theme_usecase.dart' as _i473;
+import '../shared/theme/domain/usecases/save_theme_usecase.dart' as _i374;
+import '../shared/theme/presentation/controller/theme_bloc.dart' as _i1026;
+import 'register_module.dart' as _i291;
+
+extension GetItInjectableX on _i174.GetIt {
+  // initializes the registration of main-scope dependencies inside of GetIt
+  Future<_i174.GetIt> init({
+    String? environment,
+    _i526.EnvironmentFilter? environmentFilter,
+  }) async {
+    final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    final registerModule = _$RegisterModule();
+    gh.factory<_i201.CartBloc>(() => _i201.CartBloc());
+    await gh.singletonAsync<_i865.AppDatabase>(
+      () => registerModule.database,
+      preResolve: true,
+    );
+    gh.lazySingleton<_i361.Dio>(() => registerModule.dio);
+    gh.lazySingleton<_i200.SocketDataSource>(() => _i200.SocketDataSource());
+    gh.lazySingleton<_i863.VersionRemoteDataSource>(
+      () => _i863.VersionRemoteDataSourceImpl(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i22.UpdateService>(
+      () => _i22.UpdateService(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i36.ExportRepository>(
+      () => _i1053.ExportRepositoryImpl(),
+    );
+    gh.lazySingleton<_i887.ProductDao>(
+      () => registerModule.productDao(gh<_i865.AppDatabase>()),
+    );
+    gh.lazySingleton<_i555.UserDao>(
+      () => registerModule.userDao(gh<_i865.AppDatabase>()),
+    );
+    gh.lazySingleton<_i968.PaymentDao>(
+      () => registerModule.paymentDao(gh<_i865.AppDatabase>()),
+    );
+    gh.lazySingleton<_i976.ThemeDao>(
+      () => registerModule.themeDao(gh<_i865.AppDatabase>()),
+    );
+    gh.lazySingleton<_i123.LanguageDao>(
+      () => registerModule.languageDao(gh<_i865.AppDatabase>()),
+    );
+    gh.lazySingleton<_i485.AuthLocalDataSource>(
+      () => _i485.AuthLocalDataSource(gh<_i555.UserDao>()),
+    );
+    gh.lazySingleton<_i85.ProductRepository>(
+      () => _i675.ProductRepositoryImpl(gh<_i887.ProductDao>()),
+    );
+    gh.lazySingleton<_i150.PaymentRepository>(
+      () => _i1070.PaymentRepositoryImpl(gh<_i968.PaymentDao>()),
+    );
+    gh.lazySingleton<_i149.LanguageLocalDataSource>(
+      () => _i149.LanguageLocalDataSource(gh<_i123.LanguageDao>()),
+    );
+    gh.lazySingleton<_i98.SocketRepository>(
+      () => _i199.SocketRepositoryImpl(gh<_i200.SocketDataSource>()),
+    );
+    gh.lazySingleton<_i645.LanguageRepository>(
+      () => _i789.LanguageRepositoryImpl(gh<_i149.LanguageLocalDataSource>()),
+    );
+    gh.lazySingleton<_i567.ProductRepository>(
+      () => _i651.ProductRepositoryImpl(gh<_i887.ProductDao>()),
+    );
+    gh.lazySingleton<_i774.ChatRepository>(
+      () => _i769.ChatRepositoryImpl(gh<_i200.SocketDataSource>()),
+    );
+    gh.lazySingleton<_i222.ThemeLocalDataSource>(
+      () => _i222.ThemeLocalDataSource(gh<_i976.ThemeDao>()),
+    );
+    gh.factory<_i856.GetClientsUseCase>(
+      () => _i856.GetClientsUseCase(gh<_i98.SocketRepository>()),
+    );
+    gh.lazySingleton<_i787.AuthRepository>(
+      () => _i153.AuthRepositoryImpl(gh<_i485.AuthLocalDataSource>()),
+    );
+    gh.factory<_i1021.ExportToExcelUseCase>(
+      () => _i1021.ExportToExcelUseCase(gh<_i36.ExportRepository>()),
+    );
+    gh.factory<_i566.ExportToPDFUseCase>(
+      () => _i566.ExportToPDFUseCase(gh<_i36.ExportRepository>()),
+    );
+    gh.factory<_i689.ExportBloc>(
+      () => _i689.ExportBloc(
+        gh<_i566.ExportToPDFUseCase>(),
+        gh<_i1021.ExportToExcelUseCase>(),
+      ),
+    );
+    gh.factory<_i822.GetAllPaymentsUseCase>(
+      () => _i822.GetAllPaymentsUseCase(gh<_i150.PaymentRepository>()),
+    );
+    gh.factory<_i159.GetPaymentsByUserIdAndNickname>(
+      () => _i159.GetPaymentsByUserIdAndNickname(gh<_i150.PaymentRepository>()),
+    );
+    gh.factory<_i202.SavePayment>(
+      () => _i202.SavePayment(gh<_i150.PaymentRepository>()),
+    );
+    gh.factory<_i816.AddUserUseCase>(
+      () => _i816.AddUserUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.factory<_i48.LogoutUseCase>(
+      () => _i48.LogoutUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.factory<_i217.PaymentBloc>(
+      () => _i217.PaymentBloc(
+        savePayment: gh<_i202.SavePayment>(),
+        getPaymentsByUserIdAndNickname:
+            gh<_i159.GetPaymentsByUserIdAndNickname>(),
+        getAllPaymentsUseCase: gh<_i822.GetAllPaymentsUseCase>(),
+      ),
+    );
+    gh.factory<_i188.LoginUseCase>(
+      () => _i188.LoginUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.factory<_i387.UpdatePasswordUseCase>(
+      () => _i387.UpdatePasswordUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.lazySingleton<_i85.VersionRepository>(
+      () => _i171.VersionRepositoryImpl(
+        gh<_i863.VersionRemoteDataSource>(),
+        gh<_i22.UpdateService>(),
+      ),
+    );
+    gh.factory<_i1056.UpdateProductUseCase>(
+      () => _i1056.UpdateProductUseCase(gh<_i567.ProductRepository>()),
+    );
+    gh.lazySingleton<_i1012.ThemeRepository>(
+      () => _i107.ThemeRepositoryImpl(gh<_i222.ThemeLocalDataSource>()),
+    );
+    gh.factory<_i954.AuthBloc>(
+      () => _i954.AuthBloc(
+        loginUseCase: gh<_i188.LoginUseCase>(),
+        updatePasswordUseCase: gh<_i387.UpdatePasswordUseCase>(),
+        logoutUseCase: gh<_i48.LogoutUseCase>(),
+        addUserUseCase: gh<_i816.AddUserUseCase>(),
+      ),
+    );
+    gh.factory<_i830.GetProductBySerialUseCase>(
+      () => _i830.GetProductBySerialUseCase(gh<_i85.ProductRepository>()),
+    );
+    gh.factory<_i642.GetProductsUseCase>(
+      () => _i642.GetProductsUseCase(gh<_i85.ProductRepository>()),
+    );
+    gh.factory<_i161.AddProduct>(
+      () => _i161.AddProductUsecase(gh<_i567.ProductRepository>()),
+    );
+    gh.factory<_i473.GetThemeUseCase>(
+      () => _i473.GetThemeUseCase(gh<_i1012.ThemeRepository>()),
+    );
+    gh.factory<_i374.SaveThemeUseCase>(
+      () => _i374.SaveThemeUseCase(gh<_i1012.ThemeRepository>()),
+    );
+    gh.factory<_i701.CheckForUpdate>(
+      () => _i701.CheckForUpdate(gh<_i85.VersionRepository>()),
+    );
+    gh.factory<_i418.DownloadAndInstallUpdate>(
+      () => _i418.DownloadAndInstallUpdate(gh<_i85.VersionRepository>()),
+    );
+    gh.factory<_i924.GetLanguageUseCase>(
+      () => _i924.GetLanguageUseCase(gh<_i645.LanguageRepository>()),
+    );
+    gh.factory<_i383.SaveLanguageUseCase>(
+      () => _i383.SaveLanguageUseCase(gh<_i645.LanguageRepository>()),
+    );
+    gh.factory<_i391.AutoConnectToServerUseCase>(
+      () => _i391.AutoConnectToServerUseCase(gh<_i774.ChatRepository>()),
+    );
+    gh.factory<_i362.ConnectToServerUseCase>(
+      () => _i362.ConnectToServerUseCase(gh<_i774.ChatRepository>()),
+    );
+    gh.factory<_i3.DisconnectUseCase>(
+      () => _i3.DisconnectUseCase(gh<_i774.ChatRepository>()),
+    );
+    gh.factory<_i495.GetMessagesUseCase>(
+      () => _i495.GetMessagesUseCase(gh<_i774.ChatRepository>()),
+    );
+    gh.factory<_i587.HandleClientDisconnectionUseCase>(
+      () => _i587.HandleClientDisconnectionUseCase(gh<_i774.ChatRepository>()),
+    );
+    gh.factory<_i603.SendMessageUseCase>(
+      () => _i603.SendMessageUseCase(gh<_i774.ChatRepository>()),
+    );
+    gh.factory<_i36.StartServerUseCase>(
+      () => _i36.StartServerUseCase(gh<_i774.ChatRepository>()),
+    );
+    gh.factory<_i169.UpdateBloc>(
+      () => _i169.UpdateBloc(
+        checkForUpdate: gh<_i701.CheckForUpdate>(),
+        downloadAndInstallUpdate: gh<_i418.DownloadAndInstallUpdate>(),
+      ),
+    );
+    gh.factory<_i1026.ThemeBloc>(
+      () => _i1026.ThemeBloc(
+        getThemeUseCase: gh<_i473.GetThemeUseCase>(),
+        saveThemeUseCase: gh<_i374.SaveThemeUseCase>(),
+      ),
+    );
+    gh.factory<_i640.ProductBloc>(
+      () => _i640.ProductBloc(
+        addProduct: gh<_i161.AddProduct>(),
+        updateProduct: gh<_i1056.UpdateProductUseCase>(),
+        getProductsUseCase: gh<_i642.GetProductsUseCase>(),
+      ),
+    );
+    gh.factory<_i295.GetProductBloc>(
+      () => _i295.GetProductBloc(
+        getProductsUseCase: gh<_i642.GetProductsUseCase>(),
+        getProductBySerialUseCase: gh<_i830.GetProductBySerialUseCase>(),
+      ),
+    );
+    gh.factory<_i673.ChatBloc>(
+      () => _i673.ChatBloc(
+        sendMessageUseCase: gh<_i603.SendMessageUseCase>(),
+        startServerUseCase: gh<_i36.StartServerUseCase>(),
+        connectToServerUseCase: gh<_i362.ConnectToServerUseCase>(),
+        autoConnectToServerUseCase: gh<_i391.AutoConnectToServerUseCase>(),
+        disconnectUseCase: gh<_i3.DisconnectUseCase>(),
+        getMessagesUseCase: gh<_i495.GetMessagesUseCase>(),
+        getClientsUseCase: gh<_i856.GetClientsUseCase>(),
+        handleClientDisconnectionUseCase:
+            gh<_i587.HandleClientDisconnectionUseCase>(),
+      ),
+    );
+    gh.factory<_i32.LanguageBloc>(
+      () => _i32.LanguageBloc(
+        getLanguageUseCase: gh<_i924.GetLanguageUseCase>(),
+        saveLanguageUseCase: gh<_i383.SaveLanguageUseCase>(),
+      ),
+    );
+    return this;
+  }
+}
+
+class _$RegisterModule extends _i291.RegisterModule {}

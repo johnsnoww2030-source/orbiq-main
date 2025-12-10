@@ -4,11 +4,13 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'package:injectable/injectable.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 
 import '../models/message_model.dart';
 import '../models/client_info_model.dart';
 
+@lazySingleton
 class SocketDataSource {
   static const int port = 4567;
   static const int maxRetryAttempts = 5;
@@ -38,10 +40,7 @@ class SocketDataSource {
       return;
     }
     try {
-      server = await ServerSocket.bind(
-        InternetAddress.anyIPv4,
-        port,
-      );
+      server = await ServerSocket.bind(InternetAddress.anyIPv4, port);
 
       server!.listen((Socket socket) {
         final clientInfo = ClientInfoModel(
@@ -97,7 +96,11 @@ class SocketDataSource {
     int retryAttempts = 0;
     while (retryAttempts < maxRetryAttempts) {
       try {
-        client = await Socket.connect(serverIP, port, timeout: const Duration(seconds: 5));
+        client = await Socket.connect(
+          serverIP,
+          port,
+          timeout: const Duration(seconds: 5),
+        );
         client!.listen(
           (List<int> data) {
             final messageText = utf8Decoder.convert(data);
@@ -119,7 +122,9 @@ class SocketDataSource {
         return;
       } catch (e) {
         retryAttempts++;
-        print('تلاش مجدد ($retryAttempts/$maxRetryAttempts) برای اتصال به سرور: $serverIP');
+        print(
+          'تلاش مجدد ($retryAttempts/$maxRetryAttempts) برای اتصال به سرور: $serverIP',
+        );
         await Future.delayed(const Duration(seconds: 2));
       }
     }
@@ -141,11 +146,13 @@ class SocketDataSource {
       final List<Future<void>> connectFutures = [];
       for (int i = 1; i < 255; i++) {
         final host = '$subnet.$i';
-        connectFutures.add(_attemptConnection(host).then((success) {
-          if (success && !connected) {
-            connected = true;
-          }
-        }));
+        connectFutures.add(
+          _attemptConnection(host).then((success) {
+            if (success && !connected) {
+              connected = true;
+            }
+          }),
+        );
         if (connected) break;
       }
 
@@ -166,8 +173,18 @@ class SocketDataSource {
     int retryAttempts = 0;
     while (retryAttempts < maxRetryAttempts) {
       try {
-        client = await Socket.connect(host, port, timeout: const Duration(seconds: 2));
-        _clientController?.add(ClientInfoModel(address: client!.remoteAddress.address, connectedAt: DateTime.now(), socket: client!));
+        client = await Socket.connect(
+          host,
+          port,
+          timeout: const Duration(seconds: 2),
+        );
+        _clientController?.add(
+          ClientInfoModel(
+            address: client!.remoteAddress.address,
+            connectedAt: DateTime.now(),
+            socket: client!,
+          ),
+        );
         client!.listen(
           (List<int> data) {
             final messageText = utf8Decoder.convert(data);
@@ -189,7 +206,9 @@ class SocketDataSource {
         return true;
       } catch (e) {
         retryAttempts++;
-        print('تلاش مجدد ($retryAttempts/$maxRetryAttempts) برای اتصال به آدرس: $host');
+        print(
+          'تلاش مجدد ($retryAttempts/$maxRetryAttempts) برای اتصال به آدرس: $host',
+        );
         await Future.delayed(const Duration(seconds: 1));
       }
     }

@@ -48,6 +48,7 @@
 // }
 
 import 'dart:math';
+import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/shared/product/data/data_source/local/product_dao.dart';
 import 'package:orbiq/core/shared/product/data/models/product_model.dart';
 import 'package:orbiq/features/get_product/domain/repository/product_repository.dart';
@@ -65,11 +66,12 @@ class PaginatedProducts {
     required this.totalProducts,
     required this.currentPage,
     required int limit,
-  })  : totalPages = (totalProducts / limit).ceil(),
-        hasNextPage = currentPage * limit < totalProducts,
-        hasPreviousPage = currentPage > 1;
+  }) : totalPages = (totalProducts / limit).ceil(),
+       hasNextPage = currentPage * limit < totalProducts,
+       hasPreviousPage = currentPage > 1;
 }
 
+@LazySingleton(as: ProductRepository)
 class ProductRepositoryImpl extends ProductRepository {
   final ProductDao productDao;
 

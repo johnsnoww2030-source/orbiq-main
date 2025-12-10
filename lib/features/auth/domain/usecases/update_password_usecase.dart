@@ -1,7 +1,9 @@
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
 import '../failures/failure.dart';
 import '../repositories/auth_repository.dart';
 
+@injectable
 class UpdatePasswordUseCase {
   final AuthRepository repository;
 

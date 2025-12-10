@@ -1,8 +1,10 @@
+import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/shared/product/data/data_source/local/product_dao.dart';
 import 'package:orbiq/core/shared/product/data/models/product_model.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 import 'package:orbiq/features/add_product/domain/repository/product_repository.dart';
 
+@LazySingleton(as: ProductRepository)
 class ProductRepositoryImpl implements ProductRepository {
   final ProductDao _productDao;
 

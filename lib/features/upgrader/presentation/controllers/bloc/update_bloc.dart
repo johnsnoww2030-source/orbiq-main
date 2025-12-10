@@ -1,11 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:orbiq/features/upgrader/domain/usecases/check_for_update.dart';
 import 'package:orbiq/features/upgrader/domain/usecases/download_and_install_update.dart';
-
 
 import 'update_event.dart';
 import 'update_state.dart';
 
+@injectable
 class UpdateBloc extends Bloc<UpdateEvent, UpdateState> {
   final CheckForUpdate checkForUpdate;
   final DownloadAndInstallUpdate downloadAndInstallUpdate;
@@ -41,7 +42,9 @@ class UpdateBloc extends Bloc<UpdateEvent, UpdateState> {
   ) async {
     emit(UpdateDownloading());
     try {
-      await downloadAndInstallUpdate(event.versionInfo.getUrlForCurrentPlatform());
+      await downloadAndInstallUpdate(
+        event.versionInfo.getUrlForCurrentPlatform(),
+      );
       emit(UpdateInstalled());
     } catch (e) {
       emit(UpdateError(e.toString()));

@@ -33,7 +33,6 @@ List<BlocProvider> productBlocProviders(AppDatabase database) {
         getProductBySerialUseCase: GetProductBySerialUseCase(
           getProductRepository,
         ),
-        productRepository: getProductRepository,
       ),
     ),
   ];

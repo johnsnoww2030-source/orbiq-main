@@ -1,10 +1,12 @@
 // ignore_for_file: avoid_print
 
+import 'package:injectable/injectable.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:orbiq/core/utils/version_utils.dart';
 import 'package:orbiq/features/upgrader/data/model/version_info_model.dart';
 import 'package:orbiq/features/upgrader/domain/repositories/version_repository.dart';
 
+@injectable
 class CheckForUpdate {
   final VersionRepository repository;
 

@@ -1,7 +1,9 @@
+import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/shared/localization/data/data_sources/local/language_dao.dart';
 import 'package:orbiq/core/shared/localization/data/models/language_model.dart';
 import 'package:orbiq/core/shared/localization/domain/entities/language_entity.dart';
 
+@lazySingleton
 class LanguageLocalDataSource {
   final LanguageDao languageDao;
 

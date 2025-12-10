@@ -65,6 +65,7 @@
 //
 
 import 'package:flutter/services.dart';
+import 'package:injectable/injectable.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:excel/excel.dart';
@@ -72,6 +73,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:orbiq/features/exports/domain/repositories/export_repository.dart';
 
+@LazySingleton(as: ExportRepository)
 class ExportRepositoryImpl implements ExportRepository {
   ExportRepositoryImpl();
 
@@ -79,8 +81,9 @@ class ExportRepositoryImpl implements ExportRepository {
   Future<void> exportToPDF(List<List<dynamic>> data, String fileName) async {
     final pdf = pw.Document();
 
-    final fontData =
-        await rootBundle.load('lib/core/assets/fonts/IRANYekanMedium.ttf');
+    final fontData = await rootBundle.load(
+      'lib/core/assets/fonts/IRANYekanMedium.ttf',
+    );
     final font = pw.Font.ttf(fontData);
 
     pdf.addPage(
