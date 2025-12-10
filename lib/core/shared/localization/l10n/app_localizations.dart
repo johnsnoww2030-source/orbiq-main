@@ -1611,6 +1611,354 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Stocktaking'**
   String get stocktaking;
+
+  /// No description provided for @general.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get general;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// No description provided for @generalSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'General Settings'**
+  String get generalSettings;
+
+  /// No description provided for @languageAndCurrencySettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Language and currency settings'**
+  String get languageAndCurrencySettings;
+
+  /// No description provided for @selectAppLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select app language'**
+  String get selectAppLanguage;
+
+  /// No description provided for @change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get change;
+
+  /// No description provided for @currencyUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency Unit'**
+  String get currencyUnit;
+
+  /// No description provided for @manageCurrencyAndRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage currency and exchange rate'**
+  String get manageCurrencyAndRate;
+
+  /// No description provided for @profileInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Information'**
+  String get profileInfo;
+
+  /// No description provided for @manageProfileAndImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your personal information and profile picture'**
+  String get manageProfileAndImage;
+
+  /// No description provided for @changeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Image'**
+  String get changeImage;
+
+  /// No description provided for @imageFormatHint.
+  ///
+  /// In en, this message translates to:
+  /// **'JPG, PNG or GIF. Max 2MB'**
+  String get imageFormatHint;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @role.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get role;
+
+  /// No description provided for @securitySettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get securitySettings;
+
+  /// No description provided for @managePasswordAndSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your password and security settings'**
+  String get managePasswordAndSecurity;
+
+  /// No description provided for @lastChange30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last change: 30 days ago'**
+  String get lastChange30Days;
+
+  /// No description provided for @twoFactorAuth.
+  ///
+  /// In en, this message translates to:
+  /// **'Two-factor Authentication'**
+  String get twoFactorAuth;
+
+  /// No description provided for @moreSecurityForAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'More security for your account'**
+  String get moreSecurityForAccount;
+
+  /// No description provided for @enable.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get enable;
+
+  /// No description provided for @manageUsersAndRoles.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage operators and access roles'**
+  String get manageUsersAndRoles;
+
+  /// No description provided for @user.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get user;
+
+  /// No description provided for @pressButtonAboveForUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Press the button above to manage users'**
+  String get pressButtonAboveForUsers;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Password'**
+  String get currentPassword;
+
+  /// No description provided for @enterCurrentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your current password'**
+  String get enterCurrentPassword;
+
+  /// No description provided for @repeatNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat New Password'**
+  String get repeatNewPassword;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordMinLength;
+
+  /// No description provided for @passwordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeated password does not match'**
+  String get passwordMismatch;
+
+  /// No description provided for @currencySettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency Settings'**
+  String get currencySettings;
+
+  /// No description provided for @currencyPriceAutoUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'By changing the currency, prices will update automatically'**
+  String get currencyPriceAutoUpdate;
+
+  /// No description provided for @conversionRateToToman.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversion Rate (relative to Toman)'**
+  String get conversionRateToToman;
+
+  /// No description provided for @selectCurrencyRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the currency and enter its Toman equivalent'**
+  String get selectCurrencyRate;
+
+  /// No description provided for @amountInToman.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount in Toman'**
+  String get amountInToman;
+
+  /// No description provided for @saveRates.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Rates'**
+  String get saveRates;
+
+  /// No description provided for @ratesSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Rates saved'**
+  String get ratesSaved;
+
+  /// No description provided for @yourName.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Name'**
+  String get yourName;
+
+  /// No description provided for @fillAllFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all fields'**
+  String get fillAllFields;
+
+  /// No description provided for @errorPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Error:'**
+  String get errorPrefix;
+
+  /// No description provided for @invoiceReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice Report'**
+  String get invoiceReport;
+
+  /// No description provided for @searchInInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Search in invoices...'**
+  String get searchInInvoices;
+
+  /// No description provided for @invoiceNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice'**
+  String get invoiceNumber;
+
+  /// No description provided for @userLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'User:'**
+  String get userLabel;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date:'**
+  String get dateLabel;
+
+  /// No description provided for @amountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount:'**
+  String get amountLabel;
+
+  /// No description provided for @invoiceDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice Details'**
+  String get invoiceDetails;
+
+  /// No description provided for @totalAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Amount:'**
+  String get totalAmount;
+
+  /// No description provided for @salesDateTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales Date and Time:'**
+  String get salesDateTime;
+
+  /// No description provided for @productsList.
+  ///
+  /// In en, this message translates to:
+  /// **'Products List:'**
+  String get productsList;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @serialNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Serial Number:'**
+  String get serialNumberLabel;
+
+  /// No description provided for @noInvoiceFoundWithSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'No invoice found matching this search.'**
+  String get noInvoiceFoundWithSearch;
+
+  /// No description provided for @noInvoiceFoundOnPage.
+  ///
+  /// In en, this message translates to:
+  /// **'No invoice found on this page.'**
+  String get noInvoiceFoundOnPage;
+
+  /// No description provided for @errorLoadingInvoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading invoices:'**
+  String get errorLoadingInvoices;
+
+  /// No description provided for @loadReportToView.
+  ///
+  /// In en, this message translates to:
+  /// **'Load or search to view the report.'**
+  String get loadReportToView;
+
+  /// No description provided for @previousPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get previousPage;
+
+  /// No description provided for @nextPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get nextPage;
+
+  /// No description provided for @pageOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {current} of {total}'**
+  String pageOf(Object current, Object total);
 }
 
 class _AppLocalizationsDelegate

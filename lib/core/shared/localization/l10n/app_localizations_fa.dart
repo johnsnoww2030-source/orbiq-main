@@ -765,4 +765,186 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get stocktaking => 'انبارگردانی';
+
+  @override
+  String get general => 'عمومی';
+
+  @override
+  String get profile => 'پروفایل';
+
+  @override
+  String get security => 'امنیت';
+
+  @override
+  String get generalSettings => 'تنظیمات عمومی';
+
+  @override
+  String get languageAndCurrencySettings => 'تنظیمات زبان و واحد پول برنامه';
+
+  @override
+  String get selectAppLanguage => 'زبان برنامه را انتخاب کنید';
+
+  @override
+  String get change => 'تغییر';
+
+  @override
+  String get currencyUnit => 'واحد پول';
+
+  @override
+  String get manageCurrencyAndRate => 'واحد پول و نرخ تبدیل را مدیریت کنید';
+
+  @override
+  String get profileInfo => 'اطلاعات پروفایل';
+
+  @override
+  String get manageProfileAndImage =>
+      'اطلاعات شخصی و تصویر پروفایل خود را مدیریت کنید';
+
+  @override
+  String get changeImage => 'تغییر تصویر';
+
+  @override
+  String get imageFormatHint => 'JPG, PNG یا GIF. حداکثر 2MB';
+
+  @override
+  String get name => 'نام';
+
+  @override
+  String get role => 'نقش';
+
+  @override
+  String get securitySettings => 'امنیت';
+
+  @override
+  String get managePasswordAndSecurity =>
+      'رمز عبور و تنظیمات امنیتی خود را مدیریت کنید';
+
+  @override
+  String get lastChange30Days => 'آخرین تغییر: 30 روز پیش';
+
+  @override
+  String get twoFactorAuth => 'احراز هویت دو مرحله‌ای';
+
+  @override
+  String get moreSecurityForAccount => 'امنیت بیشتر برای حساب شما';
+
+  @override
+  String get enable => 'فعال‌سازی';
+
+  @override
+  String get manageUsersAndRoles => 'اپراتورها و نقش‌های دسترسی را مدیریت کنید';
+
+  @override
+  String get user => 'کاربر';
+
+  @override
+  String get pressButtonAboveForUsers =>
+      'برای مدیریت کاربران دکمه بالا را بزنید';
+
+  @override
+  String get currentPassword => 'رمز عبور فعلی';
+
+  @override
+  String get enterCurrentPassword => 'لطفاً رمز عبور فعلی را وارد کنید';
+
+  @override
+  String get repeatNewPassword => 'تکرار رمز عبور جدید';
+
+  @override
+  String get passwordMinLength => 'رمز عبور باید حداقل 6 کاراکتر باشد';
+
+  @override
+  String get passwordMismatch => 'رمز عبور تکرار شده مطابقت ندارد';
+
+  @override
+  String get currencySettings => 'تنظیمات واحد پول';
+
+  @override
+  String get currencyPriceAutoUpdate =>
+      'با تغییر واحد پولی قیمت ها نیز بصورت خودکار بروز خواهد شد';
+
+  @override
+  String get conversionRateToToman => 'نرخ تبدیل (نسبت به تومان)';
+
+  @override
+  String get selectCurrencyRate =>
+      'نرخ ارز مورد نظر را انتخاب و مقدار معادل تومانی آن را وارد کنید.';
+
+  @override
+  String get amountInToman => 'مقدار به تومان';
+
+  @override
+  String get saveRates => 'ذخیره نرخ‌ها';
+
+  @override
+  String get ratesSaved => 'نرخ‌ها ذخیره شدند';
+
+  @override
+  String get yourName => 'نام خودتان';
+
+  @override
+  String get fillAllFields => 'لطفا تمامی فیلدها را پر کنید';
+
+  @override
+  String get errorPrefix => 'خطا:';
+
+  @override
+  String get invoiceReport => 'گزارش فاکتورها';
+
+  @override
+  String get searchInInvoices => 'جستجو در فاکتورها...';
+
+  @override
+  String get invoiceNumber => 'فاکتور';
+
+  @override
+  String get userLabel => 'کاربر:';
+
+  @override
+  String get dateLabel => 'تاریخ:';
+
+  @override
+  String get amountLabel => 'مبلغ:';
+
+  @override
+  String get invoiceDetails => 'جزئیات فاکتور';
+
+  @override
+  String get totalAmount => 'مبلغ کل:';
+
+  @override
+  String get salesDateTime => 'تاریخ و ساعت فروش:';
+
+  @override
+  String get productsList => 'لیست محصولات:';
+
+  @override
+  String get close => 'بستن';
+
+  @override
+  String get serialNumberLabel => 'شماره سریال:';
+
+  @override
+  String get noInvoiceFoundWithSearch => 'موردی با این جستجو یافت نشد.';
+
+  @override
+  String get noInvoiceFoundOnPage => 'هیچ فاکتوری در این صفحه یافت نشد.';
+
+  @override
+  String get errorLoadingInvoices => 'خطا در بارگذاری فاکتورها:';
+
+  @override
+  String get loadReportToView =>
+      'برای دیدن گزارش، بارگذاری کنید یا جستجو نمایید.';
+
+  @override
+  String get previousPage => 'قبلی';
+
+  @override
+  String get nextPage => 'بعدی';
+
+  @override
+  String pageOf(Object current, Object total) {
+    return 'صفحه $current از $total';
+  }
 }

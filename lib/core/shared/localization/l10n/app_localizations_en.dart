@@ -765,4 +765,186 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stocktaking => 'Stocktaking';
+
+  @override
+  String get general => 'General';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get generalSettings => 'General Settings';
+
+  @override
+  String get languageAndCurrencySettings => 'Language and currency settings';
+
+  @override
+  String get selectAppLanguage => 'Select app language';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String get currencyUnit => 'Currency Unit';
+
+  @override
+  String get manageCurrencyAndRate => 'Manage currency and exchange rate';
+
+  @override
+  String get profileInfo => 'Profile Information';
+
+  @override
+  String get manageProfileAndImage =>
+      'Manage your personal information and profile picture';
+
+  @override
+  String get changeImage => 'Change Image';
+
+  @override
+  String get imageFormatHint => 'JPG, PNG or GIF. Max 2MB';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get role => 'Role';
+
+  @override
+  String get securitySettings => 'Security';
+
+  @override
+  String get managePasswordAndSecurity =>
+      'Manage your password and security settings';
+
+  @override
+  String get lastChange30Days => 'Last change: 30 days ago';
+
+  @override
+  String get twoFactorAuth => 'Two-factor Authentication';
+
+  @override
+  String get moreSecurityForAccount => 'More security for your account';
+
+  @override
+  String get enable => 'Enable';
+
+  @override
+  String get manageUsersAndRoles => 'Manage operators and access roles';
+
+  @override
+  String get user => 'User';
+
+  @override
+  String get pressButtonAboveForUsers =>
+      'Press the button above to manage users';
+
+  @override
+  String get currentPassword => 'Current Password';
+
+  @override
+  String get enterCurrentPassword => 'Please enter your current password';
+
+  @override
+  String get repeatNewPassword => 'Repeat New Password';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 6 characters';
+
+  @override
+  String get passwordMismatch => 'Repeated password does not match';
+
+  @override
+  String get currencySettings => 'Currency Settings';
+
+  @override
+  String get currencyPriceAutoUpdate =>
+      'By changing the currency, prices will update automatically';
+
+  @override
+  String get conversionRateToToman => 'Conversion Rate (relative to Toman)';
+
+  @override
+  String get selectCurrencyRate =>
+      'Select the currency and enter its Toman equivalent';
+
+  @override
+  String get amountInToman => 'Amount in Toman';
+
+  @override
+  String get saveRates => 'Save Rates';
+
+  @override
+  String get ratesSaved => 'Rates saved';
+
+  @override
+  String get yourName => 'Your Name';
+
+  @override
+  String get fillAllFields => 'Please fill all fields';
+
+  @override
+  String get errorPrefix => 'Error:';
+
+  @override
+  String get invoiceReport => 'Invoice Report';
+
+  @override
+  String get searchInInvoices => 'Search in invoices...';
+
+  @override
+  String get invoiceNumber => 'Invoice';
+
+  @override
+  String get userLabel => 'User:';
+
+  @override
+  String get dateLabel => 'Date:';
+
+  @override
+  String get amountLabel => 'Amount:';
+
+  @override
+  String get invoiceDetails => 'Invoice Details';
+
+  @override
+  String get totalAmount => 'Total Amount:';
+
+  @override
+  String get salesDateTime => 'Sales Date and Time:';
+
+  @override
+  String get productsList => 'Products List:';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get serialNumberLabel => 'Serial Number:';
+
+  @override
+  String get noInvoiceFoundWithSearch =>
+      'No invoice found matching this search.';
+
+  @override
+  String get noInvoiceFoundOnPage => 'No invoice found on this page.';
+
+  @override
+  String get errorLoadingInvoices => 'Error loading invoices:';
+
+  @override
+  String get loadReportToView => 'Load or search to view the report.';
+
+  @override
+  String get previousPage => 'Previous';
+
+  @override
+  String get nextPage => 'Next';
+
+  @override
+  String pageOf(Object current, Object total) {
+    return 'Page $current of $total';
+  }
 }

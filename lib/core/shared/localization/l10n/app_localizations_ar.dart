@@ -764,4 +764,184 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get stocktaking => 'جرد المخزون';
+
+  @override
+  String get general => 'عام';
+
+  @override
+  String get profile => 'الملف الشخصي';
+
+  @override
+  String get security => 'الأمان';
+
+  @override
+  String get generalSettings => 'الإعدادات العامة';
+
+  @override
+  String get languageAndCurrencySettings => 'إعدادات اللغة والعملة';
+
+  @override
+  String get selectAppLanguage => 'اختر لغة التطبيق';
+
+  @override
+  String get change => 'تغيير';
+
+  @override
+  String get currencyUnit => 'وحدة العملة';
+
+  @override
+  String get manageCurrencyAndRate => 'إدارة العملة وسعر الصرف';
+
+  @override
+  String get profileInfo => 'معلومات الملف الشخصي';
+
+  @override
+  String get manageProfileAndImage =>
+      'إدارة معلوماتك الشخصية وصورة الملف الشخصي';
+
+  @override
+  String get changeImage => 'تغيير الصورة';
+
+  @override
+  String get imageFormatHint => 'JPG أو PNG أو GIF. بحد أقصى 2 ميجابايت';
+
+  @override
+  String get name => 'الاسم';
+
+  @override
+  String get role => 'الدور';
+
+  @override
+  String get securitySettings => 'الأمان';
+
+  @override
+  String get managePasswordAndSecurity => 'إدارة كلمة المرور وإعدادات الأمان';
+
+  @override
+  String get lastChange30Days => 'آخر تغيير: قبل 30 يوماً';
+
+  @override
+  String get twoFactorAuth => 'المصادقة الثنائية';
+
+  @override
+  String get moreSecurityForAccount => 'مزيد من الأمان لحسابك';
+
+  @override
+  String get enable => 'تفعيل';
+
+  @override
+  String get manageUsersAndRoles => 'إدارة المشغلين وأدوار الوصول';
+
+  @override
+  String get user => 'المستخدم';
+
+  @override
+  String get pressButtonAboveForUsers =>
+      'اضغط على الزر أعلاه لإدارة المستخدمين';
+
+  @override
+  String get currentPassword => 'كلمة المرور الحالية';
+
+  @override
+  String get enterCurrentPassword => 'يرجى إدخال كلمة المرور الحالية';
+
+  @override
+  String get repeatNewPassword => 'تكرار كلمة المرور الجديدة';
+
+  @override
+  String get passwordMinLength => 'يجب أن تكون كلمة المرور 6 أحرف على الأقل';
+
+  @override
+  String get passwordMismatch => 'كلمة المرور المكررة غير متطابقة';
+
+  @override
+  String get currencySettings => 'إعدادات العملة';
+
+  @override
+  String get currencyPriceAutoUpdate =>
+      'عند تغيير العملة، سيتم تحديث الأسعار تلقائياً';
+
+  @override
+  String get conversionRateToToman => 'سعر الصرف (نسبة إلى التومان)';
+
+  @override
+  String get selectCurrencyRate => 'اختر العملة وأدخل قيمتها المعادلة بالتومان';
+
+  @override
+  String get amountInToman => 'المبلغ بالتومان';
+
+  @override
+  String get saveRates => 'حفظ الأسعار';
+
+  @override
+  String get ratesSaved => 'تم حفظ الأسعار';
+
+  @override
+  String get yourName => 'اسمك';
+
+  @override
+  String get fillAllFields => 'يرجى ملء جميع الحقول';
+
+  @override
+  String get errorPrefix => 'خطأ:';
+
+  @override
+  String get invoiceReport => 'تقرير الفواتير';
+
+  @override
+  String get searchInInvoices => 'البحث في الفواتير...';
+
+  @override
+  String get invoiceNumber => 'فاتورة';
+
+  @override
+  String get userLabel => 'المستخدم:';
+
+  @override
+  String get dateLabel => 'التاريخ:';
+
+  @override
+  String get amountLabel => 'المبلغ:';
+
+  @override
+  String get invoiceDetails => 'تفاصيل الفاتورة';
+
+  @override
+  String get totalAmount => 'المبلغ الإجمالي:';
+
+  @override
+  String get salesDateTime => 'تاريخ ووقت البيع:';
+
+  @override
+  String get productsList => 'قائمة المنتجات:';
+
+  @override
+  String get close => 'إغلاق';
+
+  @override
+  String get serialNumberLabel => 'الرقم التسلسلي:';
+
+  @override
+  String get noInvoiceFoundWithSearch =>
+      'لم يتم العثور على فاتورة مطابقة لهذا البحث.';
+
+  @override
+  String get noInvoiceFoundOnPage => 'لم يتم العثور على فواتير في هذه الصفحة.';
+
+  @override
+  String get errorLoadingInvoices => 'خطأ في تحميل الفواتير:';
+
+  @override
+  String get loadReportToView => 'قم بالتحميل أو البحث لعرض التقرير.';
+
+  @override
+  String get previousPage => 'السابق';
+
+  @override
+  String get nextPage => 'التالي';
+
+  @override
+  String pageOf(Object current, Object total) {
+    return 'صفحة $current من $total';
+  }
 }

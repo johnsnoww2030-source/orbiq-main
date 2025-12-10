@@ -5,6 +5,7 @@ import 'package:orbiq/core/shared/currency/domain/entities/currency_code.dart';
 import 'package:orbiq/core/shared/currency/presentation/controller/currency_bloc.dart';
 import 'package:orbiq/core/shared/currency/presentation/controller/currency_event.dart';
 import 'package:orbiq/core/shared/currency/presentation/controller/currency_state.dart';
+import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 
 class CurrencySettingsPage extends StatefulWidget {
   const CurrencySettingsPage({super.key});
@@ -30,9 +31,10 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // We assume Toman is the Base currency for stored values.
     return Scaffold(
-      appBar: AppBar(title: const Text('تنظیمات واحد پول')),
+      appBar: AppBar(title: Text(l10n.currencySettings)),
       body: BlocConsumer<CurrencyBloc, CurrencyState>(
         listener: (context, state) {
           if (state is CurrencyLoaded) {
@@ -64,11 +66,11 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
             return LayoutBuilder(
               builder: (context, constraints) {
                 if (constraints.maxWidth > 1000) {
-                  return _buildDesktopLayout(context, state);
+                  return _buildDesktopLayout(context, state, l10n);
                 } else if (constraints.maxWidth > 700) {
-                  return _buildTabletLayout(context, state);
+                  return _buildTabletLayout(context, state, l10n);
                 } else {
-                  return _buildMobileLayout(context, state);
+                  return _buildMobileLayout(context, state, l10n);
                 }
               },
             );
@@ -79,23 +81,31 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
     );
   }
 
-  Widget _buildMobileLayout(BuildContext context, CurrencyLoaded state) {
+  Widget _buildMobileLayout(
+    BuildContext context,
+    CurrencyLoaded state,
+    AppLocalizations l10n,
+  ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildConversionRateSection(context, state),
+          _buildConversionRateSection(context, state, l10n),
           const SizedBox(height: 48),
-          _buildDisplayCurrencySection(context, state),
+          _buildDisplayCurrencySection(context, state, l10n),
           const SizedBox(height: 48),
-          _buildSaveButton(context, state, isFullWidth: true),
+          _buildSaveButton(context, state, l10n, isFullWidth: true),
         ],
       ),
     );
   }
 
-  Widget _buildTabletLayout(BuildContext context, CurrencyLoaded state) {
+  Widget _buildTabletLayout(
+    BuildContext context,
+    CurrencyLoaded state,
+    AppLocalizations l10n,
+  ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -103,9 +113,13 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: _buildDisplayCurrencySection(context, state)),
+              Expanded(
+                child: _buildDisplayCurrencySection(context, state, l10n),
+              ),
               const SizedBox(width: 24),
-              Expanded(child: _buildConversionRateSection(context, state)),
+              Expanded(
+                child: _buildConversionRateSection(context, state, l10n),
+              ),
             ],
           ),
           const SizedBox(height: 32),
@@ -113,7 +127,7 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
           Center(
             child: SizedBox(
               width: 300,
-              child: _buildSaveButton(context, state, isFullWidth: true),
+              child: _buildSaveButton(context, state, l10n, isFullWidth: true),
             ),
           ),
         ],
@@ -121,7 +135,11 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
     );
   }
 
-  Widget _buildDesktopLayout(BuildContext context, CurrencyLoaded state) {
+  Widget _buildDesktopLayout(
+    BuildContext context,
+    CurrencyLoaded state,
+    AppLocalizations l10n,
+  ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: IntrinsicHeight(
@@ -132,7 +150,7 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [_buildConversionRateSection(context, state)],
+                children: [_buildConversionRateSection(context, state, l10n)],
               ),
             ),
             const SizedBox(width: 24),
@@ -140,7 +158,7 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [_buildDisplayCurrencySection(context, state)],
+                children: [_buildDisplayCurrencySection(context, state, l10n)],
               ),
             ),
 
@@ -151,7 +169,12 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
                 children: [
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 400),
-                    child: _buildSaveButton(context, state, isFullWidth: true),
+                    child: _buildSaveButton(
+                      context,
+                      state,
+                      l10n,
+                      isFullWidth: true,
+                    ),
                   ),
                 ],
               ),
@@ -165,14 +188,15 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
   Widget _buildDisplayCurrencySection(
     BuildContext context,
     CurrencyLoaded state,
+    AppLocalizations l10n,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('واحد پول ', style: Theme.of(context).textTheme.titleMedium),
+        Text(l10n.currencyUnit, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         Text(
-          'با تغییر واحد پولی قیمت ها نیز بصورت خودکار بروز خواهد شد',
+          l10n.currencyPriceAutoUpdate,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontSize: 12,
@@ -213,17 +237,18 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
   Widget _buildConversionRateSection(
     BuildContext context,
     CurrencyLoaded state,
+    AppLocalizations l10n,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'نرخ تبدیل (نسبت به تومان)',
+          l10n.conversionRateToToman,
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
         Text(
-          'نرخ ارز مورد نظر را انتخاب و مقدار معادل تومانی آن را وارد کنید.',
+          l10n.selectCurrencyRate,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontSize: 12,
@@ -311,7 +336,7 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
                   ],
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: 'مقدار به تومان',
+                    hintText: l10n.amountInToman,
                     hintStyle: TextStyle(
                       color: Theme.of(
                         context,
@@ -342,7 +367,8 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
 
   Widget _buildSaveButton(
     BuildContext context,
-    CurrencyLoaded state, {
+    CurrencyLoaded state,
+    AppLocalizations l10n, {
     bool isFullWidth = false,
   }) {
     return SizedBox(
@@ -371,9 +397,9 @@ class _CurrencySettingsPageState extends State<CurrencySettingsPage> {
           context.read<CurrencyBloc>().add(UpdateCurrencyRates(newRates));
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(const SnackBar(content: Text('نرخ‌ها ذخیره شدند')));
+          ).showSnackBar(SnackBar(content: Text(l10n.ratesSaved)));
         },
-        child: const Text('ذخیره نرخ‌ها'),
+        child: Text(l10n.saveRates),
       ),
     );
   }

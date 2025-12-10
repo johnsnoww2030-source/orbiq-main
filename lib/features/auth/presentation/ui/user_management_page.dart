@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_bloc.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_event.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_state.dart';
+import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});
@@ -21,9 +22,10 @@ class UserManagementPageState extends State<UserManagementPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('مدیریت کاربران'),
+        title: Text(l10n.userManagement),
         backgroundColor: Colors.blue,
         elevation: 0,
       ),
@@ -32,14 +34,14 @@ class UserManagementPageState extends State<UserManagementPage> {
           if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('خطا: ${state.message}'),
+                content: Text('${l10n.errorPrefix} ${state.message}'),
                 backgroundColor: Colors.red,
               ),
             );
           } else if (state is AuthSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('کاربر با موفقیت اضافه شد'),
+              SnackBar(
+                content: Text(l10n.userAdded),
                 backgroundColor: Colors.green,
               ),
             );
@@ -86,29 +88,28 @@ class UserManagementPageState extends State<UserManagementPage> {
                           ),
                         _buildTextField(
                           controller: _nicknameController,
-                          labelText: 'نام خودتان',
+                          labelText: l10n.yourName,
                           icon: Icons.person,
                         ),
                         const SizedBox(height: 16),
                         _buildTextField(
                           controller: _usernameController,
-                          labelText: 'نام کاربری',
+                          labelText: l10n.username,
                           icon: Icons.account_circle,
                         ),
                         const SizedBox(height: 16),
                         _buildTextField(
                           controller: _passwordController,
-                          labelText: 'رمز عبور',
+                          labelText: l10n.password,
                           icon: Icons.lock,
                           obscureText: true,
                         ),
-                        const SizedBox(height: 24),
                         DropdownButtonFormField<String>(
                           initialValue: _role,
-                          decoration: const InputDecoration(
-                            labelText: 'نقش',
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.work),
+                          decoration: InputDecoration(
+                            labelText: l10n.role,
+                            border: const OutlineInputBorder(),
+                            prefixIcon: const Icon(Icons.work),
                           ),
                           items: <String>['manager', 'seller'].map((
                             String value,
@@ -138,9 +139,9 @@ class UserManagementPageState extends State<UserManagementPage> {
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                          child: const Text(
-                            'افزودن کاربر',
-                            style: TextStyle(fontSize: 18),
+                          child: Text(
+                            l10n.addUser,
+                            style: const TextStyle(fontSize: 18),
                           ),
                         ),
                       ],
@@ -173,11 +174,12 @@ class UserManagementPageState extends State<UserManagementPage> {
   }
 
   void _addUser() {
+    final l10n = AppLocalizations.of(context);
     if (_nicknameController.text.isEmpty ||
         _usernameController.text.isEmpty ||
         _passwordController.text.isEmpty) {
       setState(() {
-        _errorMessage = 'لطفا تمامی فیلدها را پر کنید';
+        _errorMessage = l10n.fillAllFields;
       });
     } else {
       BlocProvider.of<AuthBloc>(context).add(

@@ -48,8 +48,8 @@ class _SettingsPageState extends State<SettingsPage>
       listener: (context, state) {
         if (state is PasswordUpdateSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('رمز عبور با موفقیت تغییر یافت'),
+            SnackBar(
+              content: Text(l10n.passwordChanged),
               backgroundColor: Colors.green,
             ),
           );
@@ -75,37 +75,58 @@ class _SettingsPageState extends State<SettingsPage>
               ),
               const SizedBox(height: 4),
               Text(
-                'مدیریت حساب کاربری و تنظیمات برنامه',
+                l10n.languageAndCurrencySettings,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
               ),
               const SizedBox(height: 24),
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: TabBar(
-                  controller: _tabController,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicator: BoxDecoration(
-                    color: colorScheme.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: colorScheme.primary.withValues(alpha: 0.3),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isSmallScreen = constraints.maxWidth < 500;
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ),
-                  labelColor: colorScheme.primary,
-                  unselectedLabelColor: Colors.grey,
-                  dividerColor: Colors.transparent,
-                  tabs: [
-                    _buildTab(Icons.settings, 'عمومی'),
-                    _buildTab(Icons.person_outline, 'پروفایل'),
-                    _buildTab(Icons.security_outlined, 'امنیت'),
-                    _buildTab(Icons.people_outline, 'کاربران'),
-                  ],
-                ),
+                    child: TabBar(
+                      controller: _tabController,
+                      isScrollable: isSmallScreen,
+                      tabAlignment: isSmallScreen
+                          ? TabAlignment.start
+                          : TabAlignment.fill,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      indicator: BoxDecoration(
+                        color: colorScheme.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: colorScheme.primary.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      labelColor: colorScheme.primary,
+                      unselectedLabelColor: Colors.grey,
+                      dividerColor: Colors.transparent,
+                      tabs: [
+                        _buildTab(Icons.settings, l10n.general, isSmallScreen),
+                        _buildTab(
+                          Icons.person_outline,
+                          l10n.profile,
+                          isSmallScreen,
+                        ),
+                        _buildTab(
+                          Icons.security_outlined,
+                          l10n.security,
+                          isSmallScreen,
+                        ),
+                        _buildTab(
+                          Icons.people_outline,
+                          l10n.users,
+                          isSmallScreen,
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 24),
               Expanded(
@@ -126,11 +147,23 @@ class _SettingsPageState extends State<SettingsPage>
     );
   }
 
-  Widget _buildTab(IconData icon, String label) {
+  Widget _buildTab(IconData icon, String label, bool isSmallScreen) {
     return Tab(
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [Icon(icon, size: 20), const SizedBox(width: 8), Text(label)],
+        children: [
+          Icon(icon, size: 20),
+          if (!isSmallScreen) ...[
+            const SizedBox(width: 8),
+            Text(label),
+          ] else ...[
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(label, overflow: TextOverflow.ellipsis, maxLines: 1),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -149,14 +182,14 @@ class _SettingsPageState extends State<SettingsPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'تنظیمات عمومی',
+                l10n.generalSettings,
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
-                'تنظیمات زبان و واحد پول برنامه',
+                l10n.languageAndCurrencySettings,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
@@ -166,8 +199,8 @@ class _SettingsPageState extends State<SettingsPage>
                 context,
                 icon: Icons.language,
                 title: l10n.language,
-                subtitle: 'زبان برنامه را انتخاب کنید',
-                actionLabel: 'تغییر',
+                subtitle: l10n.selectAppLanguage,
+                actionLabel: l10n.change,
                 onAction: () =>
                     Navigator.pushNamed(context, Routes.languageSettings),
               ),
@@ -175,9 +208,9 @@ class _SettingsPageState extends State<SettingsPage>
               _buildSecurityItem(
                 context,
                 icon: Icons.attach_money,
-                title: 'واحد پول',
-                subtitle: 'واحد پول و نرخ تبدیل را مدیریت کنید',
-                actionLabel: 'تغییر',
+                title: l10n.currencyUnit,
+                subtitle: l10n.manageCurrencyAndRate,
+                actionLabel: l10n.change,
                 onAction: () =>
                     Navigator.pushNamed(context, Routes.currencySettings),
               ),
@@ -214,14 +247,14 @@ class _SettingsPageState extends State<SettingsPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'اطلاعات پروفایل',
+                    l10n.profileInfo,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'اطلاعات شخصی و تصویر پروفایل خود را مدیریت کنید',
+                    l10n.manageProfileAndImage,
                     style: Theme.of(
                       context,
                     ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
@@ -248,11 +281,11 @@ class _SettingsPageState extends State<SettingsPage>
                           OutlinedButton.icon(
                             onPressed: () {},
                             icon: const Icon(Icons.camera_alt_outlined),
-                            label: const Text('تغییر تصویر'),
+                            label: Text(l10n.changeImage),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'JPG, PNG یا GIF. حداکثر 2MB',
+                            l10n.imageFormatHint,
                             style: Theme.of(
                               context,
                             ).textTheme.bodySmall?.copyWith(color: Colors.grey),
@@ -265,13 +298,18 @@ class _SettingsPageState extends State<SettingsPage>
                   Row(
                     children: [
                       Expanded(
-                        child: _buildTextField(context, 'نام', nickname, false),
+                        child: _buildTextField(
+                          context,
+                          l10n.name,
+                          nickname,
+                          false,
+                        ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: _buildTextField(
                           context,
-                          'نام کاربری',
+                          l10n.username,
                           username,
                           false,
                         ),
@@ -284,8 +322,8 @@ class _SettingsPageState extends State<SettingsPage>
                       Expanded(
                         child: _buildTextField(
                           context,
-                          'نقش',
-                          _getRoleLabel(role),
+                          l10n.role,
+                          _getRoleLabel(role, l10n),
                           false,
                         ),
                       ),
@@ -298,7 +336,7 @@ class _SettingsPageState extends State<SettingsPage>
                     alignment: Alignment.centerLeft,
                     child: FilledButton(
                       onPressed: () {},
-                      child: const Text('ذخیره تغییرات'),
+                      child: Text(l10n.saveChanges),
                     ),
                   ),
                 ],
@@ -324,14 +362,14 @@ class _SettingsPageState extends State<SettingsPage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'امنیت',
+                l10n.securitySettings,
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
-                'رمز عبور و تنظیمات امنیتی خود را مدیریت کنید',
+                l10n.managePasswordAndSecurity,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
@@ -340,18 +378,18 @@ class _SettingsPageState extends State<SettingsPage>
               _buildSecurityItem(
                 context,
                 icon: Icons.lock_outline,
-                title: 'رمز عبور',
-                subtitle: 'آخرین تغییر: 30 روز پیش',
-                actionLabel: 'تغییر رمز عبور',
+                title: l10n.password,
+                subtitle: l10n.lastChange30Days,
+                actionLabel: l10n.changePassword,
                 onAction: () => _showChangePasswordDialog(context),
               ),
               const Divider(height: 32),
               _buildSecurityItem(
                 context,
                 icon: Icons.security_outlined,
-                title: 'احراز هویت دو مرحله‌ای',
-                subtitle: 'امنیت بیشتر برای حساب شما',
-                actionLabel: 'فعال‌سازی',
+                title: l10n.twoFactorAuth,
+                subtitle: l10n.moreSecurityForAccount,
+                actionLabel: l10n.enable,
                 onAction: () {},
               ),
             ],
@@ -370,103 +408,142 @@ class _SettingsPageState extends State<SettingsPage>
       ),
       child: Padding(
         padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isSmallScreen = constraints.maxWidth < 500;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'مدیریت کاربران',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                if (isSmallScreen) ...[
+                  Text(
+                    l10n.userManagement,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'اپراتورها و نقش‌های دسترسی را مدیریت کنید',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                    ),
-                  ],
-                ),
-                FilledButton.icon(
-                  onPressed: () {
-                    Navigator.push(
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.manageUsersAndRoles,
+                    style: Theme.of(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const UserManagementPage(),
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const UserManagementPage(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.person_add),
+                      label: Text(l10n.userManagement),
+                    ),
+                  ),
+                ] else ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.userManagement,
+                              style: Theme.of(context).textTheme.titleLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              l10n.manageUsersAndRoles,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: Colors.grey),
+                            ),
+                          ],
+                        ),
                       ),
-                    );
-                  },
-                  icon: const Icon(Icons.person_add),
-                  label: const Text('مدیریت کاربران'),
+                      FilledButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const UserManagementPage(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.person_add),
+                        label: Text(l10n.userManagement),
+                      ),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: 24),
+                if (!isSmallScreen)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            l10n.user,
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            l10n.role,
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            l10n.status,
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const SizedBox(width: 48),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.people_outline,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          l10n.pressButtonAboveForUsers,
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
-            ),
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      'کاربر',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'نقش',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'وضعیت',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.people_outline,
-                      size: 64,
-                      color: Colors.grey[400],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'برای مدیریت کاربران دکمه بالا را بزنید',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
@@ -498,43 +575,100 @@ class _SettingsPageState extends State<SettingsPage>
     required String actionLabel,
     required VoidCallback onAction,
   }) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(icon, color: Theme.of(context).primaryColor),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isSmallScreen = constraints.maxWidth < 400;
+
+        if (isSmallScreen) {
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).primaryColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(icon, color: Theme.of(context).primaryColor),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          subtitle,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: onAction,
+                  child: Text(actionLabel),
+                ),
               ),
             ],
-          ),
-        ),
-        OutlinedButton(onPressed: onAction, child: Text(actionLabel)),
-      ],
+          );
+        }
+
+        return Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: Theme.of(context).primaryColor),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+            OutlinedButton(onPressed: onAction, child: Text(actionLabel)),
+          ],
+        );
+      },
     );
   }
 
   void _showChangePasswordDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (dialogContext) => BlocBuilder<AuthBloc, AuthState>(
@@ -546,7 +680,7 @@ class _SettingsPageState extends State<SettingsPage>
           }
 
           return AlertDialog(
-            title: const Text('تغییر رمز عبور'),
+            title: Text(l10n.changePassword),
             content: Form(
               key: _passwordFormKey,
               child: Column(
@@ -556,13 +690,13 @@ class _SettingsPageState extends State<SettingsPage>
                     controller: _currentPasswordController,
                     obscureText: true,
                     decoration: InputDecoration(
-                      labelText: 'رمز عبور فعلی',
+                      labelText: l10n.currentPassword,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     validator: (value) => value == null || value.isEmpty
-                        ? 'لطفاً رمز عبور فعلی را وارد کنید'
+                        ? l10n.enterCurrentPassword
                         : null,
                   ),
                   const SizedBox(height: 16),
@@ -570,17 +704,17 @@ class _SettingsPageState extends State<SettingsPage>
                     controller: _newPasswordController,
                     obscureText: true,
                     decoration: InputDecoration(
-                      labelText: 'رمز عبور جدید',
+                      labelText: l10n.newPassword,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'لطفاً رمز عبور جدید را وارد کنید';
+                        return l10n.enterNewPassword;
                       }
                       if (value.length < 6) {
-                        return 'رمز عبور باید حداقل 6 کاراکتر باشد';
+                        return l10n.passwordMinLength;
                       }
                       return null;
                     },
@@ -590,14 +724,14 @@ class _SettingsPageState extends State<SettingsPage>
                     controller: _confirmPasswordController,
                     obscureText: true,
                     decoration: InputDecoration(
-                      labelText: 'تکرار رمز عبور جدید',
+                      labelText: l10n.repeatNewPassword,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     validator: (value) {
                       if (value != _newPasswordController.text) {
-                        return 'رمز عبور تکرار شده مطابقت ندارد';
+                        return l10n.passwordMismatch;
                       }
                       return null;
                     },
@@ -610,7 +744,7 @@ class _SettingsPageState extends State<SettingsPage>
                 onPressed: isLoading
                     ? null
                     : () => Navigator.pop(dialogContext),
-                child: const Text('انصراف'),
+                child: Text(l10n.cancel),
               ),
               FilledButton(
                 onPressed: isLoading
@@ -632,7 +766,7 @@ class _SettingsPageState extends State<SettingsPage>
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('ذخیره'),
+                    : Text(l10n.save),
               ),
             ],
           );
@@ -647,14 +781,14 @@ class _SettingsPageState extends State<SettingsPage>
     _confirmPasswordController.clear();
   }
 
-  String _getRoleLabel(String role) {
+  String _getRoleLabel(String role, AppLocalizations l10n) {
     switch (role) {
       case 'admin':
-        return 'مدیر';
+        return l10n.admin;
       case 'manager':
-        return 'مدیر';
+        return l10n.manager;
       case 'seller':
-        return 'فروشنده';
+        return l10n.seller;
       default:
         return role;
     }
