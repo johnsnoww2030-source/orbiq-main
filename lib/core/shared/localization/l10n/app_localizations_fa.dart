@@ -947,4 +947,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String pageOf(Object current, Object total) {
     return 'صفحه $current از $total';
   }
+
+  @override
+  String get items => 'مورد';
+
+  @override
+  String get clearCart => 'خالی کردن سبد';
 }

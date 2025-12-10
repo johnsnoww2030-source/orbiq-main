@@ -316,5 +316,7 @@
       "current": {},
       "total": {}
     }
-  }
+  },
+  "items": "items",
+  "clearCart": "Clear Cart"
 }

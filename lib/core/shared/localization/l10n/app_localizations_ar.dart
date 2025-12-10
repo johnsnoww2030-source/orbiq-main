@@ -944,4 +944,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String pageOf(Object current, Object total) {
     return 'صفحة $current من $total';
   }
+
+  @override
+  String get items => 'عنصر';
+
+  @override
+  String get clearCart => 'إفراغ السلة';
 }

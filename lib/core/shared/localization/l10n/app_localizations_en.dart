@@ -947,4 +947,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String pageOf(Object current, Object total) {
     return 'Page $current of $total';
   }
+
+  @override
+  String get items => 'items';
+
+  @override
+  String get clearCart => 'Clear Cart';
 }
