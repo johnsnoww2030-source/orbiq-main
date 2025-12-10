@@ -35,22 +35,21 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
     ToggleThemeEvent event,
     Emitter<ThemeState> emit,
   ) async {
-    state.mapOrNull(
-      loaded: (loadedState) async {
-        final currentTheme = loadedState.theme;
-        final newThemeType = currentTheme.type == ThemeType.light
-            ? ThemeType.dark
-            : ThemeType.light;
+    final currentState = state;
+    if (currentState is! ThemeLoaded) return;
 
-        final newTheme = ThemeEntity(type: newThemeType);
+    final currentTheme = currentState.theme;
+    final newThemeType = currentTheme.type == ThemeType.light
+        ? ThemeType.dark
+        : ThemeType.light;
 
-        emit(const ThemeState.loading());
-        final result = await saveThemeUseCase(newTheme);
-        result.fold(
-          (failure) => emit(const ThemeState.error('خطا در ذخیره تم')),
-          (_) => emit(ThemeState.loaded(newTheme)),
-        );
-      },
+    final newTheme = ThemeEntity(type: newThemeType);
+
+    emit(const ThemeState.loading());
+    final result = await saveThemeUseCase(newTheme);
+    result.fold(
+      (failure) => emit(const ThemeState.error('خطا در ذخیره تم')),
+      (_) => emit(ThemeState.loaded(newTheme)),
     );
   }
 
