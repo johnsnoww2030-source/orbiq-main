@@ -1,50 +1,35 @@
-// presentation/bloc/chat_state.dart
+import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/message.dart';
 import '../../domain/entities/client_info.dart';
 
-abstract class ChatState {}
-
-class ChatInitial extends ChatState {}
-
-class ChatLoading extends ChatState {}
+part 'chat_state.freezed.dart';
 
 enum ConnectionType {
   serverRunning, // سرور فعال است ولی کلاینتی متصل نیست
   connected, // کلاینت‌ها متصل هستند
 }
 
-class ChatConnected extends ChatState {
-  final List<Message> messages;
-  final List<ClientInfo> clients;
-  final bool isServer;
+@freezed
+class ChatState with _$ChatState {
+  const ChatState._();
 
-  ChatConnected({
-    required this.messages,
-    required this.clients,
-    required this.isServer,
-  });
+  const factory ChatState.initial() = ChatInitial;
+  const factory ChatState.loading() = ChatLoading;
+  const factory ChatState.connected({
+    required List<Message> messages,
+    required List<ClientInfo> clients,
+    required bool isServer,
+  }) = ChatConnected;
+  const factory ChatState.disconnected() = ChatDisconnected;
+  const factory ChatState.error(String message) = ChatError;
 
-  // Helper method to get connection type
-  ConnectionType get connectionType {
-    if (isServer && clients.isEmpty) {
-      return ConnectionType.serverRunning;
-    }
-    return ConnectionType.connected;
-  }
+  // Helper methods for ChatConnected state
+  ConnectionType? get connectionType => mapOrNull(
+    connected: (s) => s.isServer && s.clients.isEmpty
+        ? ConnectionType.serverRunning
+        : ConnectionType.connected,
+  );
 
-  // Helper to check if send is allowed
-  bool get canSendMessage {
-    if (isServer && clients.isEmpty) {
-      return false; // سرور فعال ولی کلاینتی نیست
-    }
-    return true;
-  }
-}
-
-class ChatDisconnected extends ChatState {}
-
-class ChatError extends ChatState {
-  final String message;
-
-  ChatError(this.message);
+  bool get canSendMessage =>
+      mapOrNull(connected: (s) => !(s.isServer && s.clients.isEmpty)) ?? false;
 }

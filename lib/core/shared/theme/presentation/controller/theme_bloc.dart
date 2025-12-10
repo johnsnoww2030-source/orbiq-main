@@ -13,7 +13,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   final SaveThemeUseCase saveThemeUseCase;
 
   ThemeBloc({required this.getThemeUseCase, required this.saveThemeUseCase})
-    : super(ThemeInitial()) {
+    : super(const ThemeState.initial()) {
     on<GetThemeEvent>(_onGetTheme);
     on<ToggleThemeEvent>(_onToggleTheme);
     on<SetThemeEvent>(_onSetTheme);
@@ -23,11 +23,11 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
     GetThemeEvent event,
     Emitter<ThemeState> emit,
   ) async {
-    emit(ThemeLoading());
+    emit(const ThemeState.loading());
     final result = await getThemeUseCase(NoParams());
     result.fold(
-      (failure) => emit(const ThemeError('خطا در بارگیری تم')),
-      (theme) => emit(ThemeLoaded(theme)),
+      (failure) => emit(const ThemeState.error('خطا در بارگیری تم')),
+      (theme) => emit(ThemeState.loaded(theme)),
     );
   }
 
@@ -35,21 +35,23 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
     ToggleThemeEvent event,
     Emitter<ThemeState> emit,
   ) async {
-    if (state is ThemeLoaded) {
-      final currentTheme = (state as ThemeLoaded).theme;
-      final newThemeType = currentTheme.type == ThemeType.light
-          ? ThemeType.dark
-          : ThemeType.light;
+    state.mapOrNull(
+      loaded: (loadedState) async {
+        final currentTheme = loadedState.theme;
+        final newThemeType = currentTheme.type == ThemeType.light
+            ? ThemeType.dark
+            : ThemeType.light;
 
-      final newTheme = ThemeEntity(type: newThemeType);
+        final newTheme = ThemeEntity(type: newThemeType);
 
-      emit(ThemeLoading());
-      final result = await saveThemeUseCase(newTheme);
-      result.fold(
-        (failure) => emit(const ThemeError('خطا در ذخیره تم')),
-        (_) => emit(ThemeLoaded(newTheme)),
-      );
-    }
+        emit(const ThemeState.loading());
+        final result = await saveThemeUseCase(newTheme);
+        result.fold(
+          (failure) => emit(const ThemeState.error('خطا در ذخیره تم')),
+          (_) => emit(ThemeState.loaded(newTheme)),
+        );
+      },
+    );
   }
 
   Future<void> _onSetTheme(
@@ -58,11 +60,11 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   ) async {
     final newTheme = ThemeEntity(type: event.themeType);
 
-    emit(ThemeLoading());
+    emit(const ThemeState.loading());
     final result = await saveThemeUseCase(newTheme);
     result.fold(
-      (failure) => emit(const ThemeError('خطا در ذخیره تم')),
-      (_) => emit(ThemeLoaded(newTheme)),
+      (failure) => emit(const ThemeState.error('خطا در ذخیره تم')),
+      (_) => emit(ThemeState.loaded(newTheme)),
     );
   }
 }

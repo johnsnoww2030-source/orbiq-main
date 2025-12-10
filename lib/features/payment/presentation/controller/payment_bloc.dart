@@ -13,7 +13,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   final GetAllPaymentsUseCase _getAllPaymentsUseCase;
 
   int _currentPage = 1;
-  int _limit = 20; // Default items per page
+  int _limit = 20;
 
   PaymentBloc({
     required SavePayment savePayment,
@@ -22,7 +22,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   }) : _savePayment = savePayment,
        _getPaymentsByUserIdAndNickname = getPaymentsByUserIdAndNickname,
        _getAllPaymentsUseCase = getAllPaymentsUseCase,
-       super(const PaymentInitial()) {
+       super(const PaymentState.initial()) {
     on<SavePaymentEvent>(_onSavePaymentEvent);
     on<GetPaymentsByUserIdAndNicknameEvent>(
       _onGetPaymentsByUserIdAndNicknameEvent,
@@ -35,11 +35,11 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     SavePaymentEvent event,
     Emitter<PaymentState> emit,
   ) async {
-    emit(const PaymentLoading());
+    emit(const PaymentState.loading());
     final result = await _savePayment(event.payment);
     result.fold(
-      (failure) => emit(PaymentFailure(failure.message)),
-      (_) => emit(const PaymentSuccess()),
+      (failure) => emit(PaymentState.failure(failure.message)),
+      (_) => emit(const PaymentState.success()),
     );
   }
 
@@ -47,19 +47,15 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     GetPaymentsByUserIdAndNicknameEvent event,
     Emitter<PaymentState> emit,
   ) async {
-    emit(const PaymentLoading());
+    emit(const PaymentState.loading());
     final result = await _getPaymentsByUserIdAndNickname(
       event.userId,
       event.nickname,
     );
     result.fold(
-      (failure) => emit(PaymentFailure(failure.message)),
-      // This use case doesn't seem to support pagination, so it returns a simple list.
-      // The state PaymentListLoaded now expects paginated data.
-      // This part might need adjustment depending on how non-paginated lists should be handled.
-      // For now, creating a single-page PaginatedPayments-like structure for compatibility.
+      (failure) => emit(PaymentState.failure(failure.message)),
       (payments) => emit(
-        PaymentListLoaded(
+        PaymentState.listLoaded(
           payments: payments,
           currentPage: 1,
           totalPages: 1,
@@ -73,8 +69,8 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     GetAllPaymentsEvent event,
     Emitter<PaymentState> emit,
   ) async {
-    emit(const PaymentLoading());
-    _currentPage = event.page < 1 ? 1 : event.page; // Ensure page >= 1
+    emit(const PaymentState.loading());
+    _currentPage = event.page < 1 ? 1 : event.page;
     _limit = event.limit;
 
     final params = GetAllPaymentsUseCaseParams(
@@ -83,26 +79,25 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     );
     final result = await _getAllPaymentsUseCase(params);
 
-    result.fold((failure) => emit(PaymentFailure(failure.message)), (
-      paginatedData,
-    ) {
-      emit(
-        PaymentListLoaded(
+    result.fold(
+      (failure) => emit(PaymentState.failure(failure.message)),
+      (paginatedData) => emit(
+        PaymentState.listLoaded(
           payments: paginatedData.payments,
           currentPage: paginatedData.currentPage,
           totalPages: paginatedData.totalPages,
           hasNextPage: paginatedData.currentPage < paginatedData.totalPages,
         ),
-      );
-    });
+      ),
+    );
   }
 
   Future<void> _onLoadPaymentPageEvent(
     LoadPaymentPageEvent event,
     Emitter<PaymentState> emit,
   ) async {
-    emit(const PaymentLoadingPage());
-    _currentPage = event.page < 1 ? 1 : event.page; // Ensure page >= 1
+    emit(const PaymentState.loadingPage());
+    _currentPage = event.page < 1 ? 1 : event.page;
 
     final params = GetAllPaymentsUseCaseParams(
       page: _currentPage,
@@ -110,17 +105,16 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     );
     final result = await _getAllPaymentsUseCase(params);
 
-    result.fold((failure) => emit(PaymentFailure(failure.message)), (
-      paginatedData,
-    ) {
-      emit(
-        PaymentListLoaded(
+    result.fold(
+      (failure) => emit(PaymentState.failure(failure.message)),
+      (paginatedData) => emit(
+        PaymentState.listLoaded(
           payments: paginatedData.payments,
           currentPage: paginatedData.currentPage,
           totalPages: paginatedData.totalPages,
           hasNextPage: paginatedData.currentPage < paginatedData.totalPages,
         ),
-      );
-    });
+      ),
+    );
   }
 }

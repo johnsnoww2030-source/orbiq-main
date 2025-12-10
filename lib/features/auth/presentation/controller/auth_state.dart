@@ -1,54 +1,22 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/user_entity.dart';
 
-abstract class AuthState extends Equatable {
-  @override
-  List<Object> get props => [];
+part 'auth_state.freezed.dart';
+
+@freezed
+class AuthState with _$AuthState {
+  const factory AuthState.initial() = AuthInitial;
+  const factory AuthState.loading() = AuthLoading;
+  const factory AuthState.success(UserEntity user, {required bool isManager}) =
+      AuthSuccess;
+  const factory AuthState.firstLogin(String username) = AuthFirstLogin;
+  const factory AuthState.failure(String message) = AuthFailure;
+  const factory AuthState.passwordUpdateSuccess() = PasswordUpdateSuccess;
+  const factory AuthState.unauthenticated() = UnauthenticatedState;
+  const factory AuthState.userAddedSuccess() = UserAddedSuccess;
 }
 
-class AuthInitial extends AuthState {}
-
-class AuthLoading extends AuthState {}
-
-class AuthSuccess extends AuthState {
-  final UserEntity user;
-  final bool isManager;
-
-  AuthSuccess(this.user, {required this.isManager});
-  int get userId => user.id!;
-
-  @override
-  List<Object> get props => [
-        user,
-        isManager
-      ];
+// Extension to get userId from AuthSuccess
+extension AuthSuccessExtension on AuthState {
+  int? get userId => mapOrNull(success: (s) => s.user.id);
 }
-
-class AuthFirstLogin extends AuthState {
-  final String username;
-
-  AuthFirstLogin(this.username);
-
-  @override
-  List<Object> get props => [
-        username
-      ];
-}
-
-class AuthFailure extends AuthState {
-  final String message;
-
-  AuthFailure(this.message);
-
-  @override
-  List<Object> get props => [
-        message
-      ];
-}
-
-class PasswordUpdateSuccess extends AuthState {}
-
-// اضافه کردن وضعیت Unauthenticated برای خروج کاربر
-class UnauthenticatedState extends AuthState {}
-
-class UserAddedSuccess extends AuthState {}

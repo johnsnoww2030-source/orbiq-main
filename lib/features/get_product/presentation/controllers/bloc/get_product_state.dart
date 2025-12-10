@@ -1,51 +1,17 @@
 part of 'get_product_bloc.dart';
 
-sealed class GetProductState extends Equatable {
-  const GetProductState();
-
-  @override
-  List<Object> get props => [];
-}
-
-final class GetProductInitial extends GetProductState {}
-
-class ProductLoading extends GetProductState {}
-
-class ProductLoadingPage extends GetProductState {} // New state for loading next page
-
-class ProductLoaded extends GetProductState {
-  final List<ProductModel> products;
-  final int currentPage;
-  final int totalPages;
-  final bool hasNextPage;
-
-  const ProductLoaded({
-    required this.products,
-    required this.currentPage,
-    required this.totalPages,
-    required this.hasNextPage,
-  });
-
-  @override
-  List<Object> get props => [products, currentPage, totalPages, hasNextPage];
-}
-
-class ProductFound extends GetProductState {
-  final ProductModel product;
-
-  const ProductFound(this.product);
-
-  @override
-  List<Object> get props => [product];
-}
-
-class ProductNotFound extends GetProductState {}
-
-class ProductError extends GetProductState {
-  final String message;
-
-  const ProductError(this.message);
-
-  @override
-  List<Object> get props => [message];
+@freezed
+class GetProductState with _$GetProductState {
+  const factory GetProductState.initial() = GetProductInitial;
+  const factory GetProductState.loading() = ProductLoading;
+  const factory GetProductState.loadingPage() = ProductLoadingPage;
+  const factory GetProductState.loaded({
+    required List<ProductModel> products,
+    required int currentPage,
+    required int totalPages,
+    required bool hasNextPage,
+  }) = ProductLoaded;
+  const factory GetProductState.found(ProductModel product) = ProductFound;
+  const factory GetProductState.notFound() = ProductNotFound;
+  const factory GetProductState.error(String message) = ProductError;
 }

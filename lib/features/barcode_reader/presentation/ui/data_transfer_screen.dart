@@ -117,6 +117,8 @@ class DataTransferScreenState extends State<DataTransferScreen> {
                     statusColor = Colors.green;
                     statusIcon = Icons.check_circle;
                     break;
+                  case null:
+                    break;
                 }
               }
 

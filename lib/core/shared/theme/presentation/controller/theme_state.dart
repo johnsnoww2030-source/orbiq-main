@@ -1,31 +1,12 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../domain/entities/theme_entity.dart';
 
-abstract class ThemeState extends Equatable {
-  const ThemeState();
+part 'theme_state.freezed.dart';
 
-  @override
-  List<Object?> get props => [];
-}
-
-class ThemeInitial extends ThemeState {}
-
-class ThemeLoading extends ThemeState {}
-
-class ThemeLoaded extends ThemeState {
-  final ThemeEntity theme;
-
-  const ThemeLoaded(this.theme);
-
-  @override
-  List<Object?> get props => [theme];
-}
-
-class ThemeError extends ThemeState {
-  final String message;
-
-  const ThemeError(this.message);
-
-  @override
-  List<Object?> get props => [message];
+@freezed
+class ThemeState with _$ThemeState {
+  const factory ThemeState.initial() = ThemeInitial;
+  const factory ThemeState.loading() = ThemeLoading;
+  const factory ThemeState.loaded(ThemeEntity theme) = ThemeLoaded;
+  const factory ThemeState.error(String message) = ThemeError;
 }

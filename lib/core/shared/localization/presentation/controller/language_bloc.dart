@@ -13,7 +13,7 @@ class LanguageBloc extends Bloc<LanguageEvent, LanguageState> {
   LanguageBloc({
     required this.getLanguageUseCase,
     required this.saveLanguageUseCase,
-  }) : super(LanguageInitial()) {
+  }) : super(const LanguageState.initial()) {
     on<GetLanguageEvent>(_onGetLanguage);
     on<ChangeLanguageEvent>(_onChangeLanguage);
   }
@@ -22,11 +22,11 @@ class LanguageBloc extends Bloc<LanguageEvent, LanguageState> {
     GetLanguageEvent event,
     Emitter<LanguageState> emit,
   ) async {
-    emit(LanguageLoading());
+    emit(const LanguageState.loading());
     final result = await getLanguageUseCase();
     result.fold(
-      (failure) => emit(LanguageError(failure.toString())),
-      (language) => emit(LanguageLoaded(language)),
+      (failure) => emit(LanguageState.error(failure.toString())),
+      (language) => emit(LanguageState.loaded(language)),
     );
   }
 
@@ -34,11 +34,11 @@ class LanguageBloc extends Bloc<LanguageEvent, LanguageState> {
     ChangeLanguageEvent event,
     Emitter<LanguageState> emit,
   ) async {
-    emit(LanguageLoading());
+    emit(const LanguageState.loading());
     final result = await saveLanguageUseCase(event.language);
     result.fold(
-      (failure) => emit(LanguageError(failure.toString())),
-      (_) => emit(LanguageLoaded(event.language)),
+      (failure) => emit(LanguageState.error(failure.toString())),
+      (_) => emit(LanguageState.loaded(event.language)),
     );
   }
 }

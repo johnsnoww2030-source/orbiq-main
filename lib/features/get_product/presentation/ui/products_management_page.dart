@@ -1201,7 +1201,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
         List<ProductEntity> cartItems = [];
         double totalPrice = 0.0;
         if (cartState is CartUpdated) {
-          cartItems = cartState.cartItems;
+          cartItems = cartState.items;
           totalPrice = cartItems.fold(
             0.0,
             (sum, item) => sum + item.originalPrice,

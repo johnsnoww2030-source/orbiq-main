@@ -153,11 +153,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i863.VersionRemoteDataSource>(
       () => _i863.VersionRemoteDataSourceImpl(gh<_i361.Dio>()),
     );
-    gh.lazySingleton<_i22.UpdateService>(
-      () => _i22.UpdateService(gh<_i361.Dio>()),
-    );
-    gh.lazySingleton<_i36.ExportRepository>(
-      () => _i1053.ExportRepositoryImpl(),
+    gh.lazySingleton<_i98.SocketRepository>(
+      () => _i199.SocketRepositoryImpl(gh<_i200.SocketDataSource>()),
     );
     gh.lazySingleton<_i887.ProductDao>(
       () => registerModule.productDao(gh<_i865.AppDatabase>()),
@@ -174,38 +171,23 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i123.LanguageDao>(
       () => registerModule.languageDao(gh<_i865.AppDatabase>()),
     );
-    gh.lazySingleton<_i485.AuthLocalDataSource>(
-      () => _i485.AuthLocalDataSource(gh<_i555.UserDao>()),
-    );
-    gh.lazySingleton<_i85.ProductRepository>(
-      () => _i675.ProductRepositoryImpl(gh<_i887.ProductDao>()),
-    );
-    gh.lazySingleton<_i150.PaymentRepository>(
-      () => _i1070.PaymentRepositoryImpl(gh<_i968.PaymentDao>()),
-    );
     gh.lazySingleton<_i149.LanguageLocalDataSource>(
       () => _i149.LanguageLocalDataSource(gh<_i123.LanguageDao>()),
-    );
-    gh.lazySingleton<_i98.SocketRepository>(
-      () => _i199.SocketRepositoryImpl(gh<_i200.SocketDataSource>()),
-    );
-    gh.lazySingleton<_i645.LanguageRepository>(
-      () => _i789.LanguageRepositoryImpl(gh<_i149.LanguageLocalDataSource>()),
-    );
-    gh.lazySingleton<_i567.ProductRepository>(
-      () => _i651.ProductRepositoryImpl(gh<_i887.ProductDao>()),
     );
     gh.lazySingleton<_i774.ChatRepository>(
       () => _i769.ChatRepositoryImpl(gh<_i200.SocketDataSource>()),
     );
-    gh.lazySingleton<_i222.ThemeLocalDataSource>(
-      () => _i222.ThemeLocalDataSource(gh<_i976.ThemeDao>()),
+    gh.lazySingleton<_i22.UpdateService>(
+      () => _i22.UpdateService(gh<_i361.Dio>()),
     );
-    gh.factory<_i856.GetClientsUseCase>(
-      () => _i856.GetClientsUseCase(gh<_i98.SocketRepository>()),
+    gh.lazySingleton<_i567.ProductRepository>(
+      () => _i651.ProductRepositoryImpl(gh<_i887.ProductDao>()),
     );
-    gh.lazySingleton<_i787.AuthRepository>(
-      () => _i153.AuthRepositoryImpl(gh<_i485.AuthLocalDataSource>()),
+    gh.lazySingleton<_i150.PaymentRepository>(
+      () => _i1070.PaymentRepositoryImpl(gh<_i968.PaymentDao>()),
+    );
+    gh.lazySingleton<_i36.ExportRepository>(
+      () => _i1053.ExportRepositoryImpl(),
     );
     gh.factory<_i1021.ExportToExcelUseCase>(
       () => _i1021.ExportToExcelUseCase(gh<_i36.ExportRepository>()),
@@ -213,11 +195,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i566.ExportToPDFUseCase>(
       () => _i566.ExportToPDFUseCase(gh<_i36.ExportRepository>()),
     );
-    gh.factory<_i689.ExportBloc>(
-      () => _i689.ExportBloc(
-        gh<_i566.ExportToPDFUseCase>(),
-        gh<_i1021.ExportToExcelUseCase>(),
-      ),
+    gh.factory<_i856.GetClientsUseCase>(
+      () => _i856.GetClientsUseCase(gh<_i98.SocketRepository>()),
+    );
+    gh.factory<_i1056.UpdateProductUseCase>(
+      () => _i1056.UpdateProductUseCase(gh<_i567.ProductRepository>()),
     );
     gh.factory<_i822.GetAllPaymentsUseCase>(
       () => _i822.GetAllPaymentsUseCase(gh<_i150.PaymentRepository>()),
@@ -228,72 +210,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i202.SavePayment>(
       () => _i202.SavePayment(gh<_i150.PaymentRepository>()),
     );
-    gh.factory<_i816.AddUserUseCase>(
-      () => _i816.AddUserUseCase(gh<_i787.AuthRepository>()),
+    gh.lazySingleton<_i485.AuthLocalDataSource>(
+      () => _i485.AuthLocalDataSource(gh<_i555.UserDao>()),
     );
-    gh.factory<_i48.LogoutUseCase>(
-      () => _i48.LogoutUseCase(gh<_i787.AuthRepository>()),
-    );
-    gh.factory<_i217.PaymentBloc>(
-      () => _i217.PaymentBloc(
-        savePayment: gh<_i202.SavePayment>(),
-        getPaymentsByUserIdAndNickname:
-            gh<_i159.GetPaymentsByUserIdAndNickname>(),
-        getAllPaymentsUseCase: gh<_i822.GetAllPaymentsUseCase>(),
+    gh.factory<_i689.ExportBloc>(
+      () => _i689.ExportBloc(
+        gh<_i566.ExportToPDFUseCase>(),
+        gh<_i1021.ExportToExcelUseCase>(),
       ),
     );
-    gh.factory<_i188.LoginUseCase>(
-      () => _i188.LoginUseCase(gh<_i787.AuthRepository>()),
-    );
-    gh.factory<_i387.UpdatePasswordUseCase>(
-      () => _i387.UpdatePasswordUseCase(gh<_i787.AuthRepository>()),
-    );
-    gh.lazySingleton<_i85.VersionRepository>(
-      () => _i171.VersionRepositoryImpl(
-        gh<_i863.VersionRemoteDataSource>(),
-        gh<_i22.UpdateService>(),
-      ),
-    );
-    gh.factory<_i1056.UpdateProductUseCase>(
-      () => _i1056.UpdateProductUseCase(gh<_i567.ProductRepository>()),
-    );
-    gh.lazySingleton<_i1012.ThemeRepository>(
-      () => _i107.ThemeRepositoryImpl(gh<_i222.ThemeLocalDataSource>()),
-    );
-    gh.factory<_i954.AuthBloc>(
-      () => _i954.AuthBloc(
-        loginUseCase: gh<_i188.LoginUseCase>(),
-        updatePasswordUseCase: gh<_i387.UpdatePasswordUseCase>(),
-        logoutUseCase: gh<_i48.LogoutUseCase>(),
-        addUserUseCase: gh<_i816.AddUserUseCase>(),
-      ),
-    );
-    gh.factory<_i830.GetProductBySerialUseCase>(
-      () => _i830.GetProductBySerialUseCase(gh<_i85.ProductRepository>()),
-    );
-    gh.factory<_i642.GetProductsUseCase>(
-      () => _i642.GetProductsUseCase(gh<_i85.ProductRepository>()),
-    );
-    gh.factory<_i161.AddProduct>(
-      () => _i161.AddProductUsecase(gh<_i567.ProductRepository>()),
-    );
-    gh.factory<_i473.GetThemeUseCase>(
-      () => _i473.GetThemeUseCase(gh<_i1012.ThemeRepository>()),
-    );
-    gh.factory<_i374.SaveThemeUseCase>(
-      () => _i374.SaveThemeUseCase(gh<_i1012.ThemeRepository>()),
-    );
-    gh.factory<_i701.CheckForUpdate>(
-      () => _i701.CheckForUpdate(gh<_i85.VersionRepository>()),
-    );
-    gh.factory<_i418.DownloadAndInstallUpdate>(
-      () => _i418.DownloadAndInstallUpdate(gh<_i85.VersionRepository>()),
-    );
-    gh.factory<_i924.GetLanguageUseCase>(
-      () => _i924.GetLanguageUseCase(gh<_i645.LanguageRepository>()),
-    );
-    gh.factory<_i383.SaveLanguageUseCase>(
-      () => _i383.SaveLanguageUseCase(gh<_i645.LanguageRepository>()),
+    gh.lazySingleton<_i222.ThemeLocalDataSource>(
+      () => _i222.ThemeLocalDataSource(gh<_i976.ThemeDao>()),
     );
     gh.factory<_i391.AutoConnectToServerUseCase>(
       () => _i391.AutoConnectToServerUseCase(gh<_i774.ChatRepository>()),
@@ -316,29 +243,77 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i36.StartServerUseCase>(
       () => _i36.StartServerUseCase(gh<_i774.ChatRepository>()),
     );
-    gh.factory<_i169.UpdateBloc>(
-      () => _i169.UpdateBloc(
-        checkForUpdate: gh<_i701.CheckForUpdate>(),
-        downloadAndInstallUpdate: gh<_i418.DownloadAndInstallUpdate>(),
+    gh.factory<_i161.AddProduct>(
+      () => _i161.AddProductUsecase(gh<_i567.ProductRepository>()),
+    );
+    gh.lazySingleton<_i85.ProductRepository>(
+      () => _i675.ProductRepositoryImpl(gh<_i887.ProductDao>()),
+    );
+    gh.lazySingleton<_i85.VersionRepository>(
+      () => _i171.VersionRepositoryImpl(
+        gh<_i863.VersionRemoteDataSource>(),
+        gh<_i22.UpdateService>(),
       ),
     );
-    gh.factory<_i1026.ThemeBloc>(
-      () => _i1026.ThemeBloc(
-        getThemeUseCase: gh<_i473.GetThemeUseCase>(),
-        saveThemeUseCase: gh<_i374.SaveThemeUseCase>(),
+    gh.lazySingleton<_i787.AuthRepository>(
+      () => _i153.AuthRepositoryImpl(gh<_i485.AuthLocalDataSource>()),
+    );
+    gh.factory<_i188.LoginUseCase>(
+      () => _i188.LoginUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.factory<_i387.UpdatePasswordUseCase>(
+      () => _i387.UpdatePasswordUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.lazySingleton<_i645.LanguageRepository>(
+      () => _i789.LanguageRepositoryImpl(gh<_i149.LanguageLocalDataSource>()),
+    );
+    gh.factory<_i816.AddUserUseCase>(
+      () => _i816.AddUserUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.factory<_i48.LogoutUseCase>(
+      () => _i48.LogoutUseCase(gh<_i787.AuthRepository>()),
+    );
+    gh.factory<_i701.CheckForUpdate>(
+      () => _i701.CheckForUpdate(gh<_i85.VersionRepository>()),
+    );
+    gh.factory<_i418.DownloadAndInstallUpdate>(
+      () => _i418.DownloadAndInstallUpdate(gh<_i85.VersionRepository>()),
+    );
+    gh.lazySingleton<_i1012.ThemeRepository>(
+      () => _i107.ThemeRepositoryImpl(gh<_i222.ThemeLocalDataSource>()),
+    );
+    gh.factory<_i217.PaymentBloc>(
+      () => _i217.PaymentBloc(
+        savePayment: gh<_i202.SavePayment>(),
+        getPaymentsByUserIdAndNickname:
+            gh<_i159.GetPaymentsByUserIdAndNickname>(),
+        getAllPaymentsUseCase: gh<_i822.GetAllPaymentsUseCase>(),
       ),
     );
-    gh.factory<_i640.ProductBloc>(
-      () => _i640.ProductBloc(
-        addProduct: gh<_i161.AddProduct>(),
-        updateProduct: gh<_i1056.UpdateProductUseCase>(),
-        getProductsUseCase: gh<_i642.GetProductsUseCase>(),
-      ),
+    gh.factory<_i473.GetThemeUseCase>(
+      () => _i473.GetThemeUseCase(gh<_i1012.ThemeRepository>()),
     );
-    gh.factory<_i295.GetProductBloc>(
-      () => _i295.GetProductBloc(
-        getProductsUseCase: gh<_i642.GetProductsUseCase>(),
-        getProductBySerialUseCase: gh<_i830.GetProductBySerialUseCase>(),
+    gh.factory<_i374.SaveThemeUseCase>(
+      () => _i374.SaveThemeUseCase(gh<_i1012.ThemeRepository>()),
+    );
+    gh.factory<_i924.GetLanguageUseCase>(
+      () => _i924.GetLanguageUseCase(gh<_i645.LanguageRepository>()),
+    );
+    gh.factory<_i383.SaveLanguageUseCase>(
+      () => _i383.SaveLanguageUseCase(gh<_i645.LanguageRepository>()),
+    );
+    gh.factory<_i830.GetProductBySerialUseCase>(
+      () => _i830.GetProductBySerialUseCase(gh<_i85.ProductRepository>()),
+    );
+    gh.factory<_i642.GetProductsUseCase>(
+      () => _i642.GetProductsUseCase(gh<_i85.ProductRepository>()),
+    );
+    gh.factory<_i954.AuthBloc>(
+      () => _i954.AuthBloc(
+        loginUseCase: gh<_i188.LoginUseCase>(),
+        updatePasswordUseCase: gh<_i387.UpdatePasswordUseCase>(),
+        logoutUseCase: gh<_i48.LogoutUseCase>(),
+        addUserUseCase: gh<_i816.AddUserUseCase>(),
       ),
     );
     gh.factory<_i673.ChatBloc>(
@@ -358,6 +333,31 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i32.LanguageBloc(
         getLanguageUseCase: gh<_i924.GetLanguageUseCase>(),
         saveLanguageUseCase: gh<_i383.SaveLanguageUseCase>(),
+      ),
+    );
+    gh.factory<_i1026.ThemeBloc>(
+      () => _i1026.ThemeBloc(
+        getThemeUseCase: gh<_i473.GetThemeUseCase>(),
+        saveThemeUseCase: gh<_i374.SaveThemeUseCase>(),
+      ),
+    );
+    gh.factory<_i169.UpdateBloc>(
+      () => _i169.UpdateBloc(
+        checkForUpdate: gh<_i701.CheckForUpdate>(),
+        downloadAndInstallUpdate: gh<_i418.DownloadAndInstallUpdate>(),
+      ),
+    );
+    gh.factory<_i640.ProductBloc>(
+      () => _i640.ProductBloc(
+        addProduct: gh<_i161.AddProduct>(),
+        updateProduct: gh<_i1056.UpdateProductUseCase>(),
+        getProductsUseCase: gh<_i642.GetProductsUseCase>(),
+      ),
+    );
+    gh.factory<_i295.GetProductBloc>(
+      () => _i295.GetProductBloc(
+        getProductsUseCase: gh<_i642.GetProductsUseCase>(),
+        getProductBySerialUseCase: gh<_i830.GetProductBySerialUseCase>(),
       ),
     );
     return this;

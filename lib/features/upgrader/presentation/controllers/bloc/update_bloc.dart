@@ -14,7 +14,7 @@ class UpdateBloc extends Bloc<UpdateEvent, UpdateState> {
   UpdateBloc({
     required this.checkForUpdate,
     required this.downloadAndInstallUpdate,
-  }) : super(UpdateInitial()) {
+  }) : super(const UpdateState.initial()) {
     on<CheckForUpdateEvent>(_onCheckForUpdate);
     on<DownloadAndInstallUpdateEvent>(_onDownloadAndInstallUpdate);
   }
@@ -23,16 +23,16 @@ class UpdateBloc extends Bloc<UpdateEvent, UpdateState> {
     CheckForUpdateEvent event,
     Emitter<UpdateState> emit,
   ) async {
-    emit(UpdateChecking());
+    emit(const UpdateState.checking());
     try {
       final versionInfo = await checkForUpdate();
       if (versionInfo != null) {
-        emit(UpdateAvailable(versionInfo));
+        emit(UpdateState.available(versionInfo));
       } else {
-        emit(UpdateNotAvailable());
+        emit(const UpdateState.notAvailable());
       }
     } catch (e) {
-      emit(UpdateError(e.toString()));
+      emit(UpdateState.error(e.toString()));
     }
   }
 
@@ -40,14 +40,14 @@ class UpdateBloc extends Bloc<UpdateEvent, UpdateState> {
     DownloadAndInstallUpdateEvent event,
     Emitter<UpdateState> emit,
   ) async {
-    emit(UpdateDownloading());
+    emit(const UpdateState.downloading());
     try {
       await downloadAndInstallUpdate(
         event.versionInfo.getUrlForCurrentPlatform(),
       );
-      emit(UpdateInstalled());
+      emit(const UpdateState.installed());
     } catch (e) {
-      emit(UpdateError(e.toString()));
+      emit(UpdateState.error(e.toString()));
     }
   }
 }

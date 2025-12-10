@@ -1,20 +1,10 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 
-abstract class CartState extends Equatable {
-  @override
-  List<Object> get props => [];
-}
+part 'cart_state.freezed.dart';
 
-class CartInitial extends CartState {}
-
-class CartUpdated extends CartState {
-  final List<ProductEntity> cartItems;
-
-  CartUpdated(this.cartItems);
-
-  @override
-  List<Object> get props => [
-        cartItems
-      ];
+@freezed
+class CartState with _$CartState {
+  const factory CartState.initial() = CartInitial;
+  const factory CartState.updated(List<ProductEntity> items) = CartUpdated;
 }

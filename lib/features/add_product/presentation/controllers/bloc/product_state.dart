@@ -1,44 +1,18 @@
 // lib/features/add_product/presentation/bloc/product_state.dart
 
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 
-abstract class ProductState extends Equatable {
-  const ProductState();
+part 'product_state.freezed.dart';
 
-  @override
-  List<Object?> get props => [];
-}
-
-class ProductInitial extends ProductState {}
-
-class ProductLoading extends ProductState {}
-
-class ProductAdded extends ProductState {}
-
-class ProductError extends ProductState {
-  final String message;
-
-  const ProductError(this.message);
-
-  @override
-  List<Object?> get props => [
-        message
-      ];
-}
-
-class ProductUpdated extends ProductState {
-  final ProductEntity updatedProduct;
-
-  const ProductUpdated(this.updatedProduct);
-
-  @override
-  List<Object?> get props => [
-        updatedProduct
-      ];
-}
-
-class ProductUpdatedSuccess extends ProductState {
-  final ProductEntity updatedProduct;
-  const ProductUpdatedSuccess(this.updatedProduct);
+@freezed
+class ProductState with _$ProductState {
+  const factory ProductState.initial() = ProductInitial;
+  const factory ProductState.loading() = ProductLoading;
+  const factory ProductState.added() = ProductAdded;
+  const factory ProductState.error(String message) = ProductError;
+  const factory ProductState.updated(ProductEntity updatedProduct) =
+      ProductUpdated;
+  const factory ProductState.updatedSuccess(ProductEntity updatedProduct) =
+      ProductUpdatedSuccess;
 }

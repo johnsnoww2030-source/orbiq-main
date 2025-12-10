@@ -1,12 +1,13 @@
 // get_product_bloc.dart
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/shared/product/data/models/product_model.dart';
 import 'package:orbiq/features/get_product/domain/usecases/get_product_usecase.dart';
 import 'package:orbiq/features/get_product/domain/usecases/get_products_usecase.dart';
 
+part 'get_product_bloc.freezed.dart';
 part 'get_product_event.dart';
 part 'get_product_state.dart';
 
@@ -16,12 +17,12 @@ class GetProductBloc extends Bloc<GetProductEvent, GetProductState> {
   final GetProductBySerialUseCase getProductBySerialUseCase;
 
   int _currentPage = 1;
-  final int _limit = 20; // Default limit
+  final int _limit = 20;
 
   GetProductBloc({
     required this.getProductsUseCase,
     required this.getProductBySerialUseCase,
-  }) : super(GetProductInitial()) {
+  }) : super(const GetProductState.initial()) {
     on<LoadProducts>(_onLoadProducts);
     on<SearchProductBySerial>(_onSearchProductBySerial);
     on<LoadProductPageEvent>(_onLoadProductPageEvent);
@@ -31,8 +32,7 @@ class GetProductBloc extends Bloc<GetProductEvent, GetProductState> {
     LoadProducts event,
     Emitter<GetProductState> emit,
   ) async {
-    emit(ProductLoading());
-    // Ensure page is at least 1
+    emit(const GetProductState.loading());
     _currentPage = event.page < 1 ? 1 : event.page;
     try {
       final params = GetProductsUseCaseParams(
@@ -42,7 +42,7 @@ class GetProductBloc extends Bloc<GetProductEvent, GetProductState> {
       final paginatedData = await getProductsUseCase(params);
       final totalPages = (paginatedData.totalProducts / event.limit).ceil();
       emit(
-        ProductLoaded(
+        GetProductState.loaded(
           products: paginatedData.products,
           currentPage: _currentPage,
           totalPages: totalPages,
@@ -50,7 +50,7 @@ class GetProductBloc extends Bloc<GetProductEvent, GetProductState> {
         ),
       );
     } catch (e) {
-      emit(ProductError(e.toString()));
+      emit(GetProductState.error(e.toString()));
     }
   }
 
@@ -58,8 +58,7 @@ class GetProductBloc extends Bloc<GetProductEvent, GetProductState> {
     LoadProductPageEvent event,
     Emitter<GetProductState> emit,
   ) async {
-    emit(ProductLoadingPage()); // Indicate loading a new page
-    // Ensure page is at least 1
+    emit(const GetProductState.loadingPage());
     _currentPage = event.page < 1 ? 1 : event.page;
     try {
       final params = GetProductsUseCaseParams(
@@ -69,7 +68,7 @@ class GetProductBloc extends Bloc<GetProductEvent, GetProductState> {
       final paginatedData = await getProductsUseCase(params);
       final totalPages = (paginatedData.totalProducts / _limit).ceil();
       emit(
-        ProductLoaded(
+        GetProductState.loaded(
           products: paginatedData.products,
           currentPage: _currentPage,
           totalPages: totalPages,
@@ -77,9 +76,7 @@ class GetProductBloc extends Bloc<GetProductEvent, GetProductState> {
         ),
       );
     } catch (e) {
-      // Revert page if loading fails for current page
-      // Or handle error more gracefully
-      emit(ProductError(e.toString()));
+      emit(GetProductState.error(e.toString()));
     }
   }
 
@@ -87,16 +84,16 @@ class GetProductBloc extends Bloc<GetProductEvent, GetProductState> {
     SearchProductBySerial event,
     Emitter<GetProductState> emit,
   ) async {
-    emit(ProductLoading());
+    emit(const GetProductState.loading());
     try {
       final product = await getProductBySerialUseCase(event.serialNumber);
       if (product != null) {
-        emit(ProductFound(product));
+        emit(GetProductState.found(product));
       } else {
-        emit(ProductNotFound());
+        emit(const GetProductState.notFound());
       }
     } catch (e) {
-      emit(ProductError(e.toString()));
+      emit(GetProductState.error(e.toString()));
     }
   }
 }

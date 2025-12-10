@@ -1,13 +1,11 @@
-abstract class ExportState {}
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class ExportInitial extends ExportState {}
+part 'export_state.freezed.dart';
 
-class Exporting extends ExportState {}
-
-class ExportSuccess extends ExportState {}
-
-class ExportFailure extends ExportState {
-  final String message;
-
-  ExportFailure(this.message);
+@freezed
+class ExportState with _$ExportState {
+  const factory ExportState.initial() = ExportInitial;
+  const factory ExportState.exporting() = Exporting;
+  const factory ExportState.success() = ExportSuccess;
+  const factory ExportState.failure(String message) = ExportFailure;
 }

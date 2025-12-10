@@ -27,7 +27,7 @@ class PaymentPage extends StatelessWidget {
     String userNickname;
 
     if (authState is AuthSuccess) {
-      userId = authState.userId;
+      userId = authState.user.id ?? 0;
       userNickname = authState.user.nickname;
     } else {
       userId = 0;
@@ -89,7 +89,7 @@ class PaymentPage extends StatelessWidget {
             builder: (context, cartState) {
               List<ProductEntity> cartItems = [];
               if (cartState is CartUpdated) {
-                cartItems = cartState.cartItems;
+                cartItems = cartState.items;
               }
 
               double totalPrice = cartItems.fold(
