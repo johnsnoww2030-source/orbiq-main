@@ -678,38 +678,90 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
               ),
             ),
             const SizedBox(width: 8),
-            AnimatedBuilder(
-              animation: _animation,
-              builder: (context, child) => IconButton(
-                onPressed: () {
-                  setState(() {
-                    _isCartActive = !_isCartActive;
-                    _isCartPanelOpen =
-                        _isCartActive; // Open panel when cart is activated
-                    if (_isCartActive) {
-                      _animationController.forward();
-                    } else {
-                      _animationController.reverse();
-                    }
-                  });
-                },
-                icon: Icon(
-                  _isCartActive
-                      ? Icons.shopping_cart
-                      : Icons.shopping_cart_outlined,
-                  size: 24 + (_animation.value * 4),
-                ),
-                tooltip: l10n.cart,
-                style: IconButton.styleFrom(
-                  backgroundColor: _isCartActive
-                      ? Theme.of(context).primaryColor
-                      : Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                  foregroundColor: _isCartActive
-                      ? Colors.white
-                      : Theme.of(context).primaryColor,
-                  padding: const EdgeInsets.all(12),
-                ),
-              ),
+            // Desktop Cart Button with Badge
+            BlocBuilder<CartBloc, CartState>(
+              builder: (context, cartState) {
+                int cartItemCount = 0;
+                if (cartState is CartUpdated) {
+                  cartItemCount = cartState.items.length;
+                }
+                return AnimatedBuilder(
+                  animation: _animation,
+                  builder: (context, child) => Stack(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            if (_isCartActive) {
+                              // If cart mode is active, toggle panel only
+                              _isCartPanelOpen = !_isCartPanelOpen;
+                            } else {
+                              // Activate cart mode and open panel
+                              _isCartActive = true;
+                              _isCartPanelOpen = true;
+                              _animationController.forward();
+                            }
+                          });
+                        },
+                        onLongPress: () {
+                          // Long press to deactivate cart mode
+                          setState(() {
+                            _isCartActive = false;
+                            _isCartPanelOpen = false;
+                            _animationController.reverse();
+                          });
+                        },
+                        icon: Icon(
+                          _isCartActive
+                              ? Icons.shopping_cart
+                              : Icons.shopping_cart_outlined,
+                          size: 24 + (_animation.value * 4),
+                        ),
+                        tooltip: _isCartActive
+                            ? '${l10n.cart} (${l10n.pay}: Long press)'
+                            : l10n.cart,
+                        style: IconButton.styleFrom(
+                          backgroundColor: _isCartActive
+                              ? Theme.of(context).primaryColor
+                              : Theme.of(
+                                  context,
+                                ).primaryColor.withValues(alpha: 0.1),
+                          foregroundColor: _isCartActive
+                              ? Colors.white
+                              : Theme.of(context).primaryColor,
+                          padding: const EdgeInsets.all(12),
+                        ),
+                      ),
+                      // Badge for item count
+                      if (cartItemCount > 0)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 18,
+                              minHeight: 18,
+                            ),
+                            child: Text(
+                              '$cartItemCount',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
             ),
             const SizedBox(width: 16),
             FilledButton.icon(
@@ -1564,183 +1616,6 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildCartSection(
-    BuildContext context,
-    AppLocalizations l10n,
-    int crossAxisCount,
-    bool isMobile,
-  ) {
-    return BlocBuilder<CartBloc, CartState>(
-      builder: (context, cartState) {
-        List<ProductEntity> cartItems = [];
-        double totalPrice = 0.0;
-        if (cartState is CartUpdated) {
-          cartItems = cartState.items;
-          totalPrice = cartItems.fold(
-            0.0,
-            (sum, item) => sum + item.originalPrice,
-          );
-        }
-
-        return Container(
-          height: isMobile ? 200 : 250,
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 10,
-                offset: const Offset(0, -5),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(isMobile ? 12 : 16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(24),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.shopping_cart,
-                          color: Theme.of(context).primaryColor,
-                          size: isMobile ? 20 : 24,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${l10n.cart} (${cartItems.length})',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: isMobile ? 14 : 16,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      _formatPrice(context, totalPrice),
-                      style: TextStyle(
-                        fontSize: isMobile ? 14 : 18,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                    FilledButton(
-                      onPressed: cartItems.isEmpty
-                          ? null
-                          : () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const PaymentPage(),
-                              ),
-                            ),
-                      style: FilledButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: isMobile ? 12 : 16,
-                          vertical: 8,
-                        ),
-                      ),
-                      child: Text(l10n.pay),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: cartItems.isEmpty
-                    ? Center(
-                        child: Text(
-                          l10n.cartEmpty,
-                          style: TextStyle(color: Colors.grey[500]),
-                        ),
-                      )
-                    : ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.all(8),
-                        itemCount: cartItems.length,
-                        itemBuilder: (context, index) => _buildCartItem(
-                          context,
-                          l10n,
-                          cartItems[index],
-                          isMobile,
-                        ),
-                      ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildCartItem(
-    BuildContext context,
-    AppLocalizations l10n,
-    ProductEntity product,
-    bool isMobile,
-  ) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      child: SizedBox(
-        width: isMobile ? 150 : 180,
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      product.name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: isMobile ? 12 : 14,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => context.read<CartBloc>().add(
-                      RemoveFromCartEvent(product),
-                    ),
-                    child: const Icon(Icons.close, size: 16, color: Colors.red),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                product.serialNumber,
-                style: TextStyle(
-                  fontSize: isMobile ? 9 : 10,
-                  color: Colors.grey[600],
-                ),
-              ),
-              const Spacer(),
-              Text(
-                _formatPrice(context, product.originalPrice),
-                style: TextStyle(
-                  color: Colors.green[700],
-                  fontWeight: FontWeight.w500,
-                  fontSize: isMobile ? 11 : 12,
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
