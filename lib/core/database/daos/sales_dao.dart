@@ -108,4 +108,110 @@ class SalesDao extends DatabaseAccessor<AppDatabase> with _$SalesDaoMixin {
     final all = await select(salesItems).get();
     return all.fold<double>(0.0, (double sum, item) => sum + item.profit);
   }
+
+  // === Report Methods ===
+
+  /// Get sales invoices in date range
+  Future<List<SalesInvoice>> getSalesInDateRange(
+    DateTime startDate,
+    DateTime endDate,
+  ) {
+    return (select(
+      salesInvoices,
+    )..where((i) => i.invoiceDate.isBetweenValues(startDate, endDate))).get();
+  }
+
+  /// Get total revenue in date range
+  Future<double> getRevenueInDateRange(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    final invoices = await getSalesInDateRange(startDate, endDate);
+    return invoices.fold<double>(0.0, (sum, inv) => sum + inv.totalAmount);
+  }
+
+  /// Get total profit in date range
+  Future<double> getProfitInDateRange(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    final invoices = await getSalesInDateRange(startDate, endDate);
+    double totalProfit = 0.0;
+    for (final invoice in invoices) {
+      final items = await getItemsByInvoiceUuid(invoice.invoiceUuid);
+      totalProfit += items.fold<double>(0.0, (sum, item) => sum + item.profit);
+    }
+    return totalProfit;
+  }
+
+  /// Get sales count in date range
+  Future<int> getSalesCountInDateRange(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    final invoices = await getSalesInDateRange(startDate, endDate);
+    return invoices.length;
+  }
+
+  /// Get top selling products
+  Future<List<Map<String, dynamic>>> getTopSellingProducts(int limit) async {
+    final allItems = await select(salesItems).get();
+
+    // Group by product, sum quantity and revenue
+    final Map<String, Map<String, dynamic>> productMap = {};
+    for (final item in allItems) {
+      final key = item.productUuid;
+      if (productMap.containsKey(key)) {
+        productMap[key]!['quantity'] += item.quantity;
+        productMap[key]!['revenue'] += item.totalPrice;
+        productMap[key]!['profit'] += item.profit;
+      } else {
+        productMap[key] = {
+          'productUuid': key,
+          'quantity': item.quantity,
+          'revenue': item.totalPrice,
+          'profit': item.profit,
+        };
+      }
+    }
+
+    // Sort by quantity and take top N
+    final sorted = productMap.values.toList()
+      ..sort((a, b) => (b['quantity'] as int).compareTo(a['quantity'] as int));
+
+    return sorted.take(limit).toList();
+  }
+
+  /// Get daily sales for chart (grouped by day)
+  Future<List<Map<String, dynamic>>> getDailySales(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    final invoices = await getSalesInDateRange(startDate, endDate);
+
+    // Group by day
+    final Map<String, Map<String, dynamic>> dailyMap = {};
+    for (final invoice in invoices) {
+      final dayKey =
+          '${invoice.invoiceDate.year}-${invoice.invoiceDate.month.toString().padLeft(2, '0')}-${invoice.invoiceDate.day.toString().padLeft(2, '0')}';
+      if (dailyMap.containsKey(dayKey)) {
+        dailyMap[dayKey]!['revenue'] += invoice.totalAmount;
+        dailyMap[dayKey]!['count'] += 1;
+      } else {
+        dailyMap[dayKey] = {
+          'date': invoice.invoiceDate,
+          'revenue': invoice.totalAmount,
+          'count': 1,
+        };
+      }
+    }
+
+    // Sort by date
+    final sorted = dailyMap.values.toList()
+      ..sort(
+        (a, b) => (a['date'] as DateTime).compareTo(b['date'] as DateTime),
+      );
+
+    return sorted;
+  }
 }

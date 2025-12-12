@@ -1096,4 +1096,25 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get costAtSale => 'قیمت تمام شده در فروش';
+
+  @override
+  String get today => 'امروز';
+
+  @override
+  String get thisWeek => 'این هفته';
+
+  @override
+  String get thisMonth => 'این ماه';
+
+  @override
+  String get salesChart => 'نمودار فروش';
+
+  @override
+  String get topProducts => 'پرفروش‌ترین محصولات';
+
+  @override
+  String get salesCount => 'تعداد فروش';
+
+  @override
+  String get noData => 'داده‌ای موجود نیست';
 }

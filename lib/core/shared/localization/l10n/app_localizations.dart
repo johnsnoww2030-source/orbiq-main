@@ -2253,6 +2253,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cost at Sale'**
   String get costAtSale;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This Week'**
+  String get thisWeek;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This Month'**
+  String get thisMonth;
+
+  /// No description provided for @salesChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales Chart'**
+  String get salesChart;
+
+  /// No description provided for @topProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Selling Products'**
+  String get topProducts;
+
+  /// No description provided for @salesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales Count'**
+  String get salesCount;
+
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data available'**
+  String get noData;
 }
 
 class _AppLocalizationsDelegate

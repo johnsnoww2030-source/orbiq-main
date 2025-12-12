@@ -374,5 +374,13 @@
   "pending": "در انتظار",
   "cancelled": "لغو شده",
   "unknownProduct": "محصول ناشناخته",
-  "costAtSale": "قیمت تمام شده در فروش"
+  "costAtSale": "قیمت تمام شده در فروش",
+  "reports": "گزارشات",
+  "today": "امروز",
+  "thisWeek": "این هفته",
+  "thisMonth": "این ماه",
+  "salesChart": "نمودار فروش",
+  "topProducts": "پرفروش‌ترین محصولات",
+  "salesCount": "تعداد فروش",
+  "noData": "داده‌ای موجود نیست"
 }

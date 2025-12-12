@@ -14,6 +14,7 @@ import 'package:orbiq/features/auth/presentation/ui/widgets/dashboard_content_wi
 // TODO: Replace with Sales Module (PRD)
 // Removed: payment_report_page.dart
 import 'package:orbiq/features/get_product/presentation/ui/products_management_page.dart';
+import 'package:orbiq/features/reports/presentation/ui/reports_page.dart';
 import 'package:orbiq/features/purchase/presentation/ui/purchase_page.dart';
 import 'package:orbiq/features/sales/presentation/ui/sales_page.dart';
 import 'package:orbiq/features/auth/presentation/ui/settings_page.dart';
@@ -182,8 +183,7 @@ class _ManagerPageState extends State<ManagerPage> {
       case 6: // Stocktaking
         return _buildPlaceholder("Stocktaking");
       case 7: // Reports
-        // TODO: Replace with Sales Module (PRD)
-        return _buildPlaceholder("Reports - Coming Soon");
+        return const ReportsPage();
       case 8: // Settings
         return const SettingsPage();
       default:

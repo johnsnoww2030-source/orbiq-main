@@ -1097,4 +1097,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get costAtSale => 'Cost at Sale';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get thisWeek => 'This Week';
+
+  @override
+  String get thisMonth => 'This Month';
+
+  @override
+  String get salesChart => 'Sales Chart';
+
+  @override
+  String get topProducts => 'Top Selling Products';
+
+  @override
+  String get salesCount => 'Sales Count';
+
+  @override
+  String get noData => 'No data available';
 }

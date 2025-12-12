@@ -1092,4 +1092,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get costAtSale => 'التكلفة عند البيع';
+
+  @override
+  String get today => 'اليوم';
+
+  @override
+  String get thisWeek => 'هذا الأسبوع';
+
+  @override
+  String get thisMonth => 'هذا الشهر';
+
+  @override
+  String get salesChart => 'رسم المبيعات';
+
+  @override
+  String get topProducts => 'المنتجات الأكثر مبيعاً';
+
+  @override
+  String get salesCount => 'عدد المبيعات';
+
+  @override
+  String get noData => 'لا توجد بيانات';
 }

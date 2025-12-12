@@ -372,5 +372,13 @@
   "pending": "قيد الانتظار",
   "cancelled": "ملغي",
   "unknownProduct": "منتج غير معروف",
-  "costAtSale": "التكلفة عند البيع"
+  "costAtSale": "التكلفة عند البيع",
+  "reports": "التقارير",
+  "today": "اليوم",
+  "thisWeek": "هذا الأسبوع",
+  "thisMonth": "هذا الشهر",
+  "salesChart": "رسم المبيعات",
+  "topProducts": "المنتجات الأكثر مبيعاً",
+  "salesCount": "عدد المبيعات",
+  "noData": "لا توجد بيانات"
 }

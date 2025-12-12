@@ -371,5 +371,13 @@
   "pending": "Pending",
   "cancelled": "Cancelled",
   "unknownProduct": "Unknown Product",
-  "costAtSale": "Cost at Sale"
+  "costAtSale": "Cost at Sale",
+  "reports": "Reports",
+  "today": "Today",
+  "thisWeek": "This Week",
+  "thisMonth": "This Month",
+  "salesChart": "Sales Chart",
+  "topProducts": "Top Selling Products",
+  "salesCount": "Sales Count",
+  "noData": "No data available"
 }
