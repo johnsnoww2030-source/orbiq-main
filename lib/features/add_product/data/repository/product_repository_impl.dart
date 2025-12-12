@@ -25,9 +25,7 @@ class ProductRepositoryImpl implements ProductRepository {
           product,
           existingUuid: product.uuid,
         );
-        await _productDao.insertProduct(
-          companion,
-        ); // TODO: Implement proper update
+        await _productDao.updateProductByUuid(product.uuid!, companion);
       }
     }
   }

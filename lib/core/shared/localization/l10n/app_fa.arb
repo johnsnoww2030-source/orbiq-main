@@ -382,5 +382,13 @@
   "salesChart": "نمودار فروش",
   "topProducts": "پرفروش‌ترین محصولات",
   "salesCount": "تعداد فروش",
-  "noData": "داده‌ای موجود نیست"
+  "noData": "داده‌ای موجود نیست",
+  "pricingSuggestion": "پیشنهاد قیمت‌گذاری",
+  "pricingSuggestionHint": "بروزرسانی قیمت فروش بر اساس قیمت تمام‌شده جدید",
+  "costPrice": "قیمت تمام‌شده",
+  "suggestedPrice": "قیمت پیشنهادی",
+  "currentPrice": "قیمت فعلی",
+  "currentMargin": "سود فعلی",
+  "later": "بعداً",
+  "applyPricing": "اعمال قیمت"
 }

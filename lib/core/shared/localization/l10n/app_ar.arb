@@ -380,5 +380,13 @@
   "salesChart": "رسم المبيعات",
   "topProducts": "المنتجات الأكثر مبيعاً",
   "salesCount": "عدد المبيعات",
-  "noData": "لا توجد بيانات"
+  "noData": "لا توجد بيانات",
+  "pricingSuggestion": "اقتراح التسعير",
+  "pricingSuggestionHint": "تحديث سعر البيع بناءً على التكلفة الجديدة",
+  "costPrice": "سعر التكلفة",
+  "suggestedPrice": "السعر المقترح",
+  "currentPrice": "السعر الحالي",
+  "currentMargin": "هامش الربح الحالي",
+  "later": "لاحقاً",
+  "applyPricing": "تطبيق التسعير"
 }

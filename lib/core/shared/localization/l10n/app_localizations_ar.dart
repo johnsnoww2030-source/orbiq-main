@@ -1113,4 +1113,29 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noData => 'لا توجد بيانات';
+
+  @override
+  String get pricingSuggestion => 'اقتراح التسعير';
+
+  @override
+  String get pricingSuggestionHint =>
+      'تحديث سعر البيع بناءً على التكلفة الجديدة';
+
+  @override
+  String get costPrice => 'سعر التكلفة';
+
+  @override
+  String get suggestedPrice => 'السعر المقترح';
+
+  @override
+  String get currentPrice => 'السعر الحالي';
+
+  @override
+  String get currentMargin => 'هامش الربح الحالي';
+
+  @override
+  String get later => 'لاحقاً';
+
+  @override
+  String get applyPricing => 'تطبيق التسعير';
 }

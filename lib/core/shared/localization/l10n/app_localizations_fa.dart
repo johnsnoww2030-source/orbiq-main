@@ -1117,4 +1117,29 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get noData => 'داده‌ای موجود نیست';
+
+  @override
+  String get pricingSuggestion => 'پیشنهاد قیمت‌گذاری';
+
+  @override
+  String get pricingSuggestionHint =>
+      'بروزرسانی قیمت فروش بر اساس قیمت تمام‌شده جدید';
+
+  @override
+  String get costPrice => 'قیمت تمام‌شده';
+
+  @override
+  String get suggestedPrice => 'قیمت پیشنهادی';
+
+  @override
+  String get currentPrice => 'قیمت فعلی';
+
+  @override
+  String get currentMargin => 'سود فعلی';
+
+  @override
+  String get later => 'بعداً';
+
+  @override
+  String get applyPricing => 'اعمال قیمت';
 }

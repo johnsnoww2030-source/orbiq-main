@@ -1118,4 +1118,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noData => 'No data available';
+
+  @override
+  String get pricingSuggestion => 'Pricing Suggestion';
+
+  @override
+  String get pricingSuggestionHint => 'Update selling prices based on new cost';
+
+  @override
+  String get costPrice => 'Cost Price (WAC)';
+
+  @override
+  String get suggestedPrice => 'Suggested Price';
+
+  @override
+  String get currentPrice => 'Current Price';
+
+  @override
+  String get currentMargin => 'Current Margin';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get applyPricing => 'Apply Pricing';
 }

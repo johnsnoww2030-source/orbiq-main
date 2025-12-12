@@ -2295,6 +2295,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No data available'**
   String get noData;
+
+  /// No description provided for @pricingSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing Suggestion'**
+  String get pricingSuggestion;
+
+  /// No description provided for @pricingSuggestionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Update selling prices based on new cost'**
+  String get pricingSuggestionHint;
+
+  /// No description provided for @costPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost Price (WAC)'**
+  String get costPrice;
+
+  /// No description provided for @suggestedPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested Price'**
+  String get suggestedPrice;
+
+  /// No description provided for @currentPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Price'**
+  String get currentPrice;
+
+  /// No description provided for @currentMargin.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Margin'**
+  String get currentMargin;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
+
+  /// No description provided for @applyPricing.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Pricing'**
+  String get applyPricing;
 }
 
 class _AppLocalizationsDelegate

@@ -379,5 +379,13 @@
   "salesChart": "Sales Chart",
   "topProducts": "Top Selling Products",
   "salesCount": "Sales Count",
-  "noData": "No data available"
+  "noData": "No data available",
+  "pricingSuggestion": "Pricing Suggestion",
+  "pricingSuggestionHint": "Update selling prices based on new cost",
+  "costPrice": "Cost Price (WAC)",
+  "suggestedPrice": "Suggested Price",
+  "currentPrice": "Current Price",
+  "currentMargin": "Current Margin",
+  "later": "Later",
+  "applyPricing": "Apply Pricing"
 }

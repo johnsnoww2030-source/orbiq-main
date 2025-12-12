@@ -3,8 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
+import 'package:orbiq/core/di/injection.dart';
+import 'package:orbiq/core/database/daos/product_dao.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
+import 'package:orbiq/core/shared/product/data/mappers/product_mapper.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_bloc.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_event.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_state.dart';
@@ -13,6 +16,7 @@ import 'package:orbiq/features/purchase/presentation/controller/purchase_event.d
 import 'package:orbiq/features/purchase/presentation/controller/purchase_state.dart';
 import 'package:orbiq/features/purchase/domain/entities/purchase_entity.dart';
 import 'package:orbiq/features/purchase/presentation/ui/widgets/quick_add_product_dialog.dart';
+import 'package:orbiq/features/purchase/presentation/ui/widgets/pricing_suggestion_dialog.dart';
 
 /// Add Purchase Page - form to create a new purchase invoice
 class AddPurchasePage extends StatefulWidget {
@@ -71,7 +75,7 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
     final isDesktop = MediaQuery.of(context).size.width > 800;
 
     return BlocListener<PurchaseBloc, PurchaseState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is PurchaseCreated) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -79,7 +83,33 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.pop(context, true);
+
+          // Fetch FRESH products from database (with updated WAC)
+          final productDao = getIt<ProductDao>();
+          final List<ProductEntity> freshProducts = [];
+
+          for (final item in _items) {
+            if (item.productUuid.isNotEmpty) {
+              final product = await productDao.getProductByUuid(
+                item.productUuid,
+              );
+              if (product != null) {
+                freshProducts.add(ProductMapper.toEntity(product));
+              }
+            }
+          }
+
+          if (freshProducts.isNotEmpty && mounted) {
+            await PricingSuggestionDialog.show(
+              context,
+              products: freshProducts,
+              marginPercent: 20.0,
+            );
+          }
+
+          if (mounted) {
+            Navigator.pop(context, true);
+          }
         } else if (state is PurchaseError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message), backgroundColor: Colors.red),

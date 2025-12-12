@@ -58,7 +58,7 @@ dependencies:
   path: ^1.9.1
   mockito: ^5.5.1
   shared_preferences: ^2.5.3
-  fl_chart: ^0.69.2
+  fl_chart: ^1.1.1
   get_it: ^9.2.0
   injectable: ^2.7.1+2
 

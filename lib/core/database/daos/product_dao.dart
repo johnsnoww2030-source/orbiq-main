@@ -38,6 +38,13 @@ class ProductDao extends DatabaseAccessor<AppDatabase> with _$ProductDaoMixin {
     return update(products).replace(product);
   }
 
+  /// Update a product by UUID using Companion
+  Future<int> updateProductByUuid(String uuid, ProductsCompanion companion) {
+    return (update(
+      products,
+    )..where((p) => p.productUuid.equals(uuid))).write(companion);
+  }
+
   /// Delete a product by UUID
   Future<int> deleteProduct(String uuid) {
     return (delete(products)..where((p) => p.productUuid.equals(uuid))).go();
@@ -98,6 +105,16 @@ class ProductDao extends DatabaseAccessor<AppDatabase> with _$ProductDaoMixin {
         currentStock: Value(newStock),
         avgBuyPrice: Value(newWAC),
         lastStockUpdate: Value(DateTime.now()),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  /// Update product original (selling) price
+  Future<void> updateOriginalPrice(String uuid, double newPrice) async {
+    await (update(products)..where((p) => p.productUuid.equals(uuid))).write(
+      ProductsCompanion(
+        originalPrice: Value(newPrice),
         updatedAt: Value(DateTime.now()),
       ),
     );
