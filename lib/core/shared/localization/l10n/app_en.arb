@@ -346,5 +346,16 @@
   "unknownCustomer": "Walk-in Customer",
   "totalProfit": "Total Profit",
   "insufficientStock": "Insufficient stock",
-  "profit": "Profit"
+  "profit": "Profit",
+  "quickAddProduct": "Quick Add Product",
+  "productNameRequired": "Product name is required",
+  "barcodeRequired": "Barcode is required",
+  "quickAddProductHint": "Other details can be edited later",
+  "add": "Add",
+  "addNewProduct": "Add New Product",
+  "barcodeExistsMessage": "This barcode belongs to an existing product:",
+  "useThisProduct": "Use This Product",
+  "duplicateBarcodeError": "Duplicate barcode! This barcode already exists.",
+  "stock": "Stock",
+  "price": "Price"
 }

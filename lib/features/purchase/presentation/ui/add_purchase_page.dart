@@ -12,6 +12,7 @@ import 'package:orbiq/features/purchase/presentation/controller/purchase_bloc.da
 import 'package:orbiq/features/purchase/presentation/controller/purchase_event.dart';
 import 'package:orbiq/features/purchase/presentation/controller/purchase_state.dart';
 import 'package:orbiq/features/purchase/domain/entities/purchase_entity.dart';
+import 'package:orbiq/features/purchase/presentation/ui/widgets/quick_add_product_dialog.dart';
 
 /// Add Purchase Page - form to create a new purchase invoice
 class AddPurchasePage extends StatefulWidget {
@@ -240,6 +241,12 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
                   ),
                 ),
                 const Spacer(),
+                OutlinedButton.icon(
+                  onPressed: () => _showQuickAddProductDialog(l10n),
+                  icon: const Icon(Icons.add_box, size: 18),
+                  label: Text(l10n.addNewProduct),
+                ),
+                const SizedBox(width: 8),
                 FilledButton.icon(
                   onPressed: _addItem,
                   icon: const Icon(Icons.add, size: 18),
@@ -502,6 +509,18 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
     setState(() {
       _items.add(_PurchaseItemFormData());
     });
+  }
+
+  Future<void> _showQuickAddProductDialog(AppLocalizations l10n) async {
+    final product = await QuickAddProductDialog.show(context);
+    if (product != null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${l10n.productName}: ${product.name} ✓'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
   }
 
   void _removeItem(int index) {

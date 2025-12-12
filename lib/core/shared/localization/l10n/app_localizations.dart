@@ -2139,6 +2139,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profit'**
   String get profit;
+
+  /// No description provided for @quickAddProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Add Product'**
+  String get quickAddProduct;
+
+  /// No description provided for @productNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Product name is required'**
+  String get productNameRequired;
+
+  /// No description provided for @barcodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Barcode is required'**
+  String get barcodeRequired;
+
+  /// No description provided for @quickAddProductHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Other details can be edited later'**
+  String get quickAddProductHint;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @barcodeExistsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This barcode belongs to an existing product:'**
+  String get barcodeExistsMessage;
+
+  /// No description provided for @useThisProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Use This Product'**
+  String get useThisProduct;
+
+  /// No description provided for @duplicateBarcodeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate barcode! This barcode already exists.'**
+  String get duplicateBarcodeError;
 }
 
 class _AppLocalizationsDelegate

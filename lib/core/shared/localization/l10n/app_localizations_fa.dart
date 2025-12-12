@@ -1038,4 +1038,29 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get profit => 'سود';
+
+  @override
+  String get quickAddProduct => 'افزودن سریع محصول';
+
+  @override
+  String get productNameRequired => 'نام محصول الزامی است';
+
+  @override
+  String get barcodeRequired => 'بارکد الزامی است';
+
+  @override
+  String get quickAddProductHint => 'بقیه اطلاعات بعداً قابل ویرایش است';
+
+  @override
+  String get add => 'افزودن';
+
+  @override
+  String get barcodeExistsMessage => 'این بارکد متعلق به محصول زیر است:';
+
+  @override
+  String get useThisProduct => 'استفاده از این محصول';
+
+  @override
+  String get duplicateBarcodeError =>
+      'بارکد تکراری! این بارکد قبلاً ثبت شده است.';
 }

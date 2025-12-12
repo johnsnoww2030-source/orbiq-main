@@ -347,5 +347,16 @@
   "unknownCustomer": "عميل حضوري",
   "totalProfit": "إجمالي الربح",
   "insufficientStock": "المخزون غير كافي",
-  "profit": "الربح"
+  "profit": "الربح",
+  "quickAddProduct": "إضافة منتج سريع",
+  "productNameRequired": "اسم المنتج مطلوب",
+  "barcodeRequired": "الباركود مطلوب",
+  "quickAddProductHint": "يمكن تعديل التفاصيل الأخرى لاحقاً",
+  "add": "إضافة",
+  "addNewProduct": "إضافة منتج جديد",
+  "barcodeExistsMessage": "هذا الباركود ينتمي إلى المنتج التالي:",
+  "useThisProduct": "استخدم هذا المنتج",
+  "duplicateBarcodeError": "باركود مكرر! هذا الباركود موجود مسبقاً.",
+  "stock": "المخزون",
+  "price": "السعر"
 }

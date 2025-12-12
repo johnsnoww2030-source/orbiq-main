@@ -349,5 +349,16 @@
   "unknownCustomer": "مشتری حضوری",
   "totalProfit": "سود کل",
   "insufficientStock": "موجودی کافی نیست",
-  "profit": "سود"
+  "profit": "سود",
+  "quickAddProduct": "افزودن سریع محصول",
+  "productNameRequired": "نام محصول الزامی است",
+  "barcodeRequired": "بارکد الزامی است",
+  "quickAddProductHint": "بقیه اطلاعات بعداً قابل ویرایش است",
+  "add": "افزودن",
+  "addNewProduct": "افزودن محصول جدید",
+  "barcodeExistsMessage": "این بارکد متعلق به محصول زیر است:",
+  "useThisProduct": "استفاده از این محصول",
+  "duplicateBarcodeError": "بارکد تکراری! این بارکد قبلاً ثبت شده است.",
+  "stock": "موجودی",
+  "price": "قیمت"
 }

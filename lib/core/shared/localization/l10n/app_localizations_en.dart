@@ -1038,4 +1038,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profit => 'Profit';
+
+  @override
+  String get quickAddProduct => 'Quick Add Product';
+
+  @override
+  String get productNameRequired => 'Product name is required';
+
+  @override
+  String get barcodeRequired => 'Barcode is required';
+
+  @override
+  String get quickAddProductHint => 'Other details can be edited later';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get barcodeExistsMessage =>
+      'This barcode belongs to an existing product:';
+
+  @override
+  String get useThisProduct => 'Use This Product';
+
+  @override
+  String get duplicateBarcodeError =>
+      'Duplicate barcode! This barcode already exists.';
 }

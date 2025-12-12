@@ -1035,4 +1035,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profit => 'الربح';
+
+  @override
+  String get quickAddProduct => 'إضافة منتج سريع';
+
+  @override
+  String get productNameRequired => 'اسم المنتج مطلوب';
+
+  @override
+  String get barcodeRequired => 'الباركود مطلوب';
+
+  @override
+  String get quickAddProductHint => 'يمكن تعديل التفاصيل الأخرى لاحقاً';
+
+  @override
+  String get add => 'إضافة';
+
+  @override
+  String get barcodeExistsMessage => 'هذا الباركود ينتمي إلى المنتج التالي:';
+
+  @override
+  String get useThisProduct => 'استخدم هذا المنتج';
+
+  @override
+  String get duplicateBarcodeError => 'باركود مكرر! هذا الباركود موجود مسبقاً.';
 }
