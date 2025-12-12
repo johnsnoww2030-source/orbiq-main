@@ -8,6 +8,8 @@ import 'package:orbiq/features/add_product/presentation/ui/edit_product_page.dar
 import 'package:orbiq/features/auth/presentation/controller/auth_bloc.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_state.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_bloc.dart';
+import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_event.dart';
+import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_state.dart';
 import 'package:orbiq/features/payment/presentation/controller/cart_bloc.dart';
 import 'package:orbiq/features/payment/presentation/controller/cart_event.dart';
 import 'package:orbiq/features/payment/presentation/controller/cart_state.dart';

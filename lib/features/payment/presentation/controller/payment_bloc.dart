@@ -22,7 +22,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
   }) : _savePayment = savePayment,
        _getPaymentsByUserIdAndNickname = getPaymentsByUserIdAndNickname,
        _getAllPaymentsUseCase = getAllPaymentsUseCase,
-       super(const PaymentState.initial()) {
+       super(const PaymentInitial()) {
     on<SavePaymentEvent>(_onSavePaymentEvent);
     on<GetPaymentsByUserIdAndNicknameEvent>(
       _onGetPaymentsByUserIdAndNicknameEvent,
@@ -35,11 +35,11 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     SavePaymentEvent event,
     Emitter<PaymentState> emit,
   ) async {
-    emit(const PaymentState.loading());
+    emit(const PaymentLoading());
     final result = await _savePayment(event.payment);
     result.fold(
-      (failure) => emit(PaymentState.failure(failure.message)),
-      (_) => emit(const PaymentState.success()),
+      (failure) => emit(PaymentFailure(failure.message)),
+      (_) => emit(const PaymentSuccess()),
     );
   }
 
@@ -47,15 +47,15 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     GetPaymentsByUserIdAndNicknameEvent event,
     Emitter<PaymentState> emit,
   ) async {
-    emit(const PaymentState.loading());
+    emit(const PaymentLoading());
     final result = await _getPaymentsByUserIdAndNickname(
       event.userId,
       event.nickname,
     );
     result.fold(
-      (failure) => emit(PaymentState.failure(failure.message)),
+      (failure) => emit(PaymentFailure(failure.message)),
       (payments) => emit(
-        PaymentState.listLoaded(
+        PaymentListLoaded(
           payments: payments,
           currentPage: 1,
           totalPages: 1,
@@ -69,7 +69,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     GetAllPaymentsEvent event,
     Emitter<PaymentState> emit,
   ) async {
-    emit(const PaymentState.loading());
+    emit(const PaymentLoading());
     _currentPage = event.page < 1 ? 1 : event.page;
     _limit = event.limit;
 
@@ -80,9 +80,9 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     final result = await _getAllPaymentsUseCase(params);
 
     result.fold(
-      (failure) => emit(PaymentState.failure(failure.message)),
+      (failure) => emit(PaymentFailure(failure.message)),
       (paginatedData) => emit(
-        PaymentState.listLoaded(
+        PaymentListLoaded(
           payments: paginatedData.payments,
           currentPage: paginatedData.currentPage,
           totalPages: paginatedData.totalPages,
@@ -96,7 +96,7 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     LoadPaymentPageEvent event,
     Emitter<PaymentState> emit,
   ) async {
-    emit(const PaymentState.loadingPage());
+    emit(const PaymentLoadingPage());
     _currentPage = event.page < 1 ? 1 : event.page;
 
     final params = GetAllPaymentsUseCaseParams(
@@ -106,9 +106,9 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
     final result = await _getAllPaymentsUseCase(params);
 
     result.fold(
-      (failure) => emit(PaymentState.failure(failure.message)),
+      (failure) => emit(PaymentFailure(failure.message)),
       (paginatedData) => emit(
-        PaymentState.listLoaded(
+        PaymentListLoaded(
           payments: paginatedData.payments,
           currentPage: paginatedData.currentPage,
           totalPages: paginatedData.totalPages,

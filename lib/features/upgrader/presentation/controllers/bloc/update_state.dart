@@ -1,16 +1,59 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:orbiq/features/upgrader/domain/entities/version_info_entity.dart';
 
-part 'update_state.freezed.dart';
+sealed class UpdateState extends Equatable {
+  const UpdateState();
+}
 
-@freezed
-class UpdateState with _$UpdateState {
-  const factory UpdateState.initial() = UpdateInitial;
-  const factory UpdateState.checking() = UpdateChecking;
-  const factory UpdateState.available(VersionInfoEntity versionInfo) =
-      UpdateAvailable;
-  const factory UpdateState.notAvailable() = UpdateNotAvailable;
-  const factory UpdateState.downloading() = UpdateDownloading;
-  const factory UpdateState.installed() = UpdateInstalled;
-  const factory UpdateState.error(String message) = UpdateError;
+class UpdateInitial extends UpdateState {
+  const UpdateInitial();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class UpdateChecking extends UpdateState {
+  const UpdateChecking();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class UpdateAvailable extends UpdateState {
+  final VersionInfoEntity versionInfo;
+
+  const UpdateAvailable(this.versionInfo);
+
+  @override
+  List<Object?> get props => [versionInfo];
+}
+
+class UpdateNotAvailable extends UpdateState {
+  const UpdateNotAvailable();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class UpdateDownloading extends UpdateState {
+  const UpdateDownloading();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class UpdateInstalled extends UpdateState {
+  const UpdateInstalled();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class UpdateError extends UpdateState {
+  final String message;
+
+  const UpdateError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }

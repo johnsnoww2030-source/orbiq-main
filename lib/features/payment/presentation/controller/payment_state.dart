@@ -1,19 +1,60 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 import '../../domain/entities/payment_entity.dart';
 
-part 'payment_state.freezed.dart';
+sealed class PaymentState extends Equatable {
+  const PaymentState();
+}
 
-@freezed
-class PaymentState with _$PaymentState {
-  const factory PaymentState.initial() = PaymentInitial;
-  const factory PaymentState.loading() = PaymentLoading;
-  const factory PaymentState.loadingPage() = PaymentLoadingPage;
-  const factory PaymentState.success() = PaymentSuccess;
-  const factory PaymentState.failure(String message) = PaymentFailure;
-  const factory PaymentState.listLoaded({
-    required List<PaymentEntity> payments,
-    required int currentPage,
-    required int totalPages,
-    required bool hasNextPage,
-  }) = PaymentListLoaded;
+class PaymentInitial extends PaymentState {
+  const PaymentInitial();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class PaymentLoading extends PaymentState {
+  const PaymentLoading();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class PaymentLoadingPage extends PaymentState {
+  const PaymentLoadingPage();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class PaymentSuccess extends PaymentState {
+  const PaymentSuccess();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class PaymentFailure extends PaymentState {
+  final String message;
+
+  const PaymentFailure(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class PaymentListLoaded extends PaymentState {
+  final List<PaymentEntity> payments;
+  final int currentPage;
+  final int totalPages;
+  final bool hasNextPage;
+
+  const PaymentListLoaded({
+    required this.payments,
+    required this.currentPage,
+    required this.totalPages,
+    required this.hasNextPage,
+  });
+
+  @override
+  List<Object?> get props => [payments, currentPage, totalPages, hasNextPage];
 }

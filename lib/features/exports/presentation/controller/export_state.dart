@@ -1,11 +1,35 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 
-part 'export_state.freezed.dart';
+sealed class ExportState extends Equatable {
+  const ExportState();
+}
 
-@freezed
-class ExportState with _$ExportState {
-  const factory ExportState.initial() = ExportInitial;
-  const factory ExportState.exporting() = Exporting;
-  const factory ExportState.success() = ExportSuccess;
-  const factory ExportState.failure(String message) = ExportFailure;
+class ExportInitial extends ExportState {
+  const ExportInitial();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class Exporting extends ExportState {
+  const Exporting();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ExportSuccess extends ExportState {
+  const ExportSuccess();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ExportFailure extends ExportState {
+  final String message;
+
+  const ExportFailure(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }

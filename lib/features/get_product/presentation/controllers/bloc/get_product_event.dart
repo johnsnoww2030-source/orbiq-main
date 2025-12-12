@@ -1,15 +1,33 @@
-part of 'get_product_bloc.dart';
+import 'package:equatable/equatable.dart';
 
-@freezed
-class GetProductEvent with _$GetProductEvent {
-  const factory GetProductEvent.loadProducts({
-    @Default(1) int page,
-    @Default(20) int limit,
-  }) = LoadProducts;
+sealed class GetProductEvent extends Equatable {
+  const GetProductEvent();
+}
 
-  const factory GetProductEvent.loadProductPage(int page) =
-      LoadProductPageEvent;
+class LoadProducts extends GetProductEvent {
+  final int page;
+  final int limit;
 
-  const factory GetProductEvent.searchBySerial(String serialNumber) =
-      SearchProductBySerial;
+  const LoadProducts({this.page = 1, this.limit = 20});
+
+  @override
+  List<Object?> get props => [page, limit];
+}
+
+class LoadProductPageEvent extends GetProductEvent {
+  final int page;
+
+  const LoadProductPageEvent(this.page);
+
+  @override
+  List<Object?> get props => [page];
+}
+
+class SearchProductBySerial extends GetProductEvent {
+  final String serialNumber;
+
+  const SearchProductBySerial(this.serialNumber);
+
+  @override
+  List<Object?> get props => [serialNumber];
 }

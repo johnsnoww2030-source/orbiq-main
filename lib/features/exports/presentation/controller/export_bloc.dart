@@ -11,7 +11,7 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
   final ExportToExcelUseCase exportToExcelUseCase;
 
   ExportBloc(this.exportToPDFUseCase, this.exportToExcelUseCase)
-    : super(const ExportState.initial()) {
+    : super(const ExportInitial()) {
     on<ExportPDFEvent>(_onExportPDFEvent);
     on<ExportExcelEvent>(_onExportExcelEvent);
   }
@@ -20,12 +20,12 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
     ExportPDFEvent event,
     Emitter<ExportState> emit,
   ) async {
-    emit(const ExportState.exporting());
+    emit(const Exporting());
     try {
       await exportToPDFUseCase(event.data, event.fileName);
-      emit(const ExportState.success());
+      emit(const ExportSuccess());
     } catch (e) {
-      emit(ExportState.failure(e.toString()));
+      emit(ExportFailure(e.toString()));
     }
   }
 
@@ -33,12 +33,12 @@ class ExportBloc extends Bloc<ExportEvent, ExportState> {
     ExportExcelEvent event,
     Emitter<ExportState> emit,
   ) async {
-    emit(const ExportState.exporting());
+    emit(const Exporting());
     try {
       await exportToExcelUseCase(event.data, event.fileName);
-      emit(const ExportState.success());
+      emit(const ExportSuccess());
     } catch (e) {
-      emit(ExportState.failure(e.toString()));
+      emit(ExportFailure(e.toString()));
     }
   }
 }

@@ -1,12 +1,38 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:equatable/equatable.dart';
 import '../../domain/entities/language_entity.dart';
 
-part 'language_state.freezed.dart';
+sealed class LanguageState extends Equatable {
+  const LanguageState();
+}
 
-@freezed
-class LanguageState with _$LanguageState {
-  const factory LanguageState.initial() = LanguageInitial;
-  const factory LanguageState.loading() = LanguageLoading;
-  const factory LanguageState.loaded(LanguageEntity language) = LanguageLoaded;
-  const factory LanguageState.error(String message) = LanguageError;
+class LanguageInitial extends LanguageState {
+  const LanguageInitial();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class LanguageLoading extends LanguageState {
+  const LanguageLoading();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class LanguageLoaded extends LanguageState {
+  final LanguageEntity language;
+
+  const LanguageLoaded(this.language);
+
+  @override
+  List<Object?> get props => [language];
+}
+
+class LanguageError extends LanguageState {
+  final String message;
+
+  const LanguageError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }

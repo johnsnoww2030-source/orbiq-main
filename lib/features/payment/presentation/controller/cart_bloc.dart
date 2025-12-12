@@ -9,20 +9,20 @@ import 'package:orbiq/features/payment/presentation/controller/cart_state.dart';
 class CartBloc extends Bloc<CartEvent, CartState> {
   final List<ProductEntity> _cartItems = [];
 
-  CartBloc() : super(const CartState.initial()) {
+  CartBloc() : super(const CartInitial()) {
     on<AddToCartEvent>((event, emit) {
       _cartItems.add(event.product);
-      emit(CartState.updated(List.from(_cartItems)));
+      emit(CartUpdated(List.from(_cartItems)));
     });
 
     on<RemoveFromCartEvent>((event, emit) {
       _cartItems.remove(event.product);
-      emit(CartState.updated(List.from(_cartItems)));
+      emit(CartUpdated(List.from(_cartItems)));
     });
 
     on<ClearCartEvent>((event, emit) {
       _cartItems.clear();
-      emit(CartState.updated(List.from(_cartItems)));
+      emit(CartUpdated(List.from(_cartItems)));
     });
   }
 }

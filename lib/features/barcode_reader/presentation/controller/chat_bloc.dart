@@ -45,7 +45,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     required this.getMessagesUseCase,
     required this.getClientsUseCase,
     required this.handleClientDisconnectionUseCase,
-  }) : super(const ChatState.initial()) {
+  }) : super(const ChatInitial()) {
     on<SendMessageEvent>(_onSendMessage);
     on<StartServerEvent>(_onStartServer);
     on<ConnectToServerEvent>(_onConnectToServer);
@@ -64,18 +64,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       // حذف کلاینت با clientId از لیست کلاینت‌ها
       clients.removeWhere((client) => client.address == event.clientId);
 
-      // چاپ لاگ برای بررسی وضعیت کلاینت‌ها
-
       // به‌روزرسانی وضعیت در UI
       emit(
-        ChatState.connected(
+        ChatConnected(
           messages: List.from(messages),
           clients: List.from(clients),
           isServer: isServer,
         ),
       );
     } catch (e) {
-      emit(ChatState.error('خطا در مدیریت قطع ارتباط کلاینت: $e'));
+      emit(ChatError('خطا در مدیریت قطع ارتباط کلاینت: $e'));
     }
   }
 
@@ -86,7 +84,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     try {
       await sendMessageUseCase(event.message);
     } catch (e) {
-      emit(ChatState.error(e.toString()));
+      emit(ChatError(e.toString()));
     }
   }
 
@@ -94,7 +92,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     StartServerEvent event,
     Emitter<ChatState> emit,
   ) async {
-    emit(const ChatState.loading());
+    emit(const ChatLoading());
     try {
       isConnected = true;
       isServer = true; // We're starting as server
@@ -108,7 +106,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         ChatConnected(messages: messages, clients: clients, isServer: isServer),
       );
     } catch (e) {
-      emit(ChatState.error(e.toString()));
+      emit(ChatError(e.toString()));
     }
   }
 
@@ -116,7 +114,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     ConnectToServerEvent event,
     Emitter<ChatState> emit,
   ) async {
-    emit(const ChatState.loading());
+    emit(const ChatLoading());
     await Future.delayed(const Duration(seconds: 1));
 
     try {
@@ -129,14 +127,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       _listenToClientDisconnections(); // اضافه کردن گوش دادن به قطع ارتباط
 
       emit(
-        ChatState.connected(
-          messages: messages,
-          clients: clients,
-          isServer: isServer,
-        ),
+        ChatConnected(messages: messages, clients: clients, isServer: isServer),
       );
     } catch (e) {
-      emit(ChatState.error(e.toString()));
+      emit(ChatError(e.toString()));
     }
   }
 
@@ -144,7 +138,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     AutoConnectToServerEvent event,
     Emitter<ChatState> emit,
   ) async {
-    emit(const ChatState.loading());
+    emit(const ChatLoading());
     try {
       isServer = false; // Auto-connect is for client
       await autoConnectToServerUseCase.execute();
@@ -156,14 +150,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
       isConnected = true;
       emit(
-        ChatState.connected(
-          messages: messages,
-          clients: clients,
-          isServer: isServer,
-        ),
+        ChatConnected(messages: messages, clients: clients, isServer: isServer),
       );
     } catch (e) {
-      emit(ChatState.error(e.toString()));
+      emit(ChatError(e.toString()));
     }
   }
 
@@ -188,7 +178,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       // Disconnect use case
       await disconnectUseCase();
 
-      emit(const ChatState.disconnected());
+      emit(const ChatDisconnected());
     }
   }
 
@@ -198,7 +188,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) {
     messages.add(event.message);
     emit(
-      ChatState.connected(
+      ChatConnected(
         messages: List.from(messages),
         clients: List.from(clients),
         isServer: isServer,
@@ -210,7 +200,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     clients.add(event.clientInfo);
     isConnected = true;
     emit(
-      ChatState.connected(
+      ChatConnected(
         messages: List.from(messages),
         clients: List.from(clients),
         isServer: isServer,

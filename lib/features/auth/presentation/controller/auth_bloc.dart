@@ -20,7 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.updatePasswordUseCase,
     required this.logoutUseCase,
     required this.addUserUseCase,
-  }) : super(const AuthState.initial()) {
+  }) : super(const AuthInitial()) {
     on<LoginRequested>(_onLoginRequested);
     on<UpdatePasswordRequested>(_onUpdatePasswordRequested);
     on<LogoutRequested>(_onLogoutRequested);
@@ -31,23 +31,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LoginRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(const AuthState.loading());
+    emit(const AuthLoading());
 
     final result = await loginUseCase.execute(event.username, event.password);
 
     result.fold(
       (failure) {
         if (failure is FirstLoginFailure) {
-          emit(AuthState.firstLogin(event.username));
+          emit(AuthFirstLogin(event.username));
         } else {
-          emit(AuthState.failure(failure.message));
+          emit(AuthFailure(failure.message));
         }
       },
       (user) {
         if (user.role == 'admin') {
-          emit(AuthState.success(user, isManager: true));
+          emit(AuthSuccess(user, isManager: true));
         } else if (user.role == 'seller') {
-          emit(AuthState.success(user, isManager: false));
+          emit(AuthSuccess(user, isManager: false));
         }
       },
     );
@@ -57,7 +57,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     UpdatePasswordRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(const AuthState.loading());
+    emit(const AuthLoading());
 
     final result = await updatePasswordUseCase.execute(
       event.username,
@@ -65,8 +65,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
 
     result.fold(
-      (failure) => emit(AuthState.failure(failure.message)),
-      (_) => emit(const AuthState.passwordUpdateSuccess()),
+      (failure) => emit(AuthFailure(failure.message)),
+      (_) => emit(const PasswordUpdateSuccess()),
     );
   }
 
@@ -74,13 +74,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(const AuthState.loading());
+    emit(const AuthLoading());
 
     final result = await logoutUseCase.execute(event.userId);
 
     result.fold(
-      (failure) => emit(AuthState.failure(failure.message)),
-      (_) => emit(const AuthState.unauthenticated()),
+      (failure) => emit(AuthFailure(failure.message)),
+      (_) => emit(const UnauthenticatedState()),
     );
   }
 
@@ -90,7 +90,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     final previousState = state;
 
-    emit(const AuthState.loading());
+    emit(const AuthLoading());
 
     final result = await addUserUseCase.execute(
       event.username,
@@ -99,10 +99,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       event.nickname,
     );
 
-    result.fold((failure) => emit(AuthState.failure(failure.message)), (_) {
-      emit(const AuthState.userAddedSuccess());
+    result.fold((failure) => emit(AuthFailure(failure.message)), (_) {
+      emit(const UserAddedSuccess());
       // Restore previous state if it was success
-      previousState.mapOrNull(success: (s) => emit(s));
+      if (previousState is AuthSuccess) {
+        emit(previousState);
+      }
     });
   }
 }

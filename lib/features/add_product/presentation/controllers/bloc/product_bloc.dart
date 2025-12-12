@@ -17,7 +17,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     required this.addProduct,
     required this.updateProduct,
     required this.getProductsUseCase,
-  }) : super(const ProductState.initial()) {
+  }) : super(const ProductInitial()) {
     on<AddProductEvent>(_onAddProduct);
     on<UpdateProductEvent>(_onUpdateProduct);
   }
@@ -26,12 +26,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     AddProductEvent event,
     Emitter<ProductState> emit,
   ) async {
-    emit(const ProductState.loading());
+    emit(const ProductLoading());
     try {
       await addProduct(event.product);
-      emit(const ProductState.added());
+      emit(const ProductAdded());
     } catch (e) {
-      emit(ProductState.error(e.toString()));
+      emit(ProductError(e.toString()));
     }
   }
 
@@ -39,12 +39,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     UpdateProductEvent event,
     Emitter<ProductState> emit,
   ) async {
-    emit(const ProductState.loading());
+    emit(const ProductLoading());
     try {
       await updateProduct(event.product);
-      emit(ProductState.updatedSuccess(event.product));
+      emit(ProductUpdatedSuccess(event.product));
     } catch (e) {
-      emit(ProductState.error(e.toString()));
+      emit(ProductError(e.toString()));
     }
   }
 }
