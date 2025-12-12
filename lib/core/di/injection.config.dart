@@ -229,11 +229,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i22.UpdateService>(),
       ),
     );
-    gh.factory<_i588.PurchaseLocalDataSource>(
-      () => _i588.PurchaseLocalDataSource(gh<_i257.PurchaseDao>()),
-    );
     gh.lazySingleton<_i149.LanguageLocalDataSource>(
       () => _i149.LanguageLocalDataSource(gh<_i192.LanguageDao>()),
+    );
+    gh.factory<_i588.PurchaseLocalDataSource>(
+      () => _i588.PurchaseLocalDataSource(
+        gh<_i257.PurchaseDao>(),
+        gh<_i924.ProductDao>(),
+      ),
     );
     gh.lazySingleton<_i567.ProductRepository>(
       () => _i651.ProductRepositoryImpl(gh<_i924.ProductDao>()),
@@ -247,14 +250,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i85.ProductRepository>(
       () => _i675.ProductRepositoryImpl(gh<_i924.ProductDao>()),
     );
+    gh.factory<_i929.SalesLocalDataSource>(
+      () => _i929.SalesLocalDataSource(
+        gh<_i340.SalesDao>(),
+        gh<_i924.ProductDao>(),
+      ),
+    );
     gh.factory<_i701.CheckForUpdate>(
       () => _i701.CheckForUpdate(gh<_i85.VersionRepository>()),
     );
     gh.factory<_i418.DownloadAndInstallUpdate>(
       () => _i418.DownloadAndInstallUpdate(gh<_i85.VersionRepository>()),
-    );
-    gh.factory<_i929.SalesLocalDataSource>(
-      () => _i929.SalesLocalDataSource(gh<_i340.SalesDao>()),
     );
     gh.factory<_i1056.UpdateProductUseCase>(
       () => _i1056.UpdateProductUseCase(gh<_i567.ProductRepository>()),

@@ -2187,6 +2187,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Duplicate barcode! This barcode already exists.'**
   String get duplicateBarcodeError;
+
+  /// No description provided for @invoiceInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice Info'**
+  String get invoiceInfo;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @source.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get source;
+
+  /// No description provided for @local.
+  ///
+  /// In en, this message translates to:
+  /// **'Local'**
+  String get local;
+
+  /// No description provided for @online.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get online;
+
+  /// No description provided for @totalCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Cost'**
+  String get totalCost;
+
+  /// No description provided for @completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pending;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelled;
+
+  /// No description provided for @unknownProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Product'**
+  String get unknownProduct;
+
+  /// No description provided for @costAtSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost at Sale'**
+  String get costAtSale;
 }
 
 class _AppLocalizationsDelegate

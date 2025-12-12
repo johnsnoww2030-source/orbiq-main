@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/database/daos/sales_dao.dart';
+import 'package:orbiq/core/database/daos/product_dao.dart';
 import 'package:orbiq/features/sales/data/mappers/sales_mapper.dart';
 import 'package:orbiq/features/sales/domain/entities/sales_entity.dart';
 
@@ -7,8 +8,9 @@ import 'package:orbiq/features/sales/domain/entities/sales_entity.dart';
 @injectable
 class SalesLocalDataSource {
   final SalesDao _salesDao;
+  final ProductDao _productDao;
 
-  SalesLocalDataSource(this._salesDao);
+  SalesLocalDataSource(this._salesDao, this._productDao);
 
   /// Get all sales invoices with items
   Future<List<SalesEntity>> getAllSales() async {
@@ -17,9 +19,7 @@ class SalesLocalDataSource {
 
     for (final invoice in invoices) {
       final items = await _salesDao.getItemsByInvoiceUuid(invoice.invoiceUuid);
-      final itemEntities = items
-          .map((i) => SalesMapper.itemFromDrift(i))
-          .toList();
+      final itemEntities = await _mapItemsWithProductNames(items);
       sales.add(SalesMapper.fromDrift(invoice, itemEntities));
     }
 
@@ -32,9 +32,7 @@ class SalesLocalDataSource {
     if (invoice == null) return null;
 
     final items = await _salesDao.getItemsByInvoiceUuid(uuid);
-    final itemEntities = items
-        .map((i) => SalesMapper.itemFromDrift(i))
-        .toList();
+    final itemEntities = await _mapItemsWithProductNames(items);
     return SalesMapper.fromDrift(invoice, itemEntities);
   }
 
@@ -58,9 +56,7 @@ class SalesLocalDataSource {
 
     for (final invoice in invoices) {
       final items = await _salesDao.getItemsByInvoiceUuid(invoice.invoiceUuid);
-      final itemEntities = items
-          .map((i) => SalesMapper.itemFromDrift(i))
-          .toList();
+      final itemEntities = await _mapItemsWithProductNames(items);
       sales.add(SalesMapper.fromDrift(invoice, itemEntities));
     }
 
@@ -91,12 +87,25 @@ class SalesLocalDataSource {
         final items = await _salesDao.getItemsByInvoiceUuid(
           invoice.invoiceUuid,
         );
-        final itemEntities = items
-            .map((i) => SalesMapper.itemFromDrift(i))
-            .toList();
+        final itemEntities = await _mapItemsWithProductNames(items);
         sales.add(SalesMapper.fromDrift(invoice, itemEntities));
       }
       return sales;
     });
+  }
+
+  /// Helper to map items with product names from ProductDao
+  Future<List<SalesItemEntity>> _mapItemsWithProductNames(
+    List<dynamic> items,
+  ) async {
+    final List<SalesItemEntity> itemEntities = [];
+
+    for (final item in items) {
+      final product = await _productDao.getProductByUuid(item.productUuid);
+      final productName = product?.name;
+      itemEntities.add(SalesMapper.itemFromDrift(item, productName));
+    }
+
+    return itemEntities;
   }
 }

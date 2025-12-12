@@ -1064,4 +1064,37 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get duplicateBarcodeError =>
       'Duplicate barcode! This barcode already exists.';
+
+  @override
+  String get invoiceInfo => 'Invoice Info';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get source => 'Source';
+
+  @override
+  String get local => 'Local';
+
+  @override
+  String get online => 'Online';
+
+  @override
+  String get totalCost => 'Total Cost';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String get cancelled => 'Cancelled';
+
+  @override
+  String get unknownProduct => 'Unknown Product';
+
+  @override
+  String get costAtSale => 'Cost at Sale';
 }

@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/database/daos/purchase_dao.dart';
+import 'package:orbiq/core/database/daos/product_dao.dart';
 import 'package:orbiq/features/purchase/data/mappers/purchase_mapper.dart';
 import 'package:orbiq/features/purchase/domain/entities/purchase_entity.dart';
 
@@ -7,8 +8,9 @@ import 'package:orbiq/features/purchase/domain/entities/purchase_entity.dart';
 @injectable
 class PurchaseLocalDataSource {
   final PurchaseDao _purchaseDao;
+  final ProductDao _productDao;
 
-  PurchaseLocalDataSource(this._purchaseDao);
+  PurchaseLocalDataSource(this._purchaseDao, this._productDao);
 
   /// Get all purchases
   Future<List<PurchaseEntity>> getAllPurchases() async {
@@ -19,9 +21,7 @@ class PurchaseLocalDataSource {
       final items = await _purchaseDao.getItemsByPurchaseUuid(
         invoice.purchaseUuid,
       );
-      final itemEntities = items
-          .map((i) => PurchaseMapper.itemFromDrift(i))
-          .toList();
+      final itemEntities = await _mapItemsWithProductNames(items);
       purchases.add(PurchaseMapper.fromDrift(invoice, itemEntities));
     }
 
@@ -36,9 +36,7 @@ class PurchaseLocalDataSource {
         final items = await _purchaseDao.getItemsByPurchaseUuid(
           invoice.purchaseUuid,
         );
-        final itemEntities = items
-            .map((i) => PurchaseMapper.itemFromDrift(i))
-            .toList();
+        final itemEntities = await _mapItemsWithProductNames(items);
         purchases.add(PurchaseMapper.fromDrift(invoice, itemEntities));
       }
       return purchases;
@@ -51,9 +49,7 @@ class PurchaseLocalDataSource {
     if (invoice == null) return null;
 
     final items = await _purchaseDao.getItemsByPurchaseUuid(uuid);
-    final itemEntities = items
-        .map((i) => PurchaseMapper.itemFromDrift(i))
-        .toList();
+    final itemEntities = await _mapItemsWithProductNames(items);
     return PurchaseMapper.fromDrift(invoice, itemEntities);
   }
 
@@ -73,5 +69,20 @@ class PurchaseLocalDataSource {
   /// Delete a purchase
   Future<int> deletePurchase(String uuid) async {
     return _purchaseDao.deleteInvoice(uuid);
+  }
+
+  /// Helper to map items with product names from ProductDao
+  Future<List<PurchaseItemEntity>> _mapItemsWithProductNames(
+    List<dynamic> items,
+  ) async {
+    final List<PurchaseItemEntity> itemEntities = [];
+
+    for (final item in items) {
+      final product = await _productDao.getProductByUuid(item.productUuid);
+      final productName = product?.name;
+      itemEntities.add(PurchaseMapper.itemFromDrift(item, productName));
+    }
+
+    return itemEntities;
   }
 }

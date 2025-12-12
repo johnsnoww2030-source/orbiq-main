@@ -358,5 +358,19 @@
   "useThisProduct": "استخدم هذا المنتج",
   "duplicateBarcodeError": "باركود مكرر! هذا الباركود موجود مسبقاً.",
   "stock": "المخزون",
-  "price": "السعر"
+  "price": "السعر",
+  "invoiceDetails": "تفاصيل الفاتورة",
+  "invoiceInfo": "معلومات الفاتورة",
+  "date": "التاريخ",
+  "source": "المصدر",
+  "local": "حضوري",
+  "online": "أونلاين",
+  "total": "الإجمالي",
+  "unitPrice": "سعر الوحدة",
+  "totalCost": "التكلفة الإجمالية",
+  "completed": "مكتمل",
+  "pending": "قيد الانتظار",
+  "cancelled": "ملغي",
+  "unknownProduct": "منتج غير معروف",
+  "costAtSale": "التكلفة عند البيع"
 }

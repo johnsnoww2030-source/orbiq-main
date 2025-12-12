@@ -7,6 +7,7 @@ import 'package:orbiq/features/sales/presentation/controller/sales_bloc.dart';
 import 'package:orbiq/features/sales/presentation/controller/sales_event.dart';
 import 'package:orbiq/features/sales/presentation/controller/sales_state.dart';
 import 'package:orbiq/features/sales/presentation/ui/add_sale_page.dart';
+import 'package:orbiq/features/sales/presentation/ui/sales_invoice_detail_page.dart';
 
 /// Sales list page showing all sales invoices
 class SalesPage extends StatefulWidget {
@@ -239,9 +240,7 @@ class _SalesPageState extends State<SalesPage> {
             ),
           ],
         ),
-        onTap: () {
-          // TODO: Show sale details
-        },
+        onTap: () => _navigateToSaleDetail(sale),
       ),
     );
   }
@@ -259,5 +258,14 @@ class _SalesPageState extends State<SalesPage> {
     if (result == true && mounted) {
       context.read<SalesBloc>().add(const LoadSalesEvent());
     }
+  }
+
+  void _navigateToSaleDetail(SalesEntity sale) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SalesInvoiceDetailPage(sale: sale),
+      ),
+    );
   }
 }

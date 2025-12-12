@@ -9,6 +9,7 @@ import 'package:orbiq/features/purchase/presentation/controller/purchase_bloc.da
 import 'package:orbiq/features/purchase/presentation/controller/purchase_event.dart';
 import 'package:orbiq/features/purchase/presentation/controller/purchase_state.dart';
 import 'package:orbiq/features/purchase/domain/entities/purchase_entity.dart';
+import 'package:orbiq/features/purchase/presentation/ui/purchase_invoice_detail_page.dart';
 import 'add_purchase_page.dart';
 
 /// Purchase list page - shows all purchase invoices
@@ -216,9 +217,7 @@ class _PurchasePageState extends State<PurchasePage> {
                 ),
               ],
             ),
-            onTap: () {
-              // TODO: Navigate to purchase details
-            },
+            onTap: () => _navigateToPurchaseDetail(purchase),
           ),
         );
       },
@@ -234,5 +233,14 @@ class _PurchasePageState extends State<PurchasePage> {
         context.read<PurchaseBloc>().add(const LoadPurchasesEvent());
       }
     });
+  }
+
+  void _navigateToPurchaseDetail(PurchaseEntity purchase) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PurchaseInvoiceDetailPage(purchase: purchase),
+      ),
+    );
   }
 }

@@ -357,5 +357,19 @@
   "useThisProduct": "Use This Product",
   "duplicateBarcodeError": "Duplicate barcode! This barcode already exists.",
   "stock": "Stock",
-  "price": "Price"
+  "price": "Price",
+  "invoiceDetails": "Invoice Details",
+  "invoiceInfo": "Invoice Info",
+  "date": "Date",
+  "source": "Source",
+  "local": "Local",
+  "online": "Online",
+  "total": "Total",
+  "unitPrice": "Unit Price",
+  "totalCost": "Total Cost",
+  "completed": "Completed",
+  "pending": "Pending",
+  "cancelled": "Cancelled",
+  "unknownProduct": "Unknown Product",
+  "costAtSale": "Cost at Sale"
 }

@@ -198,7 +198,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get payment => 'پرداخت';
 
   @override
-  String get total => 'مجموع';
+  String get total => 'جمع';
 
   @override
   String get subtotal => 'جمع کل';
@@ -1063,4 +1063,37 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get duplicateBarcodeError =>
       'بارکد تکراری! این بارکد قبلاً ثبت شده است.';
+
+  @override
+  String get invoiceInfo => 'اطلاعات فاکتور';
+
+  @override
+  String get date => 'تاریخ';
+
+  @override
+  String get source => 'منبع';
+
+  @override
+  String get local => 'حضوری';
+
+  @override
+  String get online => 'آنلاین';
+
+  @override
+  String get totalCost => 'قیمت تمام شده';
+
+  @override
+  String get completed => 'تکمیل شده';
+
+  @override
+  String get pending => 'در انتظار';
+
+  @override
+  String get cancelled => 'لغو شده';
+
+  @override
+  String get unknownProduct => 'محصول ناشناخته';
+
+  @override
+  String get costAtSale => 'قیمت تمام شده در فروش';
 }

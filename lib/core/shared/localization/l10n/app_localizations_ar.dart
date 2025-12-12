@@ -198,7 +198,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get payment => 'الدفع';
 
   @override
-  String get total => 'المجموع';
+  String get total => 'الإجمالي';
 
   @override
   String get subtotal => 'المجموع الفرعي';
@@ -1059,4 +1059,37 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get duplicateBarcodeError => 'باركود مكرر! هذا الباركود موجود مسبقاً.';
+
+  @override
+  String get invoiceInfo => 'معلومات الفاتورة';
+
+  @override
+  String get date => 'التاريخ';
+
+  @override
+  String get source => 'المصدر';
+
+  @override
+  String get local => 'حضوري';
+
+  @override
+  String get online => 'أونلاين';
+
+  @override
+  String get totalCost => 'التكلفة الإجمالية';
+
+  @override
+  String get completed => 'مكتمل';
+
+  @override
+  String get pending => 'قيد الانتظار';
+
+  @override
+  String get cancelled => 'ملغي';
+
+  @override
+  String get unknownProduct => 'منتج غير معروف';
+
+  @override
+  String get costAtSale => 'التكلفة عند البيع';
 }
