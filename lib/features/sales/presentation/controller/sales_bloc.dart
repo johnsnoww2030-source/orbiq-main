@@ -27,7 +27,8 @@ class SalesBloc extends Bloc<SalesEvent, SalesState> {
     emit(const SalesLoading());
 
     final result = await _repository.getAllSales();
-    result.fold((error) => emit(SalesError(error)), (sales) async {
+
+    await result.fold((error) async => emit(SalesError(error)), (sales) async {
       final revenueResult = await _repository.getTotalRevenue();
       final profitResult = await _repository.getTotalProfit();
 
