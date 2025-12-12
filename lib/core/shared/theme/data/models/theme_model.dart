@@ -1,16 +1,12 @@
-import 'package:floor/floor.dart';
 import '../../domain/entities/theme_entity.dart';
 
-@entity
+/// ThemeModel for data layer operations
+/// Maps between ThemeEntity (domain) and Drift Theme (data)
 class ThemeModel {
-  @PrimaryKey(autoGenerate: false)
   final int id;
   final String themeType;
 
-  ThemeModel({
-    required this.id,
-    required this.themeType,
-  });
+  ThemeModel({required this.id, required this.themeType});
 
   factory ThemeModel.fromEntity(ThemeEntity entity) {
     return ThemeModel(

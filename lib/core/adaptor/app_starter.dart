@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:orbiq/core/di/injection.dart';
-import 'package:orbiq/core/shared/database/database.dart';
+import 'package:orbiq/core/database/app_database.dart';
 import 'package:orbiq/features/auth/data/data_sources/local/auth_local_data_source.dart';
 import 'my_app.dart';
 

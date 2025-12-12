@@ -1,8 +1,6 @@
-import 'package:floor/floor.dart';
-
-@entity
+/// LanguageModel for data layer operations
+/// Maps between domain entities and Drift Language
 class LanguageModel {
-  @primaryKey
   final int id;
   final String code;
   final String name;

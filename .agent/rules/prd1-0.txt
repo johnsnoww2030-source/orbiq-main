@@ -1,0 +1,860 @@
+---
+trigger: always_on
+---
+
+# PRD نهایی: Migration به Drift (بدون خطای build_runner)
+
+---
+
+## 🔴 مهم: قبل از هر کاری بخوان
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│   دلیل اصلی خطای "Cannot recurse":                              │
+│                                                                 │
+│   ۱. Barrel Files (فایل‌های index.dart / exports.dart)         │
+│   ۲. Circular Dependencies در injectable                       │
+│   ۳. Import نادرست در فایل‌های Code Generation                 │
+│                                                                 │
+│   ─────────────────────────────────────────────────────────     │
+│                                                                 │
+│   قبل از Migration باید این‌ها رفع بشن                         │
+│   وگرنه دوباره همون خطا رو می‌بینی                              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📅 برنامه کلی: ۷ مرحله
+
+| مرحله | عنوان | زمان |
+|-------|-------|------|
+| ۰ | آنالیز و رفع مشکلات ساختاری | روز ۱ |
+| ۱ | حذف Floor و نصب Drift | روز ۲ صبح |
+| ۲ | ایجاد Database پایه | روز ۲ بعدازظهر |
+| ۳ | اصلاح ProductModel و UserModel | روز ۳ |
+| ۴ | ایجاد Entity های جدید | روز ۴ |
+| ۵ | ایجاد DAOs | روز ۵ صبح |
+| ۶ | رفع خطاها و تست | روز ۵ بعدازظهر |
+
+---
+
+# مرحله ۰: آنالیز و رفع مشکلات ساختاری (قبل از Migration)
+
+---
+
+## ۰.۱ پیدا کردن Barrel Files
+
+**Barrel File چیست؟**
+فایلی که فقط export دارد و چندین فایل را re-export می‌کند.
+
+**مثال Barrel File:**
+```
+// lib/features/auth/domain/domain.dart
+export 'entities/user.dart';
+export 'repositories/auth_repository.dart';
+export 'usecases/login_usecase.dart';
+```
+
+**کار اول:** در پروژه‌ات جستجو کن:
+- فایل‌هایی با نام `index.dart`
+- فایل‌هایی با نام `exports.dart`
+- فایل‌هایی که فقط `export` دارند
+- فایل‌هایی با نام کلی مثل `domain.dart`, `data.dart`, `presentation.dart`
+
+**لیست کن:** همه Barrel Files که پیدا کردی را یادداشت کن.
+
+---
+
+## ۰.۲ بررسی Import ها در فایل‌های Code Generation
+
+**فایل‌هایی که Code Generation دارند:**
+- فایل‌های `@Entity` (Floor)
+- فایل‌های `@injectable` / `@lazySingleton`
+- فایل‌های `@JsonSerializable`
+- فایل‌های BLoC
+
+**کار دوم:** هر کدام از این فایل‌ها را باز کن و Import هایش را چک کن.
+
+**قانون طلایی:**
+
+| ❌ غلط | ✅ درست |
+|--------|---------|
+| `import 'package:app/features/auth/domain/domain.dart';` | `import '../entities/user.dart';` |
+| `import 'package:app/core/core.dart';` | `import '../../core/utils/helpers.dart';` |
+| Import از Barrel File | Import مستقیم فایل |
+
+---
+
+## ۰.۳ رفع Import های نادرست
+
+**برای هر فایل که Code Generation دارد:**
+
+۱. لیست Import ها را ببین
+۲. اگر Import از Barrel File هست، پیدا کن دقیقاً کدام فایل لازمه
+۳. Import را به آدرس مستقیم تغییر بده
+
+**مثال:**
+
+قبل:
+```dart
+// lib/features/auth/data/repositories/auth_repository_impl.dart
+import 'package:app/features/auth/domain/domain.dart'; // ❌ Barrel
+```
+
+بعد:
+```dart
+// lib/features/auth/data/repositories/auth_repository_impl.dart
+import '../../domain/entities/user_entity.dart';        // ✅ مستقیم
+import '../../domain/repositories/auth_repository.dart'; // ✅ مستقیم
+```
+
+---
+
+## ۰.۴ بررسی Circular Dependencies در Injectable
+
+**کار سوم:** فایل injection.config.dart را باز کن (اگر وجود داره)
+
+**دنبال این الگو بگرد:**
+- ServiceA به ServiceB وابسته است
+- ServiceB به ServiceA وابسته است
+
+**چطور پیدا کنیم؟**
+
+در هر فایل `@injectable` ببین constructor چه چیزهایی می‌گیرد:
+
+```dart
+@injectable
+class AuthRepository {
+  final UserService userService; // ← وابستگی
+  AuthRepository(this.userService);
+}
+
+@injectable
+class UserService {
+  final AuthRepository authRepo; // ← اگر این باشه = Circular!
+  UserService(this.authRepo);
+}
+```
+
+**راه حل:** اگر Circular پیدا کردی:
+- یک Interface (abstract class) بساز
+- یکی از کلاس‌ها به Interface وابسته باشه، نه مستقیم
+
+---
+
+## ۰.۵ تست build_runner قبل از Migration
+
+**بعد از رفع مشکلات:**
+
+۱. flutter clean
+۲. حذف پوشه .dart_tool
+۳. حذف pubspec.lock
+۴. flutter pub get
+۵. dart run build_runner clean
+۶. dart run build_runner build --delete-conflicting-outputs
+
+**اگر موفق بود:** برو مرحله ۱
+**اگر خطا داد:** خطا را بخوان، فایل مشکل‌دار را پیدا کن، Import هایش را چک کن
+
+---
+
+## ۰.۶ چک‌لیست مرحله ۰
+
+```
+☐ همه Barrel Files پیدا شدن
+☐ Import های فایل‌های @injectable چک شدن
+☐ Import های فایل‌های @Entity چک شدن
+☐ همه Import ها به آدرس مستقیم تغییر کردن
+☐ Circular Dependencies چک شدن
+☐ build_runner بدون خطا اجرا شد
+```
+
+---
+
+# مرحله ۱: حذف Floor و نصب Drift
+
+---
+
+## ۱.۱ حذف Floor از pubspec.yaml
+
+**از dependencies حذف کن:**
+- floor
+
+**از dev_dependencies حذف کن:**
+- floor_generator
+
+---
+
+## ۱.۲ اضافه کردن Drift به pubspec.yaml
+
+**در dependencies اضافه کن:**
+
+| پکیج | نسخه | توضیح |
+|------|------|-------|
+| drift | ^2.14.1 | ORM اصلی |
+| sqlite3_flutter_libs | ^0.5.18 | SQLite برای موبایل |
+| path_provider | ^2.1.1 | مسیر فایل |
+| path | ^1.8.3 | کار با مسیر |
+| uuid | ^4.2.1 | تولید UUID |
+
+**در dev_dependencies اضافه کن:**
+
+| پکیج | نسخه | توضیح |
+|------|------|-------|
+| drift_dev | ^2.14.1 | Code Generator |
+
+**نکته:** build_runner را که داری نگه دار، تغییر نده.
+
+---
+
+## ۱.۳ اجرای pub get
+
+- flutter pub get
+
+---
+
+## ۱.۴ حذف فایل‌های قدیمی Floor
+
+**حذف کن:**
+- همه فایل‌های `.g.dart` مربوط به Floor
+- فایل database قدیمی Floor (مثلاً `app_database.dart` اگر Floor بود)
+
+**حذف نکن:**
+- Model ها را هنوز حذف نکن (بعداً اصلاح می‌کنیم)
+- DAO ها را هنوز حذف نکن
+
+---
+
+## ۱.۵ چک‌لیست مرحله ۱
+
+```
+☐ floor از dependencies حذف شد
+☐ floor_generator از dev_dependencies حذف شد
+☐ drift اضافه شد
+☐ drift_dev اضافه شد
+☐ sqlite3_flutter_libs اضافه شد
+☐ uuid اضافه شد
+☐ pub get موفق بود
+☐ فایل‌های .g.dart قدیمی حذف شدن
+```
+
+---
+
+# مرحله ۲: ایجاد Database پایه Drift
+
+---
+
+## ۲.۱ ساختار پوشه جدید
+
+```
+lib/
+└── core/
+    └── database/                          ← ایجاد کن
+        ├── app_database.dart              ← فایل اصلی
+        ├── tables/                        ← جداول
+        │   └── (بعداً اضافه میشه)
+        └── daos/                          ← عملیات
+            └── (بعداً اضافه میشه)
+```
+
+---
+
+## ۲.۲ ایجاد فایل app_database.dart
+
+**مسیر:** `lib/core/database/app_database.dart`
+
+**محتوا:**
+
+این فایل باید شامل:
+- Import های Drift
+- تعریف کلاس AppDatabase که extends از _$AppDatabase
+- annotation @DriftDatabase با لیست tables
+- متد schemaVersion
+- متد برای باز کردن connection
+
+**نکته مهم Import:**
+- فقط از Drift import کن
+- از هیچ Barrel File استفاده نکن
+- هر Table را مستقیم import کن
+
+---
+
+## ۲.۳ تست اولیه
+
+۱. dart run build_runner build --delete-conflicting-outputs
+۲. اگر خطا نداد، ادامه بده
+۳. اگر خطا داد، Import ها را چک کن
+
+---
+
+## ۲.۴ چک‌لیست مرحله ۲
+
+```
+☐ پوشه core/database ایجاد شد
+☐ پوشه tables ایجاد شد
+☐ پوشه daos ایجاد شد
+☐ فایل app_database.dart ایجاد شد
+☐ build_runner موفق بود
+```
+
+---
+
+# مرحله ۳: ایجاد Tables (اصلاح Model ها)
+
+---
+
+## ۳.۱ قانون مهم Drift
+
+**در Drift جدول اینطوری تعریف میشه:**
+
+| Floor | Drift |
+|-------|-------|
+| @Entity class ProductModel | class Products extends Table |
+| فیلدها با final | ستون‌ها با getter |
+| @PrimaryKey | @override Set<Column> get primaryKey |
+
+---
+
+## ۳.۲ Products Table
+
+**مسیر:** `lib/core/database/tables/products_table.dart`
+
+**ستون‌ها:**
+
+| نام | نوع Drift | توضیح |
+|-----|-----------|-------|
+| productUuid | text() | PK |
+| name | text() | نام |
+| serialNumber | text().unique() | بارکد |
+| description | text() | توضیحات |
+| brand | text() | برند |
+| model | text() | مدل |
+| color | text() | رنگ |
+| material | text() | جنس |
+| purchaseDate | dateTime() | تاریخ ثبت |
+| originalPrice | real() | قیمت فروش |
+| discountedPrice | real() | قیمت تخفیف |
+| discountStartDate | dateTime().nullable() | شروع تخفیف |
+| discountEndDate | dateTime().nullable() | پایان تخفیف |
+| currentStock | integer().withDefault(const Constant(0)) | موجودی |
+| reorderPoint | integer().withDefault(const Constant(0)) | نقطه سفارش |
+| lastStockUpdate | dateTime() | آخرین بروزرسانی |
+| avgBuyPrice | real().withDefault(const Constant(0.0)) | 🆕 میانگین خرید |
+| minMarginPercent | integer().withDefault(const Constant(20)) | 🆕 حداقل سود |
+| syncStatus | integer().withDefault(const Constant(0)) | 🆕 همگام‌سازی |
+| createdAt | dateTime() | زمان ایجاد |
+| updatedAt | dateTime() | زمان بروزرسانی |
+
+**Primary Key:** productUuid
+
+**نکته Import:** فقط drift را import کن، هیچ چیز دیگر
+
+---
+
+## ۳.۳ Users Table
+
+**مسیر:** `lib/core/database/tables/users_table.dart`
+
+**ستون‌ها:**
+
+| نام | نوع Drift | توضیح |
+|-----|-----------|-------|
+| userUuid | text() | PK |
+| username | text().unique() | نام کاربری |
+| password | text() | رمز |
+| role | text() | نقش |
+| nickname | text() | نام نمایشی |
+| isFirstLogin | boolean().withDefault(const Constant(true)) | اولین ورود |
+| loggedIn | boolean().withDefault(const Constant(false)) | وضعیت |
+| createdAt | dateTime() | زمان ایجاد |
+| updatedAt | dateTime() | زمان بروزرسانی |
+
+**Primary Key:** userUuid
+
+---
+
+## ۳.۴ Themes Table
+
+**مسیر:** `lib/core/database/tables/themes_table.dart`
+
+**ستون‌ها:**
+
+| نام | نوع Drift | توضیح |
+|-----|-----------|-------|
+| id | integer().autoIncrement() | PK (همون int بمونه) |
+| themeType | text() | light یا dark |
+
+---
+
+## ۳.۵ Languages Table
+
+**مسیر:** `lib/core/database/tables/languages_table.dart`
+
+**ستون‌ها:**
+
+| نام | نوع Drift | توضیح |
+|-----|-----------|-------|
+| id | integer().autoIncrement() | PK (همون int بمونه) |
+| code | text() | fa, en, ar |
+| name | text() | نام زبان |
+
+---
+
+## ۳.۶ اضافه کردن Tables به Database
+
+**فایل:** `lib/core/database/app_database.dart`
+
+**Import ها را اضافه کن:**
+- هر Table را مستقیم import کن
+- از مسیر نسبی استفاده کن
+
+**مثال Import صحیح:**
+```
+import 'tables/products_table.dart';
+import 'tables/users_table.dart';
+import 'tables/themes_table.dart';
+import 'tables/languages_table.dart';
+```
+
+**در annotation @DriftDatabase:**
+- tables: [Products, Users, Themes, Languages]
+
+---
+
+## ۳.۷ تست build_runner
+
+۱. dart run build_runner build --delete-conflicting-outputs
+۲. اگر خطا، کدام فایل؟ Import هایش را چک کن
+
+---
+
+## ۳.۸ چک‌لیست مرحله ۳
+
+```
+☐ products_table.dart ایجاد شد
+☐ users_table.dart ایجاد شد
+☐ themes_table.dart ایجاد شد
+☐ languages_table.dart ایجاد شد
+☐ همه به app_database.dart اضافه شدن
+☐ build_runner موفق بود
+```
+
+---
+
+# مرحله ۴: ایجاد Tables جدید PRD
+
+---
+
+## ۴.۱ Purchase Invoices Table
+
+**مسیر:** `lib/core/database/tables/purchase_invoices_table.dart`
+
+**ستون‌ها:**
+
+| نام | نوع Drift | توضیح |
+|-----|-----------|-------|
+| purchaseUuid | text() | PK |
+| supplierName | text().nullable() | تامین‌کننده |
+| purchaseDate | dateTime() | تاریخ |
+| totalCost | real().withDefault(const Constant(0.0)) | جمع اقلام |
+| additionalCosts | real().withDefault(const Constant(0.0)) | هزینه حمل |
+| finalTotal | real().withDefault(const Constant(0.0)) | جمع نهایی |
+| notes | text().nullable() | یادداشت |
+| syncStatus | integer().withDefault(const Constant(0)) | همگام‌سازی |
+| createdAt | dateTime() | زمان ایجاد |
+| updatedAt | dateTime() | زمان بروزرسانی |
+
+---
+
+## ۴.۲ Purchase Items Table
+
+**مسیر:** `lib/core/database/tables/purchase_items_table.dart`
+
+**ستون‌ها:**
+
+| نام | نوع Drift | توضیح |
+|-----|-----------|-------|
+| itemUuid | text() | PK |
+| purchaseUuid | text().references(PurchaseInvoices, #purchaseUuid) | FK |
+| productUuid | text().references(Products, #productUuid) | FK |
+| quantity | integer() | تعداد |
+| unitBuyPrice | real() | قیمت واحد |
+| totalPrice | real() | قیمت کل |
+
+**نکته:** برای references باید Table مربوطه را import کنی - مستقیم!
+
+---
+
+## ۴.۳ Sales Invoices Table
+
+**مسیر:** `lib/core/database/tables/sales_invoices_table.dart`
+
+**ستون‌ها:**
+
+| نام | نوع Drift | توضیح |
+|-----|-----------|-------|
+| invoiceUuid | text() | PK |
+| customerInfo | text().nullable() | مشتری |
+| invoiceDate | dateTime() | تاریخ |
+| totalAmount | real().withDefault(const Constant(0.0)) | جمع کل |
+| salesSource | text().withDefault(const Constant('LOCAL')) | منبع |
+| status | text().withDefault(const Constant('PENDING')) | وضعیت |
+| userUuid | text().references(Users, #userUuid) | FK کاربر |
+| notes | text().nullable() | یادداشت |
+| syncStatus | integer().withDefault(const Constant(0)) | همگام‌سازی |
+| createdAt | dateTime() | زمان ایجاد |
+| updatedAt | dateTime() | زمان بروزرسانی |
+
+---
+
+## ۴.۴ Sales Items Table
+
+**مسیر:** `lib/core/database/tables/sales_items_table.dart`
+
+**ستون‌ها:**
+
+| نام | نوع Drift | توضیح |
+|-----|-----------|-------|
+| itemUuid | text() | PK |
+| invoiceUuid | text().references(SalesInvoices, #invoiceUuid) | FK |
+| productUuid | text().references(Products, #productUuid) | FK |
+| quantity | integer() | تعداد |
+| unitSellPrice | real() | قیمت فروش |
+| costAtSale | real() | 🔴 قیمت تمام‌شده لحظه فروش |
+| totalPrice | real() | قیمت کل |
+| profit | real() | سود |
+
+---
+
+## ۴.۵ Events Table
+
+**مسیر:** `lib/core/database/tables/events_table.dart`
+
+**ستون‌ها:**
+
+| نام | نوع Drift | توضیح |
+|-----|-----------|-------|
+| eventId | text() | PK |
+| eventType | text() | نوع رویداد |
+| entityType | text() | نوع موجودیت |
+| entityId | text() | شناسه موجودیت |
+| payload | text() | JSON |
+| userUuid | text().nullable() | کاربر |
+| timestamp | dateTime() | زمان |
+| metadata | text().nullable() | اطلاعات اضافی |
+
+---
+
+## ۴.۶ اضافه کردن به Database
+
+**Import های جدید:**
+```
+import 'tables/purchase_invoices_table.dart';
+import 'tables/purchase_items_table.dart';
+import 'tables/sales_invoices_table.dart';
+import 'tables/sales_items_table.dart';
+import 'tables/events_table.dart';
+```
+
+**tables:**
+```
+[Products, Users, Themes, Languages, 
+ PurchaseInvoices, PurchaseItems, 
+ SalesInvoices, SalesItems, 
+ Events]
+```
+
+---
+
+## ۴.۷ تست build_runner
+
+اگر خطا داد، احتمالاً:
+- Import یک Table که references داره غلطه
+- از Barrel File استفاده کردی
+
+---
+
+## ۴.۸ چک‌لیست مرحله ۴
+
+```
+☐ purchase_invoices_table.dart ایجاد شد
+☐ purchase_items_table.dart ایجاد شد
+☐ sales_invoices_table.dart ایجاد شد
+☐ sales_items_table.dart ایجاد شد
+☐ events_table.dart ایجاد شد
+☐ همه به app_database.dart اضافه شدن
+☐ build_runner موفق بود
+```
+
+---
+
+# مرحله ۵: ایجاد DAOs
+
+---
+
+## ۵.۱ قانون مهم DAO در Drift
+
+**در Drift دو روش داری:**
+
+**روش ۱:** متدها داخل کلاس Database
+**روش ۲:** کلاس‌های جدا با @DriftAccessor
+
+**پیشنهاد:** روش ۲ چون تمیزتره
+
+---
+
+## ۵.۲ Product DAO
+
+**مسیر:** `lib/core/database/daos/product_dao.dart`
+
+**Import:**
+- فقط drift
+- فقط app_database.dart (مستقیم)
+- فقط products_table.dart (مستقیم)
+
+**متدها:**
+
+| متد | توضیح |
+|-----|-------|
+| getAllProducts | دریافت همه |
+| getProductByUuid | دریافت با UUID |
+| getProductBySerialNumber | دریافت با بارکد |
+| insertProduct | درج |
+| updateProduct | بروزرسانی |
+| deleteProduct | حذف |
+| updateStock | بروزرسانی موجودی |
+| updateAvgBuyPrice | بروزرسانی قیمت میانگین |
+| getProductsLowStock | موجودی کم |
+| watchAllProducts | Stream |
+
+---
+
+## ۵.۳ User DAO
+
+**مسیر:** `lib/core/database/daos/user_dao.dart`
+
+**متدها:**
+
+| متد | توضیح |
+|-----|-------|
+| getUserByUuid | دریافت با UUID |
+| getUserByUsername | دریافت با نام کاربری |
+| insertUser | درج |
+| updateUser | بروزرسانی |
+| updateLoginStatus | تغییر وضعیت ورود |
+
+---
+
+## ۵.۴ Purchase DAO
+
+**مسیر:** `lib/core/database/daos/purchase_dao.dart`
+
+**متدها:**
+
+| متد | توضیح |
+|-----|-------|
+| insertInvoice | درج فاکتور |
+| insertItem | درج آیتم |
+| insertInvoiceWithItems | درج با Transaction |
+| getInvoiceByUuid | دریافت فاکتور |
+| getAllInvoices | همه فاکتورها |
+| getItemsByPurchaseUuid | آیتم‌های فاکتور |
+| deleteInvoice | حذف |
+
+---
+
+## ۵.۵ Sales DAO
+
+**مسیر:** `lib/core/database/daos/sales_dao.dart`
+
+**متدها:**
+
+| متد | توضیح |
+|-----|-------|
+| insertInvoice | درج فاکتور |
+| insertItem | درج آیتم |
+| insertInvoiceWithItems | درج با Transaction |
+| getInvoiceByUuid | دریافت فاکتور |
+| getAllInvoices | همه فاکتورها |
+| getItemsByInvoiceUuid | آیتم‌های فاکتور |
+| updateStatus | تغییر وضعیت |
+| deleteInvoice | حذف |
+| getTodaySales | فروش امروز |
+| getTotalProfit | سود کل |
+
+---
+
+## ۵.۶ Event DAO
+
+**مسیر:** `lib/core/database/daos/event_dao.dart`
+
+**متدها:**
+
+| متد | توضیح |
+|-----|-------|
+| insertEvent | درج |
+| getEventsByEntityId | رویدادهای موجودیت |
+| getEventsByType | بر اساس نوع |
+| getRecentEvents | اخیر |
+
+---
+
+## ۵.۷ Theme DAO و Language DAO
+
+**مسیر:** `lib/core/database/daos/theme_dao.dart`
+**مسیر:** `lib/core/database/daos/language_dao.dart`
+
+مثل قبل، فقط سینتکس Drift
+
+---
+
+## ۵.۸ اضافه کردن DAOs به Database
+
+**در @DriftDatabase:**
+- daos: [ProductDao, UserDao, PurchaseDao, SalesDao, EventDao, ThemeDao, LanguageDao]
+
+---
+
+## ۵.۹ چک‌لیست مرحله ۵
+
+```
+☐ product_dao.dart ایجاد شد
+☐ user_dao.dart ایجاد شد
+☐ purchase_dao.dart ایجاد شد
+☐ sales_dao.dart ایجاد شد
+☐ event_dao.dart ایجاد شد
+☐ theme_dao.dart ایجاد شد
+☐ language_dao.dart ایجاد شد
+☐ همه به app_database.dart اضافه شدن
+☐ build_runner موفق بود
+```
+
+---
+
+# مرحله ۶: بروزرسانی لایه‌های بالاتر
+
+---
+
+## ۶.۱ حذف فایل‌های Floor قدیمی
+
+**حذف کن:**
+- lib/core/shared/product/data/models/product_model.dart
+- lib/core/shared/product/data/data_source/local/product_dao.dart
+- lib/features/auth/data/models/user_model.dart
+- lib/features/auth/data/data_sources/local/user_dao.dart
+- lib/features/payment/ (کل پوشه)
+- هر فایل دیگری مربوط به Floor
+
+---
+
+## ۶.۲ بروزرسانی LocalDataSources
+
+هر LocalDataSource که از Floor استفاده می‌کرد:
+- AppDatabase از Drift را inject کن
+- از DAO های جدید استفاده کن
+
+**نکته Import:** مستقیم از `core/database/app_database.dart`
+
+---
+
+## ۶.۳ بروزرسانی Repositories
+
+- تغییر نوع داده‌ها از Model های Floor به Drift
+- اگر Mapper داری، بروزش کن
+
+---
+
+## ۶.۴ بروزرسانی Injectable
+
+**فایل injection.dart:**
+- AppDatabase را register کن
+
+**نکته مهم:** 
+- فقط Import مستقیم
+- از Barrel File استفاده نکن
+
+---
+
+## ۶.۵ چک‌لیست مرحله ۶
+
+```
+☐ فایل‌های Floor قدیمی حذف شدن
+☐ LocalDataSources بروز شدن
+☐ Repositories بروز شدن
+☐ Mappers بروز شدن
+☐ Injectable بروز شد
+☐ build_runner موفق بود
+☐ اپ اجرا میشه
+```
+
+---
+
+# ✅ چک‌لیست نهایی
+
+```
+مرحله ۰: رفع مشکلات ساختاری
+───────────────────────────
+☐ Barrel Files شناسایی شدن
+☐ Import ها به مستقیم تغییر کردن
+☐ Circular Dependencies چک شد
+☐ build_runner قبل از Migration کار کرد
+
+مرحله ۱: نصب Drift
+──────────────────
+☐ Floor حذف شد
+☐ Drift نصب شد
+
+مرحله ۲: Database پایه
+──────────────────────
+☐ ساختار پوشه ایجاد شد
+☐ app_database.dart ایجاد شد
+
+مرحله ۳: Tables موجود
+─────────────────────
+☐ Products ایجاد شد
+☐ Users ایجاد شد
+☐ Themes ایجاد شد
+☐ Languages ایجاد شد
+
+مرحله ۴: Tables جدید
+────────────────────
+☐ PurchaseInvoices ایجاد شد
+☐ PurchaseItems ایجاد شد
+☐ SalesInvoices ایجاد شد
+☐ SalesItems ایجاد شد
+☐ Events ایجاد شد
+
+مرحله ۵: DAOs
+─────────────
+☐ همه DAOs ایجاد شدن
+
+مرحله ۶: بروزرسانی
+─────────────────
+☐ فایل‌های قدیمی حذف شدن
+☐ لایه‌های بالاتر بروز شدن
+☐ اپ کار می‌کنه
+```
+
+---
+
+## 🚀 شروع از کجا؟
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│   اول: مرحله ۰ را کامل انجام بده                                │
+│                                                                 │
+│   این مهم‌ترین مرحله است!                                       │
+│   اگر این مرحله درست انجام نشه، بقیه مراحل خطا میدن            │
+│                                                                 │
+│   بعد از موفقیت مرحله ۰، بگو تا بریم مرحله ۱                    │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+ اول Barrel Files رو پیدا کن و لیست کن. 🚀

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:orbiq/core/shared/product/data/models/product_model.dart';
+import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 
 sealed class GetProductState extends Equatable {
   const GetProductState();
@@ -27,7 +27,7 @@ class ProductLoadingPage extends GetProductState {
 }
 
 class ProductLoaded extends GetProductState {
-  final List<ProductModel> products;
+  final List<ProductEntity> products;
   final int currentPage;
   final int totalPages;
   final bool hasNextPage;
@@ -44,7 +44,7 @@ class ProductLoaded extends GetProductState {
 }
 
 class ProductFound extends GetProductState {
-  final ProductModel product;
+  final ProductEntity product;
 
   const ProductFound(this.product);
 

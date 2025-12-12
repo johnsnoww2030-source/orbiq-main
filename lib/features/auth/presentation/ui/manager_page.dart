@@ -11,7 +11,8 @@ import 'package:orbiq/core/shared/theme/presentation/controller/theme_state.dart
 import 'package:orbiq/features/auth/presentation/ui/widgets/navigation_drawer_widget.dart';
 import 'package:orbiq/features/auth/presentation/ui/widgets/dashboard_content_widget.dart';
 
-import 'package:orbiq/features/payment/presentation/ui/payment_report_page.dart';
+// TODO: Replace with Sales Module (PRD)
+// Removed: payment_report_page.dart
 import 'package:orbiq/features/get_product/presentation/ui/products_management_page.dart';
 import 'package:orbiq/features/auth/presentation/ui/settings_page.dart';
 
@@ -179,7 +180,8 @@ class _ManagerPageState extends State<ManagerPage> {
       case 6: // Stocktaking
         return _buildPlaceholder("Stocktaking");
       case 7: // Reports
-        return const PaymentsReportPage();
+        // TODO: Replace with Sales Module (PRD)
+        return _buildPlaceholder("Reports - Coming Soon");
       case 8: // Settings
         return const SettingsPage();
       default:

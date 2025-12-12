@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:orbiq/core/shared/database/database.dart';
+import 'package:orbiq/core/database/app_database.dart';
 import 'package:orbiq/features/auth/data/data_sources/local/auth_local_data_source.dart';
 import 'package:orbiq/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:orbiq/features/auth/domain/usecases/add_user_usecase.dart';

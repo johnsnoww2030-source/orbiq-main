@@ -1,60 +1,12 @@
-// import 'dart:math';
-
-// import 'package:orbiq/core/shared/product/data/data_source/local/product_dao.dart';
-// import 'package:orbiq/core/shared/product/data/models/product_model.dart';
-// import 'package:orbiq/features/get_product/domain/repository/product_repository.dart';
-
-// class PaginatedProducts {
-//   final List<ProductModel> products;
-//   final int totalProducts;
-
-//   PaginatedProducts({required this.products, required this.totalProducts});
-// }
-
-// class ProductRepositoryImpl extends ProductRepository {
-//   final ProductDao productDao; // Changed to a final field
-
-//   ProductRepositoryImpl(this.productDao); // Correctly initialize productDao
-
-//   @override
-//   Future<PaginatedProducts> getProducts(
-//       {required int page, required int limit}) async {
-//     final allProducts = await productDao.getAllProducts();
-
-//     // Sort products by creation date in descending order (newest first)
-//     // allProducts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-//     final totalProducts = allProducts.length;
-
-//     // Calculate startIndex and endIndex for pagination
-//     final startIndex = (page - 1) * limit;
-//     final endIndex = min(page * limit, totalProducts);
-
-//     if (startIndex >= totalProducts) {
-//       // Page is out of bounds
-//       return PaginatedProducts(products: [], totalProducts: totalProducts);
-//     }
-
-//     // Return the sublist of products
-//     return PaginatedProducts(
-//         products: allProducts.sublist(startIndex, endIndex),
-//         totalProducts: totalProducts);
-//   }
-
-//   @override
-//   Future<ProductModel?> getProductBySerialNumber(String serialNumber) async {
-//     return await productDao.getProductBySerialNumber(serialNumber);
-//   }
-// }
-
 import 'dart:math';
 import 'package:injectable/injectable.dart';
-import 'package:orbiq/core/shared/product/data/data_source/local/product_dao.dart';
-import 'package:orbiq/core/shared/product/data/models/product_model.dart';
+import 'package:orbiq/core/database/daos/product_dao.dart';
+import 'package:orbiq/core/shared/product/data/mappers/product_mapper.dart';
+import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 import 'package:orbiq/features/get_product/domain/repository/product_repository.dart';
 
 class PaginatedProducts {
-  final List<ProductModel> products;
+  final List<ProductEntity> products;
   final int totalProducts;
   final int currentPage;
   final int totalPages;
@@ -83,7 +35,6 @@ class ProductRepositoryImpl extends ProductRepository {
     required int limit,
   }) async {
     try {
-      // اعتبارسنجی ورودی
       if (page <= 0) {
         throw ArgumentError('صفحه باید بزرگتر از صفر باشد');
       }
@@ -95,18 +46,12 @@ class ProductRepositoryImpl extends ProductRepository {
       }
 
       final allProducts = await productDao.getAllProducts();
+      final allEntities = ProductMapper.toEntityList(allProducts);
 
-      // مرتب‌سازی محصولات بر اساس تاریخ ایجاد (جدیدترین ابتدا)
-      // اگر نیاز به مرتب‌سازی دارید، کامنت زیر را فعال کنید
-      // allProducts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-      final totalProducts = allProducts.length;
-
-      // محاسبه شاخص شروع و پایان برای pagination
+      final totalProducts = allEntities.length;
       final startIndex = (page - 1) * limit;
       final endIndex = min(page * limit, totalProducts);
 
-      // بررسی اینکه آیا صفحه خارج از محدوده است یا نه
       if (startIndex >= totalProducts) {
         return PaginatedProducts(
           products: [],
@@ -116,36 +61,33 @@ class ProductRepositoryImpl extends ProductRepository {
         );
       }
 
-      // بازگرداندن زیرلیست محصولات
       return PaginatedProducts(
-        products: allProducts.sublist(startIndex, endIndex),
+        products: allEntities.sublist(startIndex, endIndex),
         totalProducts: totalProducts,
         currentPage: page,
         limit: limit,
       );
     } catch (e) {
-      // در صورت بروز خطا، خطا را دوباره پرتاب کنید
       rethrow;
     }
   }
 
   @override
-  Future<ProductModel?> getProductBySerialNumber(String serialNumber) async {
+  Future<ProductEntity?> getProductBySerialNumber(String serialNumber) async {
     try {
-      // اعتبارسنجی ورودی
       if (serialNumber.trim().isEmpty) {
         return null;
       }
 
-      return await productDao.getProductBySerialNumber(serialNumber.trim());
+      final product = await productDao.getProductBySerialNumber(
+        serialNumber.trim(),
+      );
+      return product != null ? ProductMapper.toEntity(product) : null;
     } catch (e) {
-      // لاگ خطا (در صورت نیاز)
-      // logger.error('خطا در دریافت محصول با شماره سریال: $serialNumber', e);
       rethrow;
     }
   }
 
-  // متد اضافی برای جستجوی محصولات
   Future<PaginatedProducts> searchProducts({
     required String query,
     required int page,
@@ -157,9 +99,9 @@ class ProductRepositoryImpl extends ProductRepository {
       }
 
       final allProducts = await productDao.getAllProducts();
+      final allEntities = ProductMapper.toEntityList(allProducts);
 
-      // فیلتر کردن محصولات بر اساس query
-      final filteredProducts = allProducts.where((product) {
+      final filteredProducts = allEntities.where((product) {
         return product.name.toLowerCase().contains(query.toLowerCase()) ||
             product.serialNumber.toLowerCase().contains(query.toLowerCase());
       }).toList();

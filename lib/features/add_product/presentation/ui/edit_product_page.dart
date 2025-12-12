@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
-import 'package:orbiq/core/shared/product/data/models/product_model.dart';
+import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 import 'package:orbiq/features/add_product/presentation/controllers/bloc/product_bloc.dart';
 import 'package:orbiq/features/add_product/presentation/controllers/bloc/product_event.dart';
 import 'package:orbiq/features/add_product/presentation/controllers/bloc/product_state.dart';
 
 class EditProductPage extends StatefulWidget {
-  final ProductModel product;
+  final ProductEntity product;
 
   const EditProductPage({super.key, required this.product});
 
@@ -256,7 +256,6 @@ class _EditProductPageState extends State<EditProductPage> {
     );
   }
 
-  // اطلاعات پایه: نام، سریال، قیمت، موجودی فعلی، توضیحات
   Widget _buildMainInfoCard(AppLocalizations l10n, {required bool isDesktop}) {
     return Card(
       elevation: 0,
@@ -308,7 +307,6 @@ class _EditProductPageState extends State<EditProductPage> {
               },
             ),
             const SizedBox(height: 16),
-            // موجودی فعلی - منتقل شده به بخش اطلاعات پایه
             _buildTextField(
               controller: _currentStockController,
               label: l10n.currentStock,
@@ -338,7 +336,6 @@ class _EditProductPageState extends State<EditProductPage> {
     );
   }
 
-  // جزئیات تکمیلی: مدل، رنگ، جنس، برند، نقطه سفارش
   Widget _buildAdditionalInfoCard(
     AppLocalizations l10n, {
     required bool isDesktop,
@@ -407,7 +404,6 @@ class _EditProductPageState extends State<EditProductPage> {
                 children: [
                   const Divider(),
                   const SizedBox(height: 16),
-                  // مدل و رنگ
                   if (isDesktop)
                     Row(
                       children: [
@@ -446,7 +442,6 @@ class _EditProductPageState extends State<EditProductPage> {
                     ),
                   ],
                   const SizedBox(height: 16),
-                  // جنس و برند
                   if (isDesktop)
                     Row(
                       children: [
@@ -572,7 +567,6 @@ class _EditProductPageState extends State<EditProductPage> {
     };
   }
 
-  // دکمه ذخیره بهبود یافته
   Widget _buildSubmitButton(AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
@@ -679,9 +673,7 @@ class _EditProductPageState extends State<EditProductPage> {
           reorderPoint: int.parse(_reorderPointController.text),
         );
 
-        context.read<ProductBloc>().add(
-          UpdateProductEvent(updatedProduct.toEntity()),
-        );
+        context.read<ProductBloc>().add(UpdateProductEvent(updatedProduct));
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.error), backgroundColor: Colors.red),

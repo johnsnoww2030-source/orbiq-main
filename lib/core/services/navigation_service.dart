@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:orbiq/core/adaptor/routes_constants.dart';
-import 'package:orbiq/core/shared/product/data/models/product_model.dart';
+import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 
 /// A service class that provides navigation functionality throughout the app
 class NavigationService {
@@ -48,14 +48,15 @@ class NavigationService {
   }
 
   /// Navigate to the edit product screen
-  void navigateToEditProduct(BuildContext context, ProductModel product) {
+  void navigateToEditProduct(BuildContext context, ProductEntity product) {
     Navigator.pushNamed(context, Routes.editProduct, arguments: product);
   }
 
-  /// Navigate to the payments report screen
-  void navigateToPaymentsReport(BuildContext context) {
-    Navigator.pushNamed(context, Routes.paymentsReport);
-  }
+  // TODO: Replace with Sales Module (PRD)
+  // /// Navigate to the payments report screen
+  // void navigateToPaymentsReport(BuildContext context) {
+  //   Navigator.pushNamed(context, Routes.paymentsReport);
+  // }
 
   /// Navigate to the update screen
   void navigateToUpdate(BuildContext context) {

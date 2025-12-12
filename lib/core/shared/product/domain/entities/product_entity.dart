@@ -1,7 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 class ProductEntity extends Equatable {
-  final int? id; // id را به صورت اختیاری تعریف کنید
+  final int? id; // Legacy id (optional)
+  final String? uuid; // UUID for Drift
   final String name;
   final String serialNumber;
   final String description;
@@ -17,10 +18,10 @@ class ProductEntity extends Equatable {
   final int currentStock;
   final int reorderPoint;
   final DateTime lastStockUpdate;
-  // final List<DateTime> salesDates;
 
   const ProductEntity({
-    this.id, // id به عنوان پارامتر اختیاری
+    this.id,
+    this.uuid,
     required this.name,
     required this.serialNumber,
     required this.description,
@@ -36,27 +37,66 @@ class ProductEntity extends Equatable {
     required this.currentStock,
     required this.reorderPoint,
     required this.lastStockUpdate,
-    // required this.salesDates,
   });
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        serialNumber,
-        description,
-        brand,
-        model,
-        color,
-        material,
-        purchaseDate,
-        originalPrice,
-        discountedPrice,
-        discountStartDate,
-        discountEndDate,
-        currentStock,
-        reorderPoint,
-        lastStockUpdate,
-        // salesDates,
-      ];
+    id,
+    uuid,
+    name,
+    serialNumber,
+    description,
+    brand,
+    model,
+    color,
+    material,
+    purchaseDate,
+    originalPrice,
+    discountedPrice,
+    discountStartDate,
+    discountEndDate,
+    currentStock,
+    reorderPoint,
+    lastStockUpdate,
+  ];
+
+  ProductEntity copyWith({
+    int? id,
+    String? uuid,
+    String? name,
+    String? serialNumber,
+    String? description,
+    String? brand,
+    String? model,
+    String? color,
+    String? material,
+    DateTime? purchaseDate,
+    double? originalPrice,
+    double? discountedPrice,
+    DateTime? discountStartDate,
+    DateTime? discountEndDate,
+    int? currentStock,
+    int? reorderPoint,
+    DateTime? lastStockUpdate,
+  }) {
+    return ProductEntity(
+      id: id ?? this.id,
+      uuid: uuid ?? this.uuid,
+      name: name ?? this.name,
+      serialNumber: serialNumber ?? this.serialNumber,
+      description: description ?? this.description,
+      brand: brand ?? this.brand,
+      model: model ?? this.model,
+      color: color ?? this.color,
+      material: material ?? this.material,
+      purchaseDate: purchaseDate ?? this.purchaseDate,
+      originalPrice: originalPrice ?? this.originalPrice,
+      discountedPrice: discountedPrice ?? this.discountedPrice,
+      discountStartDate: discountStartDate ?? this.discountStartDate,
+      discountEndDate: discountEndDate ?? this.discountEndDate,
+      currentStock: currentStock ?? this.currentStock,
+      reorderPoint: reorderPoint ?? this.reorderPoint,
+      lastStockUpdate: lastStockUpdate ?? this.lastStockUpdate,
+    );
+  }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:orbiq/core/shared/database/database.dart';
+import 'package:orbiq/core/database/app_database.dart';
 import 'package:orbiq/features/add_product/data/repository/product_repository_impl.dart'
     as add_repo;
 import 'package:orbiq/features/get_product/data/repository/product_repository_impl.dart'

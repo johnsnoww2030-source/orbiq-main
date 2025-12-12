@@ -4,7 +4,7 @@ import 'package:orbiq/core/adaptor/bloc_provider.dart';
 import 'package:orbiq/core/adaptor/routes.dart';
 import 'package:orbiq/core/adaptor/routes_constants.dart';
 import 'package:orbiq/core/adaptor/theme.dart';
-import 'package:orbiq/core/shared/database/database.dart';
+import 'package:orbiq/core/database/app_database.dart';
 import 'package:orbiq/core/shared/localization/domain/entities/language_entity.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 

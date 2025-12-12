@@ -1,11 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:orbiq/core/shared/database/database.dart';
+import 'package:orbiq/core/database/app_database.dart';
 
 // Import feature-specific provider factories
 import 'bloc_providers/auth_bloc_provider.dart';
 import 'bloc_providers/product_bloc_provider.dart';
-import 'bloc_providers/payment_bloc_provider.dart';
 import 'bloc_providers/chat_bloc_provider.dart';
 import 'bloc_providers/update_bloc_provider.dart';
 import 'bloc_providers/export_bloc_provider.dart';
@@ -20,7 +19,6 @@ List<BlocProvider> blocProviders(AppDatabase database) {
   return [
     ...authBlocProviders(database),
     ...productBlocProviders(database),
-    ...paymentBlocProviders(database),
     ...chatBlocProviders(),
     ...updateBlocProviders(dio),
     ...exportBlocProviders(),

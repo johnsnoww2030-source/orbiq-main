@@ -1,56 +1,84 @@
-import 'package:orbiq/features/auth/data/mappers/user_mapper.dart';
-import 'package:orbiq/features/auth/data/models/user_model.dart';
+import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
-import 'user_dao.dart';
+import 'package:orbiq/core/database/app_database.dart';
+import 'package:orbiq/core/database/daos/user_dao.dart';
+import 'package:orbiq/features/auth/data/mappers/user_mapper.dart';
+import 'package:orbiq/features/auth/domain/entities/user_entity.dart';
+import 'package:uuid/uuid.dart';
 
 @lazySingleton
 class AuthLocalDataSource {
   final UserDao userDao;
+  static const _uuid = Uuid();
 
   AuthLocalDataSource(this.userDao);
 
-  Future<UserModel?> loginUser(String username) async {
-    final userModel = await userDao.getUserByUsername(username);
-    if (userModel != null) {
+  Future<UserEntity?> loginUser(String username) async {
+    final user = await userDao.getUserByUsername(username);
+    if (user != null) {
       // وقتی کاربر یافت شد، وضعیت ورود او را به true تغییر می‌دهیم
-      await userDao.updateLoginStatus(userModel.id!, true);
+      await userDao.updateLoginStatus(user.userUuid, true);
+      return UserMapper.toEntity(user);
     }
-    return userModel;
+    return null;
   }
 
-  Future<void> insertUser(UserModel user) {
-    return userDao.insertUser(user);
+  Future<void> insertUser(UserEntity entity) async {
+    final companion = UserMapper.toCompanion(entity);
+    await userDao.insertUser(companion);
   }
 
-  Future<void> updateUser(UserModel user) {
-    return userDao.updateUser(user);
+  Future<void> updateUser(UserEntity entity) async {
+    if (entity.uuid != null) {
+      final user = await userDao.getUserByUuid(entity.uuid!);
+      if (user != null) {
+        final updated = User(
+          userUuid: user.userUuid,
+          username: entity.username,
+          password: entity.password,
+          role: entity.role,
+          nickname: entity.nickname,
+          isFirstLogin: entity.isFirstLogin,
+          loggedIn: entity.loggedin,
+          createdAt: user.createdAt,
+          updatedAt: DateTime.now(),
+        );
+        await userDao.updateUser(updated);
+      }
+    }
   }
 
-  Future<UserModel?> getUserById(int id) {
-    return userDao.getUserById(id);
+  Future<UserEntity?> getUserByUuid(String uuid) async {
+    final user = await userDao.getUserByUuid(uuid);
+    return user != null ? UserMapper.toEntity(user) : null;
+  }
+
+  Future<UserEntity?> getLoggedInUser() async {
+    final user = await userDao.getLoggedInUser();
+    return user != null ? UserMapper.toEntity(user) : null;
   }
 
   // متد جدید برای خروج کاربر و تنظیم وضعیت loggedin به false
-  Future<void> logoutUser(int userId) async {
-    // وضعیت loggedin کاربر را به false تنظیم می‌کنیم
-    await userDao.updateLoginStatus(userId, false);
+  Future<void> logoutUser(String userUuid) async {
+    await userDao.updateLoginStatus(userUuid, false);
   }
 
   Future<void> seedAdminUser() async {
     final existingAdmin = await userDao.getUserByUsername('admin');
     if (existingAdmin == null) {
-      final adminUser = UserModel(
-        id: 1,
-        username: 'admin',
-        password: UserMapper.hashPassword('admin'), // رمز عبور هش شده
-        role: 'admin',
-        nickname: 'admin',
-        isFirstLogin: true,
-        loggedin: false,
+      final now = DateTime.now();
+      final adminCompanion = UsersCompanion(
+        userUuid: Value(_uuid.v4()),
+        username: const Value('admin'),
+        password: Value(UserMapper.hashPassword('admin')),
+        role: const Value('admin'),
+        nickname: const Value('admin'),
+        isFirstLogin: const Value(true),
+        loggedIn: const Value(false),
+        createdAt: Value(now),
+        updatedAt: Value(now),
       );
-      await userDao.insertUser(
-        adminUser,
-      ); // اگر کاربر مدیر وجود نداشت، اضافه شود
+      await userDao.insertUser(adminCompanion);
     }
   }
 }

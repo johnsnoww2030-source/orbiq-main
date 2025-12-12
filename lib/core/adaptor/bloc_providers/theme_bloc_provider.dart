@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:orbiq/core/shared/database/database.dart';
+import 'package:orbiq/core/database/app_database.dart';
 import 'package:orbiq/core/shared/theme/data/data_sources/local/theme_local_data_source.dart';
 import 'package:orbiq/core/shared/theme/data/repositories/theme_repository_impl.dart';
 import 'package:orbiq/core/shared/theme/domain/usecases/get_theme_usecase.dart';

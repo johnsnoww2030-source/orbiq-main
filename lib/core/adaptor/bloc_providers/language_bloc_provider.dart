@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:orbiq/core/shared/database/database.dart';
+import 'package:orbiq/core/database/app_database.dart';
 import 'package:orbiq/core/shared/localization/data/data_sources/local/language_local_data_source.dart';
 import 'package:orbiq/core/shared/localization/data/repositories/language_repository_impl.dart';
 import 'package:orbiq/core/shared/localization/domain/usecases/get_language_usecase.dart';

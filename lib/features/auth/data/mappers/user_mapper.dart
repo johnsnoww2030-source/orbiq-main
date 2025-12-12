@@ -1,10 +1,15 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
-import 'package:orbiq/features/auth/data/models/user_model.dart';
+import 'package:drift/drift.dart';
+import 'package:orbiq/core/database/app_database.dart';
 import 'package:orbiq/features/auth/domain/entities/user_entity.dart';
+import 'package:uuid/uuid.dart';
 
+/// Mapper for converting between Drift User and domain UserEntity
 class UserMapper {
+  static const _uuid = Uuid();
+
   // تابع هش کردن رمز عبور با الگوریتم SHA-256
   static String hashPassword(String password) {
     var bytes = utf8.encode(password); // تبدیل رمز عبور به بایت
@@ -14,33 +19,37 @@ class UserMapper {
 
   // تابع برای بررسی تطابق رمز عبور وارد شده با رمز عبور هش‌شده
   static bool checkPassword(String plainPassword, String hashedPassword) {
-    // هش کردن رمز عبور وارد شده
     var hashedInputPassword = hashPassword(plainPassword);
-
-    // مقایسه رمز عبور هش‌شده وارد شده با رمز عبور ذخیره شده در دیتابیس
     return hashedInputPassword == hashedPassword;
   }
 
-  static UserModel toModel(UserEntity entity) {
-    return UserModel(
-        id: entity.id,
-        username: entity.username,
-        password: hashPassword(entity.password), // هش کردن رمز عبور
-        role: entity.role,
-        isFirstLogin: entity.isFirstLogin,
-        loggedin: entity.loggedin,
-        nickname: entity.nickname);
+  /// Convert domain UserEntity to Drift UsersCompanion for insert
+  static UsersCompanion toCompanion(UserEntity entity, {String? existingUuid}) {
+    final now = DateTime.now();
+    return UsersCompanion(
+      userUuid: Value(existingUuid ?? _uuid.v4()),
+      username: Value(entity.username),
+      password: Value(hashPassword(entity.password)),
+      role: Value(entity.role),
+      nickname: Value(entity.nickname),
+      isFirstLogin: Value(entity.isFirstLogin),
+      loggedIn: Value(entity.loggedin),
+      createdAt: Value(now),
+      updatedAt: Value(now),
+    );
   }
 
-  static UserEntity toEntity(UserModel model) {
+  /// Convert Drift User to domain UserEntity
+  static UserEntity toEntity(User user) {
     return UserEntity(
-      id: model.id,
-      username: model.username,
-      password: model.password, // هش‌شده است
-      role: model.role,
-      isFirstLogin: model.isFirstLogin,
-      loggedin: model.loggedin,
-      nickname: model.nickname,
+      id: null, // UUID is used instead of int id
+      uuid: user.userUuid,
+      username: user.username,
+      password: user.password, // هش‌شده است
+      role: user.role,
+      nickname: user.nickname,
+      isFirstLogin: user.isFirstLogin,
+      loggedin: user.loggedIn,
     );
   }
 }
