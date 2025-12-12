@@ -765,7 +765,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                               EditProductPage(product: product),
                         ),
                       ).then((result) {
-                        if (result == true && mounted) {
+                        if (result == true && context.mounted) {
                           context.read<GetProductBloc>().add(LoadProducts());
                         }
                       });

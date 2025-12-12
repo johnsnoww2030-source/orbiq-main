@@ -953,4 +953,89 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clearCart => 'Clear Cart';
+
+  @override
+  String get purchases => 'Purchases';
+
+  @override
+  String get newPurchase => 'New Purchase';
+
+  @override
+  String get noPurchases => 'No purchases yet';
+
+  @override
+  String get unknownSupplier => 'Unknown Supplier';
+
+  @override
+  String get purchaseCreated => 'Purchase created successfully';
+
+  @override
+  String get supplierName => 'Supplier Name';
+
+  @override
+  String get additionalCosts => 'Additional Costs (Shipping)';
+
+  @override
+  String get addItem => 'Add Item';
+
+  @override
+  String get noItemsAdded => 'No items added yet';
+
+  @override
+  String get product => 'Product';
+
+  @override
+  String get quantity => 'Quantity';
+
+  @override
+  String get unitPrice => 'Unit Price';
+
+  @override
+  String get summary => 'Summary';
+
+  @override
+  String get itemsTotal => 'Items Total';
+
+  @override
+  String get finalTotal => 'Final Total';
+
+  @override
+  String get savePurchase => 'Save Purchase';
+
+  @override
+  String get pleaseCompleteAllItems =>
+      'Please complete all items with product, quantity and price';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get newSale => 'New Sale';
+
+  @override
+  String get noSales => 'No sales yet';
+
+  @override
+  String get saleCreated => 'Sale created successfully';
+
+  @override
+  String get customerInfo => 'Customer Info';
+
+  @override
+  String get customerName => 'Customer Name';
+
+  @override
+  String get saveSale => 'Save Sale';
+
+  @override
+  String get unknownCustomer => 'Walk-in Customer';
+
+  @override
+  String get totalProfit => 'Total Profit';
+
+  @override
+  String get insufficientStock => 'Insufficient stock';
+
+  @override
+  String get profit => 'Profit';
 }

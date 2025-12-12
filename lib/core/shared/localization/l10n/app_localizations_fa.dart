@@ -953,4 +953,89 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get clearCart => 'خالی کردن سبد';
+
+  @override
+  String get purchases => 'خریدها';
+
+  @override
+  String get newPurchase => 'خرید جدید';
+
+  @override
+  String get noPurchases => 'هنوز خریدی ثبت نشده';
+
+  @override
+  String get unknownSupplier => 'تأمین‌کننده نامشخص';
+
+  @override
+  String get purchaseCreated => 'خرید با موفقیت ثبت شد';
+
+  @override
+  String get supplierName => 'نام تأمین‌کننده';
+
+  @override
+  String get additionalCosts => 'هزینه‌های اضافی (حمل و نقل)';
+
+  @override
+  String get addItem => 'افزودن آیتم';
+
+  @override
+  String get noItemsAdded => 'هنوز آیتمی اضافه نشده';
+
+  @override
+  String get product => 'محصول';
+
+  @override
+  String get quantity => 'تعداد';
+
+  @override
+  String get unitPrice => 'قیمت واحد';
+
+  @override
+  String get summary => 'خلاصه';
+
+  @override
+  String get itemsTotal => 'جمع اقلام';
+
+  @override
+  String get finalTotal => 'جمع نهایی';
+
+  @override
+  String get savePurchase => 'ذخیره خرید';
+
+  @override
+  String get pleaseCompleteAllItems =>
+      'لطفا تمام آیتم‌ها را با محصول، تعداد و قیمت کامل کنید';
+
+  @override
+  String get retry => 'تلاش مجدد';
+
+  @override
+  String get newSale => 'فروش جدید';
+
+  @override
+  String get noSales => 'هنوز فروشی ثبت نشده';
+
+  @override
+  String get saleCreated => 'فروش با موفقیت ثبت شد';
+
+  @override
+  String get customerInfo => 'اطلاعات مشتری';
+
+  @override
+  String get customerName => 'نام مشتری';
+
+  @override
+  String get saveSale => 'ذخیره فروش';
+
+  @override
+  String get unknownCustomer => 'مشتری حضوری';
+
+  @override
+  String get totalProfit => 'سود کل';
+
+  @override
+  String get insufficientStock => 'موجودی کافی نیست';
+
+  @override
+  String get profit => 'سود';
 }

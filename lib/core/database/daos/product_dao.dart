@@ -70,4 +70,36 @@ class ProductDao extends DatabaseAccessor<AppDatabase> with _$ProductDaoMixin {
       ),
     );
   }
+
+  /// Update stock and WAC (Weighted Average Cost) atomically
+  /// WAC Formula: newWAC = (oldStock × oldWAC + newQty × newPrice) / (oldStock + newQty)
+  Future<void> updateStockAndWAC({
+    required String uuid,
+    required int additionalQty,
+    required double newUnitPrice,
+  }) async {
+    final product = await getProductByUuid(uuid);
+    if (product == null) return;
+
+    final oldStock = product.currentStock;
+    final oldWAC = product.avgBuyPrice;
+    final newStock = oldStock + additionalQty;
+
+    // Calculate new WAC
+    double newWAC;
+    if (newStock > 0) {
+      newWAC = (oldStock * oldWAC + additionalQty * newUnitPrice) / newStock;
+    } else {
+      newWAC = newUnitPrice;
+    }
+
+    await (update(products)..where((p) => p.productUuid.equals(uuid))).write(
+      ProductsCompanion(
+        currentStock: Value(newStock),
+        avgBuyPrice: Value(newWAC),
+        lastStockUpdate: Value(DateTime.now()),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
 }

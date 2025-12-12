@@ -1971,6 +1971,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear Cart'**
   String get clearCart;
+
+  /// No description provided for @purchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases'**
+  String get purchases;
+
+  /// No description provided for @newPurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'New Purchase'**
+  String get newPurchase;
+
+  /// No description provided for @noPurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'No purchases yet'**
+  String get noPurchases;
+
+  /// No description provided for @unknownSupplier.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Supplier'**
+  String get unknownSupplier;
+
+  /// No description provided for @purchaseCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase created successfully'**
+  String get purchaseCreated;
+
+  /// No description provided for @supplierName.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier Name'**
+  String get supplierName;
+
+  /// No description provided for @additionalCosts.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Costs (Shipping)'**
+  String get additionalCosts;
+
+  /// No description provided for @addItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Item'**
+  String get addItem;
+
+  /// No description provided for @noItemsAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'No items added yet'**
+  String get noItemsAdded;
+
+  /// No description provided for @product.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get product;
+
+  /// No description provided for @quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get quantity;
+
+  /// No description provided for @unitPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit Price'**
+  String get unitPrice;
+
+  /// No description provided for @summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get summary;
+
+  /// No description provided for @itemsTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Items Total'**
+  String get itemsTotal;
+
+  /// No description provided for @finalTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Final Total'**
+  String get finalTotal;
+
+  /// No description provided for @savePurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Purchase'**
+  String get savePurchase;
+
+  /// No description provided for @pleaseCompleteAllItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete all items with product, quantity and price'**
+  String get pleaseCompleteAllItems;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @newSale.
+  ///
+  /// In en, this message translates to:
+  /// **'New Sale'**
+  String get newSale;
+
+  /// No description provided for @noSales.
+  ///
+  /// In en, this message translates to:
+  /// **'No sales yet'**
+  String get noSales;
+
+  /// No description provided for @saleCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale created successfully'**
+  String get saleCreated;
+
+  /// No description provided for @customerInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Info'**
+  String get customerInfo;
+
+  /// No description provided for @customerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Name'**
+  String get customerName;
+
+  /// No description provided for @saveSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Sale'**
+  String get saveSale;
+
+  /// No description provided for @unknownCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Walk-in Customer'**
+  String get unknownCustomer;
+
+  /// No description provided for @totalProfit.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Profit'**
+  String get totalProfit;
+
+  /// No description provided for @insufficientStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient stock'**
+  String get insufficientStock;
+
+  /// No description provided for @profit.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit'**
+  String get profit;
 }
 
 class _AppLocalizationsDelegate

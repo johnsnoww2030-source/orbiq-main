@@ -18,6 +18,7 @@ class ProductEntity extends Equatable {
   final int currentStock;
   final int reorderPoint;
   final DateTime lastStockUpdate;
+  final double avgBuyPrice; // Weighted Average Cost
 
   const ProductEntity({
     this.id,
@@ -37,6 +38,7 @@ class ProductEntity extends Equatable {
     required this.currentStock,
     required this.reorderPoint,
     required this.lastStockUpdate,
+    this.avgBuyPrice = 0.0,
   });
 
   @override
@@ -58,6 +60,7 @@ class ProductEntity extends Equatable {
     currentStock,
     reorderPoint,
     lastStockUpdate,
+    avgBuyPrice,
   ];
 
   ProductEntity copyWith({
@@ -78,6 +81,7 @@ class ProductEntity extends Equatable {
     int? currentStock,
     int? reorderPoint,
     DateTime? lastStockUpdate,
+    double? avgBuyPrice,
   }) {
     return ProductEntity(
       id: id ?? this.id,
@@ -97,6 +101,7 @@ class ProductEntity extends Equatable {
       currentStock: currentStock ?? this.currentStock,
       reorderPoint: reorderPoint ?? this.reorderPoint,
       lastStockUpdate: lastStockUpdate ?? this.lastStockUpdate,
+      avgBuyPrice: avgBuyPrice ?? this.avgBuyPrice,
     );
   }
 }

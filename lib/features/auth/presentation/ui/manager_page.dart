@@ -14,6 +14,8 @@ import 'package:orbiq/features/auth/presentation/ui/widgets/dashboard_content_wi
 // TODO: Replace with Sales Module (PRD)
 // Removed: payment_report_page.dart
 import 'package:orbiq/features/get_product/presentation/ui/products_management_page.dart';
+import 'package:orbiq/features/purchase/presentation/ui/purchase_page.dart';
+import 'package:orbiq/features/sales/presentation/ui/sales_page.dart';
 import 'package:orbiq/features/auth/presentation/ui/settings_page.dart';
 
 class ManagerPage extends StatefulWidget {
@@ -168,13 +170,13 @@ class _ManagerPageState extends State<ManagerPage> {
       case 0: // Dashboard
         return const DashboardContentWidget();
       case 1: // Sales Invoices
-        return _buildPlaceholder("Sales Invoices");
+        return const SalesPage();
       case 2: // Customers
         return _buildPlaceholder("Customers");
       case 3: // Product List
         return const ProductsManagementPage();
       case 4: // Purchase Invoices
-        return _buildPlaceholder("Purchase Invoices");
+        return const PurchasePage();
       case 5: // Suppliers
         return _buildPlaceholder("Suppliers");
       case 6: // Stocktaking

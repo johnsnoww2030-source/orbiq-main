@@ -13,6 +13,10 @@ class Routes {
   static const String paymentsReport = '/paymentsReport';
   static const String update = '/update';
 
+  // Purchase routes
+  static const String purchases = '/purchases';
+  static const String addPurchase = '/purchases/add';
+
   // Seller routes
   static const String seller = '/seller';
 

@@ -950,4 +950,89 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get clearCart => 'إفراغ السلة';
+
+  @override
+  String get purchases => 'المشتريات';
+
+  @override
+  String get newPurchase => 'شراء جديد';
+
+  @override
+  String get noPurchases => 'لا توجد مشتريات بعد';
+
+  @override
+  String get unknownSupplier => 'مورد غير معروف';
+
+  @override
+  String get purchaseCreated => 'تم إنشاء الشراء بنجاح';
+
+  @override
+  String get supplierName => 'اسم المورد';
+
+  @override
+  String get additionalCosts => 'تكاليف إضافية (الشحن)';
+
+  @override
+  String get addItem => 'إضافة عنصر';
+
+  @override
+  String get noItemsAdded => 'لم يتم إضافة عناصر بعد';
+
+  @override
+  String get product => 'المنتج';
+
+  @override
+  String get quantity => 'الكمية';
+
+  @override
+  String get unitPrice => 'سعر الوحدة';
+
+  @override
+  String get summary => 'ملخص';
+
+  @override
+  String get itemsTotal => 'إجمالي العناصر';
+
+  @override
+  String get finalTotal => 'الإجمالي النهائي';
+
+  @override
+  String get savePurchase => 'حفظ الشراء';
+
+  @override
+  String get pleaseCompleteAllItems =>
+      'يرجى إكمال جميع العناصر بالمنتج والكمية والسعر';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get newSale => 'بيع جديد';
+
+  @override
+  String get noSales => 'لا توجد مبيعات بعد';
+
+  @override
+  String get saleCreated => 'تم إنشاء البيع بنجاح';
+
+  @override
+  String get customerInfo => 'معلومات العميل';
+
+  @override
+  String get customerName => 'اسم العميل';
+
+  @override
+  String get saveSale => 'حفظ البيع';
+
+  @override
+  String get unknownCustomer => 'عميل حضوري';
+
+  @override
+  String get totalProfit => 'إجمالي الربح';
+
+  @override
+  String get insufficientStock => 'المخزون غير كافي';
+
+  @override
+  String get profit => 'الربح';
 }

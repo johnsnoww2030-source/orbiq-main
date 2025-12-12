@@ -30,7 +30,7 @@ class ProductMapper {
       currentStock: Value(entity.currentStock),
       reorderPoint: Value(entity.reorderPoint),
       lastStockUpdate: Value(entity.lastStockUpdate),
-      avgBuyPrice: const Value(0.0),
+      avgBuyPrice: Value(entity.avgBuyPrice),
       minMarginPercent: const Value(20),
       syncStatus: const Value(0),
       createdAt: Value(now),
@@ -58,6 +58,7 @@ class ProductMapper {
       currentStock: product.currentStock,
       reorderPoint: product.reorderPoint,
       lastStockUpdate: product.lastStockUpdate,
+      avgBuyPrice: product.avgBuyPrice,
     );
   }
 

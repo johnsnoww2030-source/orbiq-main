@@ -11,6 +11,8 @@ import 'bloc_providers/export_bloc_provider.dart';
 import 'bloc_providers/theme_bloc_provider.dart';
 import 'bloc_providers/language_bloc_provider.dart';
 import 'bloc_providers/currency_bloc_provider.dart';
+import 'bloc_providers/purchase_bloc_provider.dart';
+import 'bloc_providers/sales_bloc_provider.dart';
 
 List<BlocProvider> blocProviders(AppDatabase database) {
   final dio = Dio();
@@ -25,5 +27,7 @@ List<BlocProvider> blocProviders(AppDatabase database) {
     ...themeBlocProviders(database),
     ...languageBlocProviders(database),
     ...currencyBlocProviders(),
+    ...purchaseBlocProviders,
+    ...salesBlocProviders,
   ];
 }
