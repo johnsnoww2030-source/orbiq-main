@@ -1,5 +1,3 @@
-// lib/features/add_product/presentation/bloc/product_state.dart
-
 import 'package:equatable/equatable.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 
@@ -35,15 +33,6 @@ class ProductError extends ProductState {
 
   @override
   List<Object?> get props => [message];
-}
-
-class ProductUpdated extends ProductState {
-  final ProductEntity updatedProduct;
-
-  const ProductUpdated(this.updatedProduct);
-
-  @override
-  List<Object?> get props => [updatedProduct];
 }
 
 class ProductUpdatedSuccess extends ProductState {

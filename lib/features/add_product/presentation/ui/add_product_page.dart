@@ -741,7 +741,7 @@ class AddProductPageState extends State<AddProductPage> {
           lastStockUpdate: _lastStockUpdate,
         );
 
-        context.read<ProductBloc>().add(AddProductEvent(product));
+        context.read<ProductBloc>().add(ProductAddRequested(product));
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.error), backgroundColor: Colors.red),

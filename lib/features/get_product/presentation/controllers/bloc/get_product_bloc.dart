@@ -2,6 +2,7 @@
 
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:orbiq/features/get_product/data/constants/product_constants.dart';
 import 'package:orbiq/features/get_product/domain/usecases/get_product_usecase.dart';
 import 'package:orbiq/features/get_product/domain/usecases/get_products_usecase.dart';
 
@@ -14,29 +15,30 @@ class GetProductBloc extends Bloc<GetProductEvent, GetProductState> {
   final GetProductBySerialUseCase getProductBySerialUseCase;
 
   int _currentPage = 1;
-  final int _limit = 20;
 
   GetProductBloc({
     required this.getProductsUseCase,
     required this.getProductBySerialUseCase,
   }) : super(const GetProductInitial()) {
-    on<LoadProducts>(_onLoadProducts);
-    on<SearchProductBySerial>(_onSearchProductBySerial);
-    on<LoadProductPageEvent>(_onLoadProductPageEvent);
+    on<ProductsLoadRequested>(_onProductsLoadRequested);
+    on<ProductBySerialSearchRequested>(_onProductBySerialSearchRequested);
+    on<ProductPageLoadRequested>(_onProductPageLoadRequested);
   }
 
-  void _onLoadProducts(
-    LoadProducts event,
+  void _onProductsLoadRequested(
+    ProductsLoadRequested event,
     Emitter<GetProductState> emit,
   ) async {
     emit(const ProductLoading());
     _currentPage = event.page < 1 ? 1 : event.page;
-    try {
-      final params = GetProductsUseCaseParams(
-        page: _currentPage,
-        limit: event.limit,
-      );
-      final paginatedData = await getProductsUseCase(params);
+
+    final result = await getProductsUseCase(
+      GetProductsUseCaseParams(page: _currentPage, limit: event.limit),
+    );
+
+    result.fold((failure) => emit(ProductError(failure.toString())), (
+      paginatedData,
+    ) {
       final totalPages = (paginatedData.totalProducts / event.limit).ceil();
       emit(
         ProductLoaded(
@@ -46,24 +48,29 @@ class GetProductBloc extends Bloc<GetProductEvent, GetProductState> {
           hasNextPage: _currentPage < totalPages,
         ),
       );
-    } catch (e) {
-      emit(ProductError(e.toString()));
-    }
+    });
   }
 
-  void _onLoadProductPageEvent(
-    LoadProductPageEvent event,
+  void _onProductPageLoadRequested(
+    ProductPageLoadRequested event,
     Emitter<GetProductState> emit,
   ) async {
     emit(const ProductLoadingPage());
     _currentPage = event.page < 1 ? 1 : event.page;
-    try {
-      final params = GetProductsUseCaseParams(
+
+    final result = await getProductsUseCase(
+      GetProductsUseCaseParams(
         page: _currentPage,
-        limit: _limit,
-      );
-      final paginatedData = await getProductsUseCase(params);
-      final totalPages = (paginatedData.totalProducts / _limit).ceil();
+        limit: ProductConstants.defaultPageLimit,
+      ),
+    );
+
+    result.fold((failure) => emit(ProductError(failure.toString())), (
+      paginatedData,
+    ) {
+      final totalPages =
+          (paginatedData.totalProducts / ProductConstants.defaultPageLimit)
+              .ceil();
       emit(
         ProductLoaded(
           products: paginatedData.products,
@@ -72,25 +79,23 @@ class GetProductBloc extends Bloc<GetProductEvent, GetProductState> {
           hasNextPage: _currentPage < totalPages,
         ),
       );
-    } catch (e) {
-      emit(ProductError(e.toString()));
-    }
+    });
   }
 
-  void _onSearchProductBySerial(
-    SearchProductBySerial event,
+  void _onProductBySerialSearchRequested(
+    ProductBySerialSearchRequested event,
     Emitter<GetProductState> emit,
   ) async {
     emit(const ProductLoading());
-    try {
-      final product = await getProductBySerialUseCase(event.serialNumber);
+
+    final result = await getProductBySerialUseCase(event.serialNumber);
+
+    result.fold((failure) => emit(ProductError(failure.toString())), (product) {
       if (product != null) {
         emit(ProductFound(product));
       } else {
         emit(const ProductNotFound());
       }
-    } catch (e) {
-      emit(ProductError(e.toString()));
-    }
+    });
   }
 }

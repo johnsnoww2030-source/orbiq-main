@@ -7,6 +7,9 @@ import 'package:uuid/uuid.dart';
 class ProductMapper {
   static const _uuid = Uuid();
 
+  /// Default minimum margin percentage for new products
+  static const int defaultMinMarginPercent = 20;
+
   /// Convert domain ProductEntity to Drift ProductsCompanion for insert
   static ProductsCompanion toCompanion(
     ProductEntity entity, {
@@ -31,7 +34,7 @@ class ProductMapper {
       reorderPoint: Value(entity.reorderPoint),
       lastStockUpdate: Value(entity.lastStockUpdate),
       avgBuyPrice: Value(entity.avgBuyPrice),
-      minMarginPercent: const Value(20),
+      minMarginPercent: const Value(defaultMinMarginPercent),
       syncStatus: const Value(0),
       createdAt: Value(now),
       updatedAt: Value(now),

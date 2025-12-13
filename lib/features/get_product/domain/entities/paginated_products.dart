@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 
 /// Paginated products value object for Domain layer
-class PaginatedProducts extends Equatable {
+class PaginatedProductsEntity extends Equatable {
   final List<ProductEntity> products;
   final int totalProducts;
   final int currentPage;
@@ -10,7 +10,7 @@ class PaginatedProducts extends Equatable {
   final bool hasNextPage;
   final bool hasPreviousPage;
 
-  PaginatedProducts({
+  PaginatedProductsEntity({
     required this.products,
     required this.totalProducts,
     required this.currentPage,

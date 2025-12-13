@@ -1,0 +1,23 @@
+SOLID
+─────
+☐ S: هر کلاس یک مسئولیت
+☐ O: توسعه بدون تغییر کد موجود
+☐ L: کلاس فرزند جایگزین والد
+☐ I: اینترفیس‌های کوچک و تخصصی
+☐ D: وابستگی به Abstraction
+
+Clean Architecture
+──────────────────
+☐ Domain: بدون import از Data/Presentation
+☐ Domain: Entities با Equatable
+☐ Domain: Repository فقط Interface
+☐ Data: Repository پیاده‌سازی می‌کند
+☐ Data: از Mapper استفاده می‌کند
+☐ Presentation: BLoC فقط از Repository
+☐ Presentation: BLoC از DAO استفاده نمی‌کند
+
+Dependency Rule
+───────────────
+☐ Presentation → Domain ✅
+☐ Data → Domain ✅
+☐ Domain → هیچ‌کس ✅

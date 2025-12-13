@@ -55,7 +55,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
   @override
   void initState() {
     super.initState();
-    context.read<GetProductBloc>().add(LoadProducts());
+    context.read<GetProductBloc>().add(ProductsLoadRequested());
 
     context.read<ChatBloc>().stream.listen((state) {
       if (state is ChatConnected && state.messages.isNotEmpty) {
@@ -83,11 +83,11 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
 
   void _onSearchSubmitted(String value) {
     if (value.isNotEmpty) {
-      context.read<GetProductBloc>().add(SearchProductBySerial(value));
+      context.read<GetProductBloc>().add(ProductBySerialSearchRequested(value));
       _searchController.clear();
       _searchFocusNode.requestFocus();
     } else {
-      context.read<GetProductBloc>().add(LoadProducts());
+      context.read<GetProductBloc>().add(ProductsLoadRequested());
     }
   }
 
@@ -150,7 +150,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
           MaterialPageRoute(builder: (context) => const AddProductPage()),
         ).then((result) {
           if (result == true && mounted) {
-            bloc.add(LoadProducts());
+            bloc.add(ProductsLoadRequested());
           }
         });
       },
@@ -283,7 +283,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                 icon: const Icon(Icons.clear, size: 18),
                 onPressed: () {
                   _searchController.clear();
-                  context.read<GetProductBloc>().add(LoadProducts());
+                  context.read<GetProductBloc>().add(ProductsLoadRequested());
                 },
               ),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12),
@@ -422,7 +422,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                   ),
                 ).then((result) {
                   if (result == true && mounted) {
-                    bloc.add(LoadProducts());
+                    bloc.add(ProductsLoadRequested());
                   }
                 });
               },
@@ -495,7 +495,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                   icon: const Icon(Icons.clear, size: 18),
                   onPressed: () {
                     _searchController.clear();
-                    context.read<GetProductBloc>().add(LoadProducts());
+                    context.read<GetProductBloc>().add(ProductsLoadRequested());
                   },
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12),
@@ -766,7 +766,9 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                         ),
                       ).then((result) {
                         if (result == true && context.mounted) {
-                          context.read<GetProductBloc>().add(LoadProducts());
+                          context.read<GetProductBloc>().add(
+                            ProductsLoadRequested(),
+                          );
                         }
                       });
                     },

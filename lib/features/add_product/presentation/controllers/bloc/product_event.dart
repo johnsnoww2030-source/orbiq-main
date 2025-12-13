@@ -1,5 +1,3 @@
-// lib/features/add_product/presentation/bloc/product_event.dart
-
 import 'package:equatable/equatable.dart';
 import '../../../../../core/shared/product/domain/entities/product_entity.dart';
 
@@ -10,30 +8,29 @@ abstract class ProductEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class AddProductEvent extends ProductEvent {
+/// Event triggered when user requests to add a new product
+class ProductAddRequested extends ProductEvent {
   final ProductEntity product;
 
-  const AddProductEvent(this.product);
+  const ProductAddRequested(this.product);
 
   @override
-  List<Object?> get props => [
-        product
-      ];
+  List<Object?> get props => [product];
 }
 
-class UpdateProductEvent extends ProductEvent {
+/// Event triggered when user requests to update an existing product
+class ProductUpdateRequested extends ProductEvent {
   final ProductEntity product;
 
-  const UpdateProductEvent(this.product);
+  const ProductUpdateRequested(this.product);
 
   @override
-  List<Object?> get props => [
-        product
-      ];
+  List<Object?> get props => [product];
 }
 
-class LoadProductsEvent extends ProductEvent {
-  const LoadProductsEvent();
+/// Event triggered when user requests to load all products
+class ProductsLoadRequested extends ProductEvent {
+  const ProductsLoadRequested();
 
   @override
   List<Object?> get props => [];

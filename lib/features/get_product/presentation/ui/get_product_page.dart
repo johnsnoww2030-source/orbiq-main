@@ -3,15 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
+import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/features/add_product/presentation/ui/edit_product_page.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_bloc.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_state.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_bloc.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_event.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_state.dart';
-
-// TODO: Replace with Sales Module (PRD)
-// Removed: CartBloc, CartEvent, CartState, PaymentPage
 
 import 'package:orbiq/core/shared/currency/presentation/controller/currency_bloc.dart';
 import 'package:orbiq/core/shared/currency/presentation/controller/currency_state.dart';
@@ -32,8 +30,6 @@ class ProductListPageState extends State<ProductListPage>
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   List<ProductEntity> _products = [];
-  // TODO: Replace with Sales Module (PRD)
-  // bool _isCartActive = false;
   late AnimationController _animationController;
 
   final NumberFormat currencyFormat = NumberFormat('#,##0');
@@ -56,7 +52,7 @@ class ProductListPageState extends State<ProductListPage>
   @override
   void initState() {
     super.initState();
-    context.read<GetProductBloc>().add(LoadProducts());
+    context.read<GetProductBloc>().add(ProductsLoadRequested());
     context.read<ChatBloc>().stream.listen((state) {
       if (state is ChatConnected && state.messages.isNotEmpty) {
         final message = state.messages.last;
@@ -74,6 +70,7 @@ class ProductListPageState extends State<ProductListPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final authState = BlocProvider.of<AuthBloc>(context).state;
     final double screenWidth = MediaQuery.of(context).size.width;
     const double itemWidth = 200.0;
@@ -84,13 +81,11 @@ class ProductListPageState extends State<ProductListPage>
       constraints: const BoxConstraints(minWidth: minScreenWidth),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'لیست محصولات',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+          title: Text(
+            l10n.productList,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
           ),
           actions: [
-            // TODO: Replace with Sales Module (PRD)
-            // Cart button temporarily disabled
             IconButton(
               icon: const Icon(Icons.qr_code, color: Colors.white),
               onPressed: () {
@@ -101,13 +96,12 @@ class ProductListPageState extends State<ProductListPage>
         ),
         body: Column(
           children: [
-            _buildSearchField(),
+            _buildSearchField(l10n),
             Expanded(
               child: BlocListener<GetProductBloc, GetProductState>(
                 listener: (context, state) {
                   if (state is ProductFound) {
-                    // TODO: Replace with Sales Module (PRD)
-                    // Cart functionality disabled
+                    // Product found via search
                   }
                 },
                 child: BlocBuilder<GetProductBloc, GetProductState>(
@@ -134,6 +128,7 @@ class ProductListPageState extends State<ProductListPage>
                             ),
                           ),
                           _buildPaginationControls(
+                            l10n,
                             state.currentPage,
                             state.totalPages,
                             state.hasNextPage,
@@ -148,10 +143,10 @@ class ProductListPageState extends State<ProductListPage>
                         authState,
                       );
                     } else if (state is ProductNotFound) {
-                      return const Center(
+                      return Center(
                         child: Text(
-                          'محصولی با این شماره سریال یافت نشد',
-                          style: TextStyle(
+                          l10n.noProductsFound,
+                          style: const TextStyle(
                             fontSize: 18,
                             color: Colors.red,
                             fontWeight: FontWeight.bold,
@@ -161,7 +156,7 @@ class ProductListPageState extends State<ProductListPage>
                     } else if (state is ProductError) {
                       return Center(
                         child: Text(
-                          'خطا: ${state.message}',
+                          '${l10n.error}: ${state.message}',
                           style: const TextStyle(
                             fontSize: 18,
                             color: Colors.red,
@@ -170,10 +165,10 @@ class ProductListPageState extends State<ProductListPage>
                         ),
                       );
                     } else {
-                      return const Center(
+                      return Center(
                         child: Text(
-                          'لطفاً محصولی را جستجو کنید',
-                          style: TextStyle(
+                          l10n.searchProducts,
+                          style: const TextStyle(
                             fontSize: 18,
                             color: Colors.grey,
                             fontWeight: FontWeight.bold,
@@ -185,22 +180,20 @@ class ProductListPageState extends State<ProductListPage>
                 ),
               ),
             ),
-            // TODO: Replace with Sales Module (PRD)
-            // Cart section temporarily disabled
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSearchField() {
+  Widget _buildSearchField(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextField(
         controller: _searchController,
         focusNode: _searchFocusNode,
         decoration: InputDecoration(
-          labelText: 'جستجو با شماره سریال',
+          labelText: l10n.searchBySerial,
           prefixIcon: const Icon(Icons.search),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
           focusedBorder: OutlineInputBorder(
@@ -257,28 +250,28 @@ class ProductListPageState extends State<ProductListPage>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'شماره سریال: ${product.serialNumber}',
+                    '${AppLocalizations.of(context).serialNumber}: ${product.serialNumber}',
                     style: const TextStyle(fontSize: 14),
                   ),
                   Text(
-                    'مدل: ${product.model}',
+                    '${AppLocalizations.of(context).model}: ${product.model}',
                     style: const TextStyle(fontSize: 14),
                   ),
                   Text(
-                    'رنگ: ${product.color}',
+                    '${AppLocalizations.of(context).color}: ${product.color}',
                     style: const TextStyle(fontSize: 14),
                   ),
                   Text(
-                    'جنس: ${product.material}',
+                    '${AppLocalizations.of(context).material}: ${product.material}',
                     style: const TextStyle(fontSize: 14),
                   ),
                   Text(
-                    'سایز: ${product.description}',
+                    '${AppLocalizations.of(context).size}: ${product.description}',
                     style: const TextStyle(fontSize: 14),
                   ),
                   const Spacer(),
                   Text(
-                    'قیمت: ${_formatPrice(product.originalPrice)}',
+                    '${AppLocalizations.of(context).price}: ${_formatPrice(product.originalPrice)}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -315,19 +308,20 @@ class ProductListPageState extends State<ProductListPage>
 
   void _handleProductEditResult(dynamic result) {
     if (result == true && mounted) {
-      context.read<GetProductBloc>().add(LoadProducts());
+      context.read<GetProductBloc>().add(ProductsLoadRequested());
     }
   }
 
   void _onSearchSubmitted(String value) {
     if (value.isNotEmpty) {
-      context.read<GetProductBloc>().add(SearchProductBySerial(value));
+      context.read<GetProductBloc>().add(ProductBySerialSearchRequested(value));
       _searchController.clear();
       _searchFocusNode.requestFocus();
     }
   }
 
   Widget _buildPaginationControls(
+    AppLocalizations l10n,
     int currentPage,
     int totalPages,
     bool hasNextPage,
@@ -341,22 +335,22 @@ class ProductListPageState extends State<ProductListPage>
             onPressed: currentPage > 1
                 ? () {
                     context.read<GetProductBloc>().add(
-                      LoadProductPageEvent(currentPage - 1),
+                      ProductPageLoadRequested(currentPage - 1),
                     );
                   }
                 : null,
-            child: const Text(' قبلی'),
+            child: Text(l10n.previousPage),
           ),
-          Text('صفحه $currentPage از $totalPages'),
+          Text(l10n.pageOf(currentPage, totalPages)),
           ElevatedButton(
             onPressed: hasNextPage
                 ? () {
                     context.read<GetProductBloc>().add(
-                      LoadProductPageEvent(currentPage + 1),
+                      ProductPageLoadRequested(currentPage + 1),
                     );
                   }
                 : null,
-            child: const Text('بعدی '),
+            child: Text(l10n.nextPage),
           ),
         ],
       ),

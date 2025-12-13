@@ -4,29 +4,29 @@ sealed class GetProductEvent extends Equatable {
   const GetProductEvent();
 }
 
-class LoadProducts extends GetProductEvent {
+class ProductsLoadRequested extends GetProductEvent {
   final int page;
   final int limit;
 
-  const LoadProducts({this.page = 1, this.limit = 20});
+  const ProductsLoadRequested({this.page = 1, this.limit = 20});
 
   @override
   List<Object?> get props => [page, limit];
 }
 
-class LoadProductPageEvent extends GetProductEvent {
+class ProductPageLoadRequested extends GetProductEvent {
   final int page;
 
-  const LoadProductPageEvent(this.page);
+  const ProductPageLoadRequested(this.page);
 
   @override
   List<Object?> get props => [page];
 }
 
-class SearchProductBySerial extends GetProductEvent {
+class ProductBySerialSearchRequested extends GetProductEvent {
   final String serialNumber;
 
-  const SearchProductBySerial(this.serialNumber);
+  const ProductBySerialSearchRequested(this.serialNumber);
 
   @override
   List<Object?> get props => [serialNumber];

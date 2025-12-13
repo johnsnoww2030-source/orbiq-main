@@ -1,8 +1,11 @@
 import 'dart:math';
+import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/database/daos/product_dao.dart';
 import 'package:orbiq/core/shared/product/data/mappers/product_mapper.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
+import 'package:orbiq/core/utils/error/failures.dart';
+import 'package:orbiq/features/get_product/data/constants/product_constants.dart';
 import 'package:orbiq/features/get_product/domain/entities/paginated_products.dart';
 import 'package:orbiq/features/get_product/domain/repository/product_repository.dart';
 
@@ -13,19 +16,19 @@ class ProductRepositoryImpl extends ProductRepository {
   ProductRepositoryImpl(this.productDao);
 
   @override
-  Future<PaginatedProducts> getProducts({
+  Future<Either<Failure, PaginatedProductsEntity>> getProducts({
     required int page,
     required int limit,
   }) async {
     try {
-      if (page <= 0) {
-        throw ArgumentError('صفحه باید بزرگتر از صفر باشد');
+      if (page < ProductConstants.minPage) {
+        return const Left(ProductFailure('INVALID_PAGE'));
       }
       if (limit <= 0) {
-        throw ArgumentError('حد باید بزرگتر از صفر باشد');
+        return const Left(ProductFailure('INVALID_LIMIT'));
       }
-      if (limit > 100) {
-        throw ArgumentError('حداکثر حد مجاز 100 محصول است');
+      if (limit > ProductConstants.maxPageLimit) {
+        return const Left(ProductFailure('LIMIT_EXCEEDED'));
       }
 
       final allProducts = await productDao.getAllProducts();
@@ -36,42 +39,48 @@ class ProductRepositoryImpl extends ProductRepository {
       final endIndex = min(page * limit, totalProducts);
 
       if (startIndex >= totalProducts) {
-        return PaginatedProducts(
-          products: [],
-          totalProducts: totalProducts,
-          currentPage: page,
-          limit: limit,
+        return Right(
+          PaginatedProductsEntity(
+            products: [],
+            totalProducts: totalProducts,
+            currentPage: page,
+            limit: limit,
+          ),
         );
       }
 
-      return PaginatedProducts(
-        products: allEntities.sublist(startIndex, endIndex),
-        totalProducts: totalProducts,
-        currentPage: page,
-        limit: limit,
+      return Right(
+        PaginatedProductsEntity(
+          products: allEntities.sublist(startIndex, endIndex),
+          totalProducts: totalProducts,
+          currentPage: page,
+          limit: limit,
+        ),
       );
     } catch (e) {
-      rethrow;
+      return Left(ProductFailure(e.toString()));
     }
   }
 
   @override
-  Future<ProductEntity?> getProductBySerialNumber(String serialNumber) async {
+  Future<Either<Failure, ProductEntity?>> getProductBySerialNumber(
+    String serialNumber,
+  ) async {
     try {
       if (serialNumber.trim().isEmpty) {
-        return null;
+        return const Right(null);
       }
 
       final product = await productDao.getProductBySerialNumber(
         serialNumber.trim(),
       );
-      return product != null ? ProductMapper.toEntity(product) : null;
+      return Right(product != null ? ProductMapper.toEntity(product) : null);
     } catch (e) {
-      rethrow;
+      return Left(ProductFailure(e.toString()));
     }
   }
 
-  Future<PaginatedProducts> searchProducts({
+  Future<Either<Failure, PaginatedProductsEntity>> searchProducts({
     required String query,
     required int page,
     required int limit,
@@ -94,22 +103,26 @@ class ProductRepositoryImpl extends ProductRepository {
       final endIndex = min(page * limit, totalProducts);
 
       if (startIndex >= totalProducts) {
-        return PaginatedProducts(
-          products: [],
-          totalProducts: totalProducts,
-          currentPage: page,
-          limit: limit,
+        return Right(
+          PaginatedProductsEntity(
+            products: [],
+            totalProducts: totalProducts,
+            currentPage: page,
+            limit: limit,
+          ),
         );
       }
 
-      return PaginatedProducts(
-        products: filteredProducts.sublist(startIndex, endIndex),
-        totalProducts: totalProducts,
-        currentPage: page,
-        limit: limit,
+      return Right(
+        PaginatedProductsEntity(
+          products: filteredProducts.sublist(startIndex, endIndex),
+          totalProducts: totalProducts,
+          currentPage: page,
+          limit: limit,
+        ),
       );
     } catch (e) {
-      rethrow;
+      return Left(ProductFailure(e.toString()));
     }
   }
 }

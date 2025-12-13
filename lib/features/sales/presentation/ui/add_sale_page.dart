@@ -38,7 +38,7 @@ class _AddSalePageState extends State<AddSalePage> {
   void initState() {
     super.initState();
     // Load products for selection
-    context.read<GetProductBloc>().add(LoadProducts());
+    context.read<GetProductBloc>().add(ProductsLoadRequested());
   }
 
   @override

@@ -1,7 +1,7 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:orbiq/features/add_product/domain/usecases/add_product_usecase.dart';
 import 'package:orbiq/features/add_product/domain/usecases/update_product_usecase.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'product_event.dart';
 import 'product_state.dart';
@@ -13,33 +13,35 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   ProductBloc({required this.addProduct, required this.updateProduct})
     : super(const ProductInitial()) {
-    on<AddProductEvent>(_onAddProduct);
-    on<UpdateProductEvent>(_onUpdateProduct);
+    on<ProductAddRequested>(_onAddProduct);
+    on<ProductUpdateRequested>(_onUpdateProduct);
   }
 
   Future<void> _onAddProduct(
-    AddProductEvent event,
+    ProductAddRequested event,
     Emitter<ProductState> emit,
   ) async {
     emit(const ProductLoading());
-    try {
-      await addProduct(event.product);
-      emit(const ProductAdded());
-    } catch (e) {
-      emit(ProductError(e.toString()));
-    }
+
+    final result = await addProduct(event.product);
+
+    result.fold(
+      (failure) => emit(ProductError(failure.message)),
+      (_) => emit(const ProductAdded()),
+    );
   }
 
   Future<void> _onUpdateProduct(
-    UpdateProductEvent event,
+    ProductUpdateRequested event,
     Emitter<ProductState> emit,
   ) async {
     emit(const ProductLoading());
-    try {
-      await updateProduct(event.product);
-      emit(ProductUpdatedSuccess(event.product));
-    } catch (e) {
-      emit(ProductError(e.toString()));
-    }
+
+    final result = await updateProduct(event.product);
+
+    result.fold(
+      (failure) => emit(ProductError(failure.message)),
+      (_) => emit(ProductUpdatedSuccess(event.product)),
+    );
   }
 }

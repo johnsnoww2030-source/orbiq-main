@@ -673,7 +673,7 @@ class _EditProductPageState extends State<EditProductPage> {
           reorderPoint: int.parse(_reorderPointController.text),
         );
 
-        context.read<ProductBloc>().add(UpdateProductEvent(updatedProduct));
+        context.read<ProductBloc>().add(ProductUpdateRequested(updatedProduct));
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.error), backgroundColor: Colors.red),

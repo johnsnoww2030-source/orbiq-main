@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 import 'package:orbiq/core/di/injection.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
-import 'package:orbiq/features/add_product/domain/repository/product_repository.dart';
+import 'package:orbiq/features/add_product/domain/usecases/add_product_usecase.dart';
 import 'package:orbiq/features/get_product/domain/repository/product_repository.dart'
     as get_product;
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_bloc.dart';
@@ -321,13 +321,20 @@ class _QuickAddProductDialogState extends State<QuickAddProductDialog> {
 
     try {
       final repository = getIt<get_product.ProductRepository>();
-      final product = await repository.getProductBySerialNumber(barcode.trim());
+      final result = await repository.getProductBySerialNumber(barcode.trim());
 
       if (mounted) {
-        setState(() {
-          _existingProduct = product;
-          _isCheckingBarcode = false;
-        });
+        result.fold(
+          (failure) {
+            setState(() => _isCheckingBarcode = false);
+          },
+          (product) {
+            setState(() {
+              _existingProduct = product;
+              _isCheckingBarcode = false;
+            });
+          },
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -377,19 +384,35 @@ class _QuickAddProductDialogState extends State<QuickAddProductDialog> {
 
     try {
       final product = _buildProductEntity();
-      final repository = getIt<ProductRepository>();
-      await repository.addProduct(product);
 
-      // Refresh products list
-      if (mounted) {
-        context.read<GetProductBloc>().add(LoadProducts());
-        Navigator.of(context).pop(product);
-      }
+      // Use UseCase instead of direct Repository access (Clean Architecture)
+      final addProductUseCase = getIt<AddProduct>();
+      final result = await addProductUseCase(product);
+
+      result.fold(
+        (failure) {
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+              _errorMessage = failure.message;
+            });
+          }
+        },
+        (_) {
+          // Refresh products list
+          if (mounted) {
+            context.read<GetProductBloc>().add(ProductsLoadRequested());
+            Navigator.of(context).pop(product);
+          }
+        },
+      );
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _errorMessage = e.toString();
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = e.toString();
+        });
+      }
     }
   }
 }

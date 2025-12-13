@@ -14,3 +14,12 @@ class ServerFailure extends Failure {
 class CacheFailure extends Failure {
   const CacheFailure();
 }
+
+class ProductFailure extends Failure {
+  final String message;
+
+  const ProductFailure(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
