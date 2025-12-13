@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/database/daos/product_dao.dart';
+import 'package:orbiq/core/services/event_service.dart';
 import 'package:orbiq/features/sales/data/data_sources/sales_local_data_source.dart';
 import 'package:orbiq/features/sales/domain/entities/sales_entity.dart';
 import 'package:orbiq/features/sales/domain/repositories/sales_repository.dart';
@@ -11,8 +12,13 @@ import 'package:orbiq/features/sales/domain/repositories/sales_repository.dart';
 class SalesRepositoryImpl implements SalesRepository {
   final SalesLocalDataSource _localDataSource;
   final ProductDao _productDao;
+  final EventService _eventService;
 
-  SalesRepositoryImpl(this._localDataSource, this._productDao);
+  SalesRepositoryImpl(
+    this._localDataSource,
+    this._productDao,
+    this._eventService,
+  );
 
   @override
   Future<Either<String, List<SalesEntity>>> getAllSales() async {
@@ -43,6 +49,7 @@ class SalesRepositoryImpl implements SalesRepository {
       // 1. Validate stock and get costAtSale for each item
       final List<SalesItemEntity> itemsWithCost = [];
       double totalAmount = 0;
+      double totalProfit = 0;
 
       for (final item in sale.items) {
         // Get current product for stock and avgBuyPrice
@@ -72,6 +79,7 @@ class SalesRepositoryImpl implements SalesRepository {
         );
 
         totalAmount += totalPrice;
+        totalProfit += profit;
       }
 
       // 2. Create sale with calculated totals
@@ -85,16 +93,33 @@ class SalesRepositoryImpl implements SalesRepository {
         saleWithTotals,
       );
 
-      // 4. Decrease stock for each product
-      for (final item in sale.items) {
+      // 4. Decrease stock for each product + log events
+      for (final item in itemsWithCost) {
         final product = await _productDao.getProductByUuid(item.productUuid);
         if (product != null) {
           final newStock = product.currentStock - item.quantity;
           await _productDao.updateStock(item.productUuid, newStock);
+
+          // Log stock removed event
+          await _eventService.logStockRemoved(
+            productId: item.productUuid,
+            productName: product.name,
+            quantity: item.quantity,
+            unitPrice: item.unitSellPrice,
+            saleId: invoiceUuid,
+          );
         }
       }
 
-      // 5. Return created sale
+      // 5. Log sale created event
+      await _eventService.logSaleCreated(
+        saleId: invoiceUuid,
+        totalSales: totalAmount,
+        profit: totalProfit,
+        itemCount: itemsWithCost.length,
+      );
+
+      // 6. Return created sale
       final createdSale = await _localDataSource.getSaleByUuid(invoiceUuid);
       if (createdSale != null) {
         return Right(createdSale);

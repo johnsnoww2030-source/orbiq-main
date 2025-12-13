@@ -390,5 +390,14 @@
   "currentPrice": "قیمت فعلی",
   "currentMargin": "سود فعلی",
   "later": "بعداً",
-  "applyPricing": "اعمال قیمت"
+  "applyPricing": "اعمال قیمت",
+  "lowStock": "کم‌موجودی",
+  "outOfStock": "تمام‌شده",
+  "inventoryValue": "ارزش موجودی",
+  "todaySales": "فروش امروز",
+  "lowStockAlert": "هشدار کمبود موجودی",
+  "stock": "موجودی",
+  "reorderPoint": "نقطه سفارش",
+  "viewAll": "مشاهده همه",
+  "invoices": "فاکتورها"
 }

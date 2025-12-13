@@ -388,5 +388,14 @@
   "currentPrice": "السعر الحالي",
   "currentMargin": "هامش الربح الحالي",
   "later": "لاحقاً",
-  "applyPricing": "تطبيق التسعير"
+  "applyPricing": "تطبيق التسعير",
+  "lowStock": "مخزون منخفض",
+  "outOfStock": "نفذ المخزون",
+  "inventoryValue": "قيمة المخزون",
+  "todaySales": "مبيعات اليوم",
+  "lowStockAlert": "تنبيه انخفاض المخزون",
+  "stock": "المخزون",
+  "reorderPoint": "نقطة إعادة الطلب",
+  "viewAll": "عرض الكل",
+  "invoices": "الفواتير"
 }

@@ -387,5 +387,14 @@
   "currentPrice": "Current Price",
   "currentMargin": "Current Margin",
   "later": "Later",
-  "applyPricing": "Apply Pricing"
+  "applyPricing": "Apply Pricing",
+  "lowStock": "Low Stock",
+  "outOfStock": "Out of Stock",
+  "inventoryValue": "Inventory Value",
+  "todaySales": "Today's Sales",
+  "lowStockAlert": "Low Stock Alert",
+  "stock": "Stock",
+  "reorderPoint": "Reorder Point",
+  "viewAll": "View All",
+  "invoices": "Invoices"
 }

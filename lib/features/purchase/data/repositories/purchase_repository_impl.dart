@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/database/daos/product_dao.dart';
+import 'package:orbiq/core/services/event_service.dart';
 import 'package:orbiq/features/purchase/data/data_sources/purchase_local_data_source.dart';
 import 'package:orbiq/features/purchase/domain/entities/purchase_entity.dart';
 import 'package:orbiq/features/purchase/domain/repositories/purchase_repository.dart';
@@ -10,8 +11,13 @@ import 'package:orbiq/features/purchase/domain/repositories/purchase_repository.
 class PurchaseRepositoryImpl implements PurchaseRepository {
   final PurchaseLocalDataSource _localDataSource;
   final ProductDao _productDao;
+  final EventService _eventService;
 
-  PurchaseRepositoryImpl(this._localDataSource, this._productDao);
+  PurchaseRepositoryImpl(
+    this._localDataSource,
+    this._productDao,
+    this._eventService,
+  );
 
   @override
   Future<Either<String, List<PurchaseEntity>>> getAllPurchases() async {
@@ -59,16 +65,33 @@ class PurchaseRepositoryImpl implements PurchaseRepository {
         purchaseWithTotals,
       );
 
-      // 4. Update stock and WAC for each product
+      // 4. Update stock and WAC for each product + log events
       for (final item in purchase.items) {
         await _productDao.updateStockAndWAC(
           uuid: item.productUuid,
           additionalQty: item.quantity,
           newUnitPrice: item.unitBuyPrice,
         );
+
+        // Log stock added event
+        await _eventService.logStockAdded(
+          productId: item.productUuid,
+          productName: item.productName ?? 'Unknown',
+          quantity: item.quantity,
+          unitPrice: item.unitBuyPrice,
+          purchaseId: purchaseUuid,
+        );
       }
 
-      // 5. Return created purchase
+      // 5. Log purchase created event
+      await _eventService.logPurchaseCreated(
+        purchaseId: purchaseUuid,
+        supplierName: purchase.supplierName ?? 'Unknown',
+        totalCost: finalTotal,
+        itemCount: purchase.items.length,
+      );
+
+      // 6. Return created purchase
       final createdPurchase = await _localDataSource.getPurchaseByUuid(
         purchaseUuid,
       );

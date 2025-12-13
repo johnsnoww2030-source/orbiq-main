@@ -2343,6 +2343,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Apply Pricing'**
   String get applyPricing;
+
+  /// No description provided for @inventoryValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory Value'**
+  String get inventoryValue;
+
+  /// No description provided for @todaySales.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Sales'**
+  String get todaySales;
+
+  /// No description provided for @lowStockAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'Low Stock Alert'**
+  String get lowStockAlert;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get viewAll;
 }
 
 class _AppLocalizationsDelegate

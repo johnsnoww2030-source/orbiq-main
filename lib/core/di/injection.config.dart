@@ -116,6 +116,7 @@ import '../database/daos/purchase_dao.dart' as _i257;
 import '../database/daos/sales_dao.dart' as _i340;
 import '../database/daos/theme_dao.dart' as _i905;
 import '../database/daos/user_dao.dart' as _i794;
+import '../services/event_service.dart' as _i273;
 import '../shared/localization/data/data_sources/local/language_local_data_source.dart'
     as _i149;
 import '../shared/localization/data/repositories/language_repository_impl.dart'
@@ -229,6 +230,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i22.UpdateService>(),
       ),
     );
+    gh.lazySingleton<_i273.EventService>(
+      () => _i273.EventService(gh<_i565.EventDao>()),
+    );
     gh.lazySingleton<_i149.LanguageLocalDataSource>(
       () => _i149.LanguageLocalDataSource(gh<_i192.LanguageDao>()),
     );
@@ -238,13 +242,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.ProductDao>(),
       ),
     );
-    gh.lazySingleton<_i567.ProductRepository>(
-      () => _i651.ProductRepositoryImpl(gh<_i924.ProductDao>()),
-    );
     gh.factory<_i220.PurchaseRepository>(
       () => _i254.PurchaseRepositoryImpl(
         gh<_i588.PurchaseLocalDataSource>(),
         gh<_i924.ProductDao>(),
+        gh<_i273.EventService>(),
       ),
     );
     gh.lazySingleton<_i85.ProductRepository>(
@@ -262,8 +264,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i418.DownloadAndInstallUpdate>(
       () => _i418.DownloadAndInstallUpdate(gh<_i85.VersionRepository>()),
     );
-    gh.factory<_i1056.UpdateProductUseCase>(
-      () => _i1056.UpdateProductUseCase(gh<_i567.ProductRepository>()),
+    gh.factory<_i434.SalesRepository>(
+      () => _i779.SalesRepositoryImpl(
+        gh<_i929.SalesLocalDataSource>(),
+        gh<_i924.ProductDao>(),
+        gh<_i273.EventService>(),
+      ),
     );
     gh.lazySingleton<_i222.ThemeLocalDataSource>(
       () => _i222.ThemeLocalDataSource(gh<_i905.ThemeDao>()),
@@ -290,6 +296,12 @@ extension GetItInjectableX on _i174.GetIt {
             gh<_i587.HandleClientDisconnectionUseCase>(),
       ),
     );
+    gh.lazySingleton<_i567.ProductRepository>(
+      () => _i651.ProductRepositoryImpl(
+        gh<_i924.ProductDao>(),
+        gh<_i273.EventService>(),
+      ),
+    );
     gh.factory<_i161.AddProduct>(
       () => _i161.AddProductUsecase(gh<_i567.ProductRepository>()),
     );
@@ -311,21 +323,8 @@ extension GetItInjectableX on _i174.GetIt {
         downloadAndInstallUpdate: gh<_i418.DownloadAndInstallUpdate>(),
       ),
     );
-    gh.factory<_i434.SalesRepository>(
-      () => _i779.SalesRepositoryImpl(
-        gh<_i929.SalesLocalDataSource>(),
-        gh<_i924.ProductDao>(),
-      ),
-    );
     gh.factory<_i796.PurchaseBloc>(
       () => _i796.PurchaseBloc(gh<_i220.PurchaseRepository>()),
-    );
-    gh.factory<_i640.ProductBloc>(
-      () => _i640.ProductBloc(
-        addProduct: gh<_i161.AddProduct>(),
-        updateProduct: gh<_i1056.UpdateProductUseCase>(),
-        getProductsUseCase: gh<_i642.GetProductsUseCase>(),
-      ),
     );
     gh.factory<_i816.AddUserUseCase>(
       () => _i816.AddUserUseCase(gh<_i787.AuthRepository>()),
@@ -335,6 +334,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i292.SalesBloc>(
       () => _i292.SalesBloc(gh<_i434.SalesRepository>()),
+    );
+    gh.factory<_i1056.UpdateProductUseCase>(
+      () => _i1056.UpdateProductUseCase(gh<_i567.ProductRepository>()),
     );
     gh.lazySingleton<_i1012.ThemeRepository>(
       () => _i107.ThemeRepositoryImpl(gh<_i222.ThemeLocalDataSource>()),
@@ -375,6 +377,13 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i1026.ThemeBloc(
         getThemeUseCase: gh<_i473.GetThemeUseCase>(),
         saveThemeUseCase: gh<_i374.SaveThemeUseCase>(),
+      ),
+    );
+    gh.factory<_i640.ProductBloc>(
+      () => _i640.ProductBloc(
+        addProduct: gh<_i161.AddProduct>(),
+        updateProduct: gh<_i1056.UpdateProductUseCase>(),
+        getProductsUseCase: gh<_i642.GetProductsUseCase>(),
       ),
     );
     return this;

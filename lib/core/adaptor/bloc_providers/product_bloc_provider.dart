@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orbiq/core/database/app_database.dart';
-import 'package:orbiq/features/add_product/data/repository/product_repository_impl.dart'
+import 'package:orbiq/core/di/injection.dart';
+import 'package:orbiq/features/add_product/domain/repository/product_repository.dart'
     as add_repo;
 import 'package:orbiq/features/get_product/data/repository/product_repository_impl.dart'
     as get_repo;
@@ -13,7 +14,9 @@ import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_pro
 
 List<BlocProvider> productBlocProviders(AppDatabase database) {
   final productDao = database.productDao;
-  final addProductRepository = add_repo.ProductRepositoryImpl(productDao);
+
+  // Use getIt for add_repo which requires EventService
+  final addProductRepository = getIt<add_repo.ProductRepository>();
   final getProductRepository = get_repo.ProductRepositoryImpl(productDao);
 
   // ایجاد UpdateProductUseCase

@@ -699,7 +699,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get lowStock => 'مخزون منخفض';
 
   @override
-  String get outOfStock => 'نفذ';
+  String get outOfStock => 'نفذ المخزون';
 
   @override
   String get searchBySerial => 'البحث بالرقم التسلسلي...';
@@ -1138,4 +1138,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get applyPricing => 'تطبيق التسعير';
+
+  @override
+  String get inventoryValue => 'قيمة المخزون';
+
+  @override
+  String get todaySales => 'مبيعات اليوم';
+
+  @override
+  String get lowStockAlert => 'تنبيه انخفاض المخزون';
+
+  @override
+  String get viewAll => 'عرض الكل';
 }

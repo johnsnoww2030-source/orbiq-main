@@ -480,7 +480,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get enterDiscountedPrice => 'لطفاً قیمت با تخفیف را وارد کنید';
 
   @override
-  String get reorderPoint => 'نقطه سفارش مجدد';
+  String get reorderPoint => 'نقطه سفارش';
 
   @override
   String get enterReorderPoint => 'لطفاً نقطه سفارش مجدد را وارد کنید';
@@ -697,10 +697,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get available => 'موجود';
 
   @override
-  String get lowStock => 'موجودی کم';
+  String get lowStock => 'کم‌موجودی';
 
   @override
-  String get outOfStock => 'تمام شده';
+  String get outOfStock => 'تمام‌شده';
 
   @override
   String get searchBySerial => 'جستجو با شماره سریال...';
@@ -1142,4 +1142,16 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get applyPricing => 'اعمال قیمت';
+
+  @override
+  String get inventoryValue => 'ارزش موجودی';
+
+  @override
+  String get todaySales => 'فروش امروز';
+
+  @override
+  String get lowStockAlert => 'هشدار کمبود موجودی';
+
+  @override
+  String get viewAll => 'مشاهده همه';
 }

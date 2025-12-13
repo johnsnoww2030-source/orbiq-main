@@ -119,4 +119,54 @@ class ProductDao extends DatabaseAccessor<AppDatabase> with _$ProductDaoMixin {
       ),
     );
   }
+
+  // === Dashboard Methods ===
+
+  /// Get products with zero or negative stock
+  Future<List<Product>> getOutOfStockProducts() {
+    return (select(
+      products,
+    )..where((p) => p.currentStock.isSmallerOrEqualValue(0))).get();
+  }
+
+  /// Get total product count
+  Future<int> getProductCount() async {
+    final all = await select(products).get();
+    return all.length;
+  }
+
+  /// Get low stock product count
+  /// Uses same logic as products_management_page: stock > 0 && stock <= (reorderPoint > 0 ? reorderPoint : 5)
+  Future<int> getLowStockCount() async {
+    final all = await select(products).get();
+    return all.where((p) {
+      final threshold = p.reorderPoint > 0 ? p.reorderPoint : 5;
+      return p.currentStock > 0 && p.currentStock <= threshold;
+    }).length;
+  }
+
+  /// Get out of stock product count (stock <= 0)
+  Future<int> getOutOfStockCount() async {
+    final all = await select(products).get();
+    return all.where((p) => p.currentStock <= 0).length;
+  }
+
+  /// Get low stock products list (for dashboard alerts)
+  /// Uses same logic as products_management_page
+  Future<List<Product>> getLowStockProductsList() async {
+    final all = await select(products).get();
+    return all.where((p) {
+      final threshold = p.reorderPoint > 0 ? p.reorderPoint : 5;
+      return p.currentStock > 0 && p.currentStock <= threshold;
+    }).toList();
+  }
+
+  /// Get total inventory value (sum of currentStock * avgBuyPrice)
+  Future<double> getTotalInventoryValue() async {
+    final all = await select(products).get();
+    return all.fold<double>(
+      0.0,
+      (sum, p) => sum + (p.currentStock * p.avgBuyPrice),
+    );
+  }
 }

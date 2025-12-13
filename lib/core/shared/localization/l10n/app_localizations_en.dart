@@ -1142,4 +1142,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get applyPricing => 'Apply Pricing';
+
+  @override
+  String get inventoryValue => 'Inventory Value';
+
+  @override
+  String get todaySales => 'Today\'s Sales';
+
+  @override
+  String get lowStockAlert => 'Low Stock Alert';
+
+  @override
+  String get viewAll => 'View All';
 }
