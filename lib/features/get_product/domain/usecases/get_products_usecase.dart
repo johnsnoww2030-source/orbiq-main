@@ -1,7 +1,7 @@
 // features/get_product/domain/use_cases/get_products_usecase.dart
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
-import 'package:orbiq/features/get_product/data/repository/product_repository_impl.dart'; // Import PaginatedProducts
+import 'package:orbiq/features/get_product/domain/entities/paginated_products.dart';
 import 'package:orbiq/features/get_product/domain/repository/product_repository.dart';
 
 @injectable

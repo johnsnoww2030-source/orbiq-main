@@ -3,25 +3,8 @@ import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/database/daos/product_dao.dart';
 import 'package:orbiq/core/shared/product/data/mappers/product_mapper.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
+import 'package:orbiq/features/get_product/domain/entities/paginated_products.dart';
 import 'package:orbiq/features/get_product/domain/repository/product_repository.dart';
-
-class PaginatedProducts {
-  final List<ProductEntity> products;
-  final int totalProducts;
-  final int currentPage;
-  final int totalPages;
-  final bool hasNextPage;
-  final bool hasPreviousPage;
-
-  PaginatedProducts({
-    required this.products,
-    required this.totalProducts,
-    required this.currentPage,
-    required int limit,
-  }) : totalPages = (totalProducts / limit).ceil(),
-       hasNextPage = currentPage * limit < totalProducts,
-       hasPreviousPage = currentPage > 1;
-}
 
 @LazySingleton(as: ProductRepository)
 class ProductRepositoryImpl extends ProductRepository {
