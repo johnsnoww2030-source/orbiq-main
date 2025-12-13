@@ -23,4 +23,11 @@ abstract class ProductStockRepository {
     String uuid,
     double newPrice,
   );
+
+  /// Rollback stock after purchase deletion
+  /// Reduces stock by the given quantity
+  Future<Either<String, void>> rollbackPurchaseStock({
+    required String uuid,
+    required int quantity,
+  });
 }

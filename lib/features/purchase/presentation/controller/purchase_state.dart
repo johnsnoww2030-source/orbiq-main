@@ -54,6 +54,16 @@ class PurchaseDeleted extends PurchaseState {
   const PurchaseDeleted();
 }
 
+/// Purchase updated successfully
+class PurchaseUpdated extends PurchaseState {
+  final PurchaseEntity purchase;
+
+  const PurchaseUpdated(this.purchase);
+
+  @override
+  List<Object?> get props => [purchase];
+}
+
 /// Error state
 class PurchaseError extends PurchaseState {
   final String message;

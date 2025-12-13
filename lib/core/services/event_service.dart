@@ -16,6 +16,7 @@ enum EventType {
 
   // Purchase events
   purchaseCreated,
+  purchaseDeleted,
   stockAdded,
 
   // Sales events
@@ -40,6 +41,8 @@ extension EventTypeExtension on EventType {
         return 'PURCHASE_CREATED';
       case EventType.stockAdded:
         return 'STOCK_ADDED';
+      case EventType.purchaseDeleted:
+        return 'PURCHASE_DELETED';
       case EventType.saleCreated:
         return 'SALE_CREATED';
       case EventType.stockRemoved:
@@ -246,6 +249,32 @@ class EventService {
       metadata: saleId != null ? {'saleId': saleId} : null,
       userUuid: userUuid,
     );
+  }
+
+  /// Convenience method for purchase deleted event
+  Future<void> logPurchaseDeleted({
+    required String purchaseId,
+    required String supplierName,
+    required double totalCost,
+    required int itemCount,
+    String? userUuid,
+  }) {
+    return logEvent(
+      type: EventType.purchaseDeleted,
+      entityType: EntityType.purchase,
+      entityId: purchaseId,
+      payload: {
+        'supplierName': supplierName,
+        'totalCost': totalCost,
+        'itemCount': itemCount,
+      },
+      userUuid: userUuid,
+    );
+  }
+
+  /// Log an error message (for debugging/audit purposes)
+  void logError({required String message}) {
+    debugPrint('⚠️ Error: $message');
   }
 
   /// Get recent events

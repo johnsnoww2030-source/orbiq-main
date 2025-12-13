@@ -4,6 +4,7 @@ import 'package:orbiq/core/services/event_service.dart';
 import 'package:orbiq/core/shared/product/domain/repositories/product_stock_repository.dart';
 import 'package:orbiq/features/purchase/data/data_sources/purchase_local_data_source.dart';
 import 'package:orbiq/features/purchase/domain/entities/purchase_entity.dart';
+import 'package:orbiq/features/purchase/domain/failures/purchase_failure.dart';
 import 'package:orbiq/features/purchase/domain/repositories/purchase_repository.dart';
 
 /// Repository implementation for Purchase operations with WAC logic
@@ -20,33 +21,41 @@ class PurchaseRepositoryImpl implements PurchaseRepository {
   );
 
   @override
-  Future<Either<String, List<PurchaseEntity>>> getAllPurchases() async {
+  Future<Either<PurchaseFailure, List<PurchaseEntity>>>
+  getAllPurchases() async {
     try {
       final purchases = await _localDataSource.getAllPurchases();
       return Right(purchases);
     } catch (e) {
-      return Left('خطا در دریافت لیست خریدها: $e');
+      return Left(PurchaseDatabaseFailure('خطا در دریافت لیست خریدها: $e'));
     }
   }
 
   @override
-  Future<Either<String, PurchaseEntity>> getPurchaseByUuid(String uuid) async {
+  Future<Either<PurchaseFailure, PurchaseEntity>> getPurchaseByUuid(
+    String uuid,
+  ) async {
     try {
       final purchase = await _localDataSource.getPurchaseByUuid(uuid);
       if (purchase == null) {
-        return const Left('خرید مورد نظر یافت نشد');
+        return const Left(PurchaseNotFoundFailure());
       }
       return Right(purchase);
     } catch (e) {
-      return Left('خطا در دریافت اطلاعات خرید: $e');
+      return Left(PurchaseDatabaseFailure('خطا در دریافت اطلاعات خرید: $e'));
     }
   }
 
   @override
-  Future<Either<String, PurchaseEntity>> createPurchase(
+  Future<Either<PurchaseFailure, PurchaseEntity>> createPurchase(
     PurchaseEntity purchase,
   ) async {
     try {
+      // Validate items
+      if (purchase.items.isEmpty) {
+        return const Left(EmptyItemsFailure());
+      }
+
       // 1. Calculate totals
       double totalCost = 0;
       for (final item in purchase.items) {
@@ -107,7 +116,7 @@ class PurchaseRepositoryImpl implements PurchaseRepository {
         itemCount: purchase.items.length,
       );
 
-      // 6. Return created purchase
+      // 7. Return created purchase
       final createdPurchase = await _localDataSource.getPurchaseByUuid(
         purchaseUuid,
       );
@@ -117,19 +126,86 @@ class PurchaseRepositoryImpl implements PurchaseRepository {
 
       return Right(purchaseWithTotals.copyWith(purchaseUuid: purchaseUuid));
     } catch (e) {
-      return Left('خطا در ثبت خرید: $e');
+      return Left(PurchaseDatabaseFailure('خطا در ثبت خرید: $e'));
     }
   }
 
   @override
-  Future<Either<String, void>> deletePurchase(String uuid) async {
+  Future<Either<PurchaseFailure, PurchaseEntity>> updatePurchase(
+    PurchaseEntity purchase,
+  ) async {
     try {
-      // Note: In a real app, you might want to rollback stock changes
-      // For now, we just delete the purchase
+      // For now, update is a simple delete and recreate
+      // A more sophisticated implementation would handle partial updates
+
+      // 1. Get existing purchase to rollback stock
+      final existingResult = await getPurchaseByUuid(purchase.purchaseUuid);
+      if (existingResult.isLeft()) {
+        return existingResult;
+      }
+
+      // 2. Rollback stock from old purchase
+      final existingPurchase = existingResult.getOrElse(
+        () => throw Exception('Purchase not found'),
+      );
+      for (final item in existingPurchase.items) {
+        await _productStockRepository.rollbackPurchaseStock(
+          uuid: item.productUuid,
+          quantity: item.quantity,
+        );
+      }
+
+      // 3. Delete old purchase
+      await _localDataSource.deletePurchase(purchase.purchaseUuid);
+
+      // 4. Create new purchase with updated data
+      return createPurchase(purchase);
+    } catch (e) {
+      return Left(PurchaseDatabaseFailure('خطا در بروزرسانی خرید: $e'));
+    }
+  }
+
+  @override
+  Future<Either<PurchaseFailure, void>> deletePurchase(String uuid) async {
+    try {
+      // 1. Get purchase with items for rollback
+      final purchase = await _localDataSource.getPurchaseByUuid(uuid);
+      if (purchase == null) {
+        return const Left(PurchaseNotFoundFailure());
+      }
+
+      // 2. Rollback stock for each item
+      for (final item in purchase.items) {
+        final rollbackResult = await _productStockRepository
+            .rollbackPurchaseStock(
+              uuid: item.productUuid,
+              quantity: item.quantity,
+            );
+
+        // Log rollback result but don't fail the whole operation
+        rollbackResult.fold(
+          (error) => _eventService.logError(
+            message:
+                'Failed to rollback stock for product ${item.productUuid}: $error',
+          ),
+          (_) => null,
+        );
+      }
+
+      // 3. Delete purchase
       await _localDataSource.deletePurchase(uuid);
+
+      // 4. Log purchase deleted event
+      await _eventService.logPurchaseDeleted(
+        purchaseId: uuid,
+        supplierName: purchase.supplierName ?? 'Unknown',
+        totalCost: purchase.finalTotal,
+        itemCount: purchase.items.length,
+      );
+
       return const Right(null);
     } catch (e) {
-      return Left('خطا در حذف خرید: $e');
+      return Left(StockRollbackFailure('خطا در حذف خرید: $e'));
     }
   }
 

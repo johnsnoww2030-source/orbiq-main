@@ -15,6 +15,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     on<LoadPurchasesEvent>(_onLoadPurchases);
     on<WatchPurchasesEvent>(_onWatchPurchases);
     on<CreatePurchaseEvent>(_onCreatePurchase);
+    on<UpdatePurchaseEvent>(_onUpdatePurchase);
     on<DeletePurchaseEvent>(_onDeletePurchase);
     on<LoadPurchaseDetailsEvent>(_onLoadPurchaseDetails);
   }
@@ -27,7 +28,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
 
     final result = await _purchaseRepository.getAllPurchases();
     result.fold(
-      (error) => emit(PurchaseError(error)),
+      (failure) => emit(PurchaseError(failure.message)),
       (purchases) => emit(PurchasesLoaded(purchases)),
     );
   }
@@ -53,9 +54,23 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     emit(const PurchaseLoading());
 
     final result = await _purchaseRepository.createPurchase(event.purchase);
-    result.fold((error) => emit(PurchaseError(error)), (purchase) {
+    result.fold((failure) => emit(PurchaseError(failure.message)), (purchase) {
       emit(PurchaseCreated(purchase));
       // Reload purchases after creation
+      add(const LoadPurchasesEvent());
+    });
+  }
+
+  Future<void> _onUpdatePurchase(
+    UpdatePurchaseEvent event,
+    Emitter<PurchaseState> emit,
+  ) async {
+    emit(const PurchaseLoading());
+
+    final result = await _purchaseRepository.updatePurchase(event.purchase);
+    result.fold((failure) => emit(PurchaseError(failure.message)), (purchase) {
+      emit(PurchaseUpdated(purchase));
+      // Reload purchases after update
       add(const LoadPurchasesEvent());
     });
   }
@@ -67,7 +82,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
     emit(const PurchaseLoading());
 
     final result = await _purchaseRepository.deletePurchase(event.purchaseUuid);
-    result.fold((error) => emit(PurchaseError(error)), (_) {
+    result.fold((failure) => emit(PurchaseError(failure.message)), (_) {
       emit(const PurchaseDeleted());
       // Reload purchases after deletion
       add(const LoadPurchasesEvent());
@@ -84,7 +99,7 @@ class PurchaseBloc extends Bloc<PurchaseEvent, PurchaseState> {
       event.purchaseUuid,
     );
     result.fold(
-      (error) => emit(PurchaseError(error)),
+      (failure) => emit(PurchaseError(failure.message)),
       (purchase) => emit(PurchaseDetailsLoaded(purchase)),
     );
   }

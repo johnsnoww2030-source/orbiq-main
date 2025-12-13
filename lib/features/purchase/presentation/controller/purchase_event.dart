@@ -39,6 +39,16 @@ class DeletePurchaseEvent extends PurchaseEvent {
   List<Object?> get props => [purchaseUuid];
 }
 
+/// Update an existing purchase
+class UpdatePurchaseEvent extends PurchaseEvent {
+  final PurchaseEntity purchase;
+
+  const UpdatePurchaseEvent(this.purchase);
+
+  @override
+  List<Object?> get props => [purchase];
+}
+
 /// Get purchase details
 class LoadPurchaseDetailsEvent extends PurchaseEvent {
   final String purchaseUuid;

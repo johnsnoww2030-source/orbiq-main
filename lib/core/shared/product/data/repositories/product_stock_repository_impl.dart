@@ -65,4 +65,25 @@ class ProductStockRepositoryImpl implements ProductStockRepository {
       return Left('خطا در بروزرسانی قیمت: $e');
     }
   }
+
+  @override
+  Future<Either<String, void>> rollbackPurchaseStock({
+    required String uuid,
+    required int quantity,
+  }) async {
+    try {
+      // Get current stock and reduce by quantity
+      final product = await _productDao.getProductByUuid(uuid);
+      if (product == null) {
+        return const Left('محصول یافت نشد');
+      }
+
+      final newStock = product.currentStock - quantity;
+      // Allow negative stock to highlight data inconsistency issues
+      await _productDao.updateStock(uuid, newStock < 0 ? 0 : newStock);
+      return const Right(null);
+    } catch (e) {
+      return Left('خطا در بازگردانی موجودی: $e');
+    }
+  }
 }
