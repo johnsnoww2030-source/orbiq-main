@@ -7,38 +7,40 @@ import 'package:orbiq/features/exports/presentation/controller/export_state.dart
 
 @injectable
 class ExportBloc extends Bloc<ExportEvent, ExportState> {
-  final ExportToPDFUseCase exportToPDFUseCase;
-  final ExportToExcelUseCase exportToExcelUseCase;
+  final ExportToPDFUseCase _exportToPDFUseCase;
+  final ExportToExcelUseCase _exportToExcelUseCase;
 
-  ExportBloc(this.exportToPDFUseCase, this.exportToExcelUseCase)
+  ExportBloc(this._exportToPDFUseCase, this._exportToExcelUseCase)
     : super(const ExportInitial()) {
-    on<ExportPDFEvent>(_onExportPDFEvent);
-    on<ExportExcelEvent>(_onExportExcelEvent);
+    on<PdfExportRequested>(_onPdfExportRequested);
+    on<ExcelExportRequested>(_onExcelExportRequested);
   }
 
-  Future<void> _onExportPDFEvent(
-    ExportPDFEvent event,
+  Future<void> _onPdfExportRequested(
+    PdfExportRequested event,
     Emitter<ExportState> emit,
   ) async {
     emit(const Exporting());
-    try {
-      await exportToPDFUseCase(event.data, event.fileName);
-      emit(const ExportSuccess());
-    } catch (e) {
-      emit(ExportFailure(e.toString()));
-    }
+
+    final result = await _exportToPDFUseCase(event.data, event.fileName);
+
+    result.fold(
+      (failure) => emit(ExportError(failure.message)),
+      (filePath) => emit(ExportSuccess(filePath: filePath)),
+    );
   }
 
-  Future<void> _onExportExcelEvent(
-    ExportExcelEvent event,
+  Future<void> _onExcelExportRequested(
+    ExcelExportRequested event,
     Emitter<ExportState> emit,
   ) async {
     emit(const Exporting());
-    try {
-      await exportToExcelUseCase(event.data, event.fileName);
-      emit(const ExportSuccess());
-    } catch (e) {
-      emit(ExportFailure(e.toString()));
-    }
+
+    final result = await _exportToExcelUseCase(event.data, event.fileName);
+
+    result.fold(
+      (failure) => emit(ExportError(failure.message)),
+      (filePath) => emit(ExportSuccess(filePath: filePath)),
+    );
   }
 }

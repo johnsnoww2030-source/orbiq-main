@@ -1,15 +1,31 @@
-abstract class ExportEvent {}
+import 'package:equatable/equatable.dart';
 
-class ExportPDFEvent extends ExportEvent {
+/// Base class for Export events
+abstract class ExportEvent extends Equatable {
+  const ExportEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+/// Event when PDF export is requested
+class PdfExportRequested extends ExportEvent {
   final List<List<dynamic>> data;
   final String fileName;
 
-  ExportPDFEvent(this.data, this.fileName);
+  const PdfExportRequested({required this.data, required this.fileName});
+
+  @override
+  List<Object?> get props => [data, fileName];
 }
 
-class ExportExcelEvent extends ExportEvent {
+/// Event when Excel export is requested
+class ExcelExportRequested extends ExportEvent {
   final List<dynamic> data;
   final String fileName;
 
-  ExportExcelEvent(this.data, this.fileName);
+  const ExcelExportRequested({required this.data, required this.fileName});
+
+  @override
+  List<Object?> get props => [data, fileName];
 }
