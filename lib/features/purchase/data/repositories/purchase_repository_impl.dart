@@ -65,15 +65,31 @@ class PurchaseRepositoryImpl implements PurchaseRepository {
         purchaseWithTotals,
       );
 
-      // 4. Update stock and WAC for each product + log events
+      // 4. Calculate total quantity for shipping cost distribution
+      int totalQuantity = 0;
       for (final item in purchase.items) {
+        totalQuantity += item.quantity;
+      }
+
+      // 5. Update stock and WAC for each product + log events
+      // Shipping cost is distributed proportionally by quantity
+      for (final item in purchase.items) {
+        // Calculate effective unit price including shipping cost share
+        // effectiveUnitPrice = unitBuyPrice + (additionalCosts / totalQuantity)
+        double effectiveUnitPrice = item.unitBuyPrice;
+        if (purchase.additionalCosts > 0 && totalQuantity > 0) {
+          // Shipping cost per unit across all items
+          final shippingPerUnit = purchase.additionalCosts / totalQuantity;
+          effectiveUnitPrice = item.unitBuyPrice + shippingPerUnit;
+        }
+
         await _productStockRepository.updateStockAndWAC(
           uuid: item.productUuid,
           additionalQty: item.quantity,
-          newUnitPrice: item.unitBuyPrice,
+          newUnitPrice: effectiveUnitPrice,
         );
 
-        // Log stock added event
+        // Log stock added event (log original unitBuyPrice, not effective)
         await _eventService.logStockAdded(
           productId: item.productUuid,
           productName: item.productName ?? 'Unknown',
@@ -83,7 +99,7 @@ class PurchaseRepositoryImpl implements PurchaseRepository {
         );
       }
 
-      // 5. Log purchase created event
+      // 6. Log purchase created event
       await _eventService.logPurchaseCreated(
         purchaseId: purchaseUuid,
         supplierName: purchase.supplierName ?? 'Unknown',

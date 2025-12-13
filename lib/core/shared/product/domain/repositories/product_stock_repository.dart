@@ -17,4 +17,10 @@ abstract class ProductStockRepository {
     required int additionalQty,
     required double newUnitPrice,
   });
+
+  /// Update original price for a product (price suggestion)
+  Future<Either<String, void>> updateOriginalPrice(
+    String uuid,
+    double newPrice,
+  );
 }

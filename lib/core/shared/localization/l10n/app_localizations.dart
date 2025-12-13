@@ -2367,6 +2367,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View All'**
   String get viewAll;
+
+  /// No description provided for @priceNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Price Not Set'**
+  String get priceNotSet;
 }
 
 class _AppLocalizationsDelegate

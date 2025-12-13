@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:orbiq/core/di/injection.dart';
-import 'package:orbiq/core/database/daos/product_dao.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
+import 'package:orbiq/core/shared/product/domain/repositories/product_stock_repository.dart';
 
 /// Dialog to suggest pricing for products after a purchase is recorded
 /// Shows WAC, suggested price with margin, and current price comparison
@@ -38,14 +38,14 @@ class PricingSuggestionDialog extends StatefulWidget {
 }
 
 class _PricingSuggestionDialogState extends State<PricingSuggestionDialog> {
-  late ProductDao _productDao;
+  late ProductStockRepository _productRepository;
   late List<_ProductPricing> _pricingList;
   bool _isApplying = false;
 
   @override
   void initState() {
     super.initState();
-    _productDao = getIt<ProductDao>();
+    _productRepository = getIt<ProductStockRepository>();
     _initializePricing();
   }
 
@@ -55,10 +55,14 @@ class _PricingSuggestionDialogState extends State<PricingSuggestionDialog> {
         product.avgBuyPrice,
         widget.defaultMarginPercent,
       );
-      final currentProfit = product.originalPrice - product.avgBuyPrice;
-      final currentMargin = product.avgBuyPrice > 0
-          ? (currentProfit / product.avgBuyPrice) * 100
-          : 0.0;
+
+      // Calculate current margin only if originalPrice is set (> 0)
+      // If originalPrice is 0, the product was quickly created without a selling price
+      double? currentMargin;
+      if (product.originalPrice > 0 && product.avgBuyPrice > 0) {
+        final currentProfit = product.originalPrice - product.avgBuyPrice;
+        currentMargin = (currentProfit / product.avgBuyPrice) * 100;
+      }
 
       return _ProductPricing(
         product: product,
@@ -250,7 +254,9 @@ class _PricingSuggestionDialogState extends State<PricingSuggestionDialog> {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    '${l10n.currentMargin}: ${pricing.currentMargin.toStringAsFixed(1)}%',
+                    pricing.currentMargin != null
+                        ? '${l10n.currentMargin}: ${pricing.currentMargin!.toStringAsFixed(1)}%'
+                        : l10n.priceNotSet,
                     style: const TextStyle(
                       color: Colors.orange,
                       fontSize: 12,
@@ -339,14 +345,17 @@ class _PricingSuggestionDialogState extends State<PricingSuggestionDialog> {
 
       for (final pricing in _pricingList) {
         if (pricing.isSelected) {
-          // Update product price in database
-          await _productDao.updateOriginalPrice(
+          // Update product price using Repository (Clean Architecture)
+          final result = await _productRepository.updateOriginalPrice(
             pricing.product.uuid!,
             pricing.suggestedPrice,
           );
 
-          updatedProducts.add(
-            pricing.product.copyWith(originalPrice: pricing.suggestedPrice),
+          result.fold(
+            (error) => debugPrint('Error updating price: $error'),
+            (_) => updatedProducts.add(
+              pricing.product.copyWith(originalPrice: pricing.suggestedPrice),
+            ),
           );
         }
       }
@@ -374,7 +383,7 @@ class _ProductPricing {
   final ProductEntity product;
   final double suggestedPrice;
   double customPrice;
-  final double currentMargin;
+  final double? currentMargin;
   bool isSelected;
 
   _ProductPricing({

@@ -27,7 +27,11 @@ import '../../features/auth/data/data_sources/local/auth_local_data_source.dart'
     as _i485;
 import '../../features/auth/data/repositories/auth_repository_impl.dart'
     as _i153;
+import '../../features/auth/data/repositories/dashboard_repository_impl.dart'
+    as _i499;
 import '../../features/auth/domain/repositories/auth_repository.dart' as _i787;
+import '../../features/auth/domain/repositories/dashboard_repository.dart'
+    as _i1029;
 import '../../features/auth/domain/usecases/add_user_usecase.dart' as _i816;
 import '../../features/auth/domain/usecases/login_usecase.dart' as _i188;
 import '../../features/auth/domain/usecases/logout_usecase.dart' as _i48;
@@ -89,6 +93,10 @@ import '../../features/purchase/domain/repositories/purchase_repository.dart'
     as _i220;
 import '../../features/purchase/presentation/controller/purchase_bloc.dart'
     as _i796;
+import '../../features/reports/data/repositories/reports_repository_impl.dart'
+    as _i227;
+import '../../features/reports/domain/repositories/reports_repository.dart'
+    as _i808;
 import '../../features/sales/data/data_sources/sales_local_data_source.dart'
     as _i929;
 import '../../features/sales/data/repositories/sales_repository_impl.dart'
@@ -234,6 +242,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i22.UpdateService>(),
       ),
     );
+    gh.factory<_i808.ReportsRepository>(
+      () => _i227.ReportsRepositoryImpl(
+        gh<_i340.SalesDao>(),
+        gh<_i924.ProductDao>(),
+      ),
+    );
     gh.lazySingleton<_i273.EventService>(
       () => _i273.EventService(gh<_i565.EventDao>()),
     );
@@ -287,6 +301,12 @@ extension GetItInjectableX on _i174.GetIt {
         getClientsUseCase: gh<_i856.GetClientsUseCase>(),
         handleClientDisconnectionUseCase:
             gh<_i587.HandleClientDisconnectionUseCase>(),
+      ),
+    );
+    gh.factory<_i1029.DashboardRepository>(
+      () => _i499.DashboardRepositoryImpl(
+        gh<_i924.ProductDao>(),
+        gh<_i340.SalesDao>(),
       ),
     );
     gh.lazySingleton<_i567.ProductRepository>(

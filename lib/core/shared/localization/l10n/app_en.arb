@@ -396,5 +396,6 @@
   "stock": "Stock",
   "reorderPoint": "Reorder Point",
   "viewAll": "View All",
-  "invoices": "Invoices"
+  "invoices": "Invoices",
+  "priceNotSet": "Price Not Set"
 }

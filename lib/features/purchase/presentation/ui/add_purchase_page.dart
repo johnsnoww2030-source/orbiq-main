@@ -4,10 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:orbiq/core/di/injection.dart';
-import 'package:orbiq/core/database/daos/product_dao.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
-import 'package:orbiq/core/shared/product/data/mappers/product_mapper.dart';
+import 'package:orbiq/core/shared/product/domain/repositories/product_stock_repository.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_bloc.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_event.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_state.dart';
@@ -69,49 +68,63 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
     return _totalCost + (double.tryParse(_additionalCostsController.text) ?? 0);
   }
 
+  /// Handle purchase created - separate async method to properly manage context
+  Future<void> _handlePurchaseCreated(
+    BuildContext listenerContext,
+    AppLocalizations l10n,
+  ) async {
+    // Store references BEFORE any async operations
+    final scaffoldMessenger = ScaffoldMessenger.of(listenerContext);
+    final navigator = Navigator.of(listenerContext);
+
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
+        content: Text(l10n.purchaseCreated),
+        backgroundColor: Colors.green,
+      ),
+    );
+
+    // Use Repository instead of DAO (Clean Architecture)
+    final productRepository = getIt<ProductStockRepository>();
+    final List<ProductEntity> freshProducts = [];
+
+    for (final item in _items) {
+      if (item.productUuid.isNotEmpty) {
+        final result = await productRepository.getProductByUuid(
+          item.productUuid,
+        );
+        result.fold((error) => null, (product) => freshProducts.add(product));
+      }
+    }
+
+    // Check mounted after async operation
+    if (!mounted) return;
+
+    if (freshProducts.isNotEmpty) {
+      // Now context is safe to use since we verified mounted
+      await PricingSuggestionDialog.show(
+        context,
+        products: freshProducts,
+        marginPercent: 20.0,
+      );
+    }
+
+    // Check mounted again after second async operation
+    if (!mounted) return;
+    navigator.pop(true);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final isDesktop = MediaQuery.of(context).size.width > 800;
 
     return BlocListener<PurchaseBloc, PurchaseState>(
-      listener: (context, state) async {
+      listener: (listenerContext, state) {
         if (state is PurchaseCreated) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.purchaseCreated),
-              backgroundColor: Colors.green,
-            ),
-          );
-
-          // Fetch FRESH products from database (with updated WAC)
-          final productDao = getIt<ProductDao>();
-          final List<ProductEntity> freshProducts = [];
-
-          for (final item in _items) {
-            if (item.productUuid.isNotEmpty) {
-              final product = await productDao.getProductByUuid(
-                item.productUuid,
-              );
-              if (product != null) {
-                freshProducts.add(ProductMapper.toEntity(product));
-              }
-            }
-          }
-
-          if (freshProducts.isNotEmpty && mounted) {
-            await PricingSuggestionDialog.show(
-              context,
-              products: freshProducts,
-              marginPercent: 20.0,
-            );
-          }
-
-          if (mounted) {
-            Navigator.pop(context, true);
-          }
+          _handlePurchaseCreated(listenerContext, l10n);
         } else if (state is PurchaseError) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          ScaffoldMessenger.of(listenerContext).showSnackBar(
             SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
         }

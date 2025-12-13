@@ -399,5 +399,6 @@
   "stock": "موجودی",
   "reorderPoint": "نقطه سفارش",
   "viewAll": "مشاهده همه",
-  "invoices": "فاکتورها"
+  "invoices": "فاکتورها",
+  "priceNotSet": "قیمت تعیین نشده"
 }

@@ -1154,4 +1154,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get viewAll => 'مشاهده همه';
+
+  @override
+  String get priceNotSet => 'قیمت تعیین نشده';
 }

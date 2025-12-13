@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:orbiq/core/di/injection.dart';
-import 'package:orbiq/core/database/daos/sales_dao.dart';
-import 'package:orbiq/core/database/daos/product_dao.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
+import 'package:orbiq/features/reports/domain/entities/report_data.dart';
+import 'package:orbiq/features/reports/domain/repositories/reports_repository.dart';
 
 /// Reports Page - shows sales summary, profit chart, and top products
 class ReportsPage extends StatefulWidget {
@@ -22,18 +22,15 @@ class _ReportsPageState extends State<ReportsPage> {
   double _totalRevenue = 0;
   double _totalProfit = 0;
   int _salesCount = 0;
-  List<Map<String, dynamic>> _dailySales = [];
-  List<Map<String, dynamic>> _topProducts = [];
-  final Map<String, String> _productNames = {};
+  List<DailySalesData> _dailySales = [];
+  List<TopProductData> _topProducts = [];
 
-  late SalesDao _salesDao;
-  late ProductDao _productDao;
+  late ReportsRepository _reportsRepository;
 
   @override
   void initState() {
     super.initState();
-    _salesDao = getIt<SalesDao>();
-    _productDao = getIt<ProductDao>();
+    _reportsRepository = getIt<ReportsRepository>();
     _loadReportData();
   }
 
@@ -60,27 +57,37 @@ class _ReportsPageState extends State<ReportsPage> {
     }
 
     try {
-      // Load summary data
-      _totalRevenue = await _salesDao.getRevenueInDateRange(startDate, endDate);
-      _totalProfit = await _salesDao.getProfitInDateRange(startDate, endDate);
-      _salesCount = await _salesDao.getSalesCountInDateRange(
+      // Load summary data using Repository (Clean Architecture)
+      final revenueResult = await _reportsRepository.getRevenueInDateRange(
         startDate,
         endDate,
       );
+      revenueResult.fold((e) => null, (v) => _totalRevenue = v);
+
+      final profitResult = await _reportsRepository.getProfitInDateRange(
+        startDate,
+        endDate,
+      );
+      profitResult.fold((e) => null, (v) => _totalProfit = v);
+
+      final countResult = await _reportsRepository.getSalesCountInDateRange(
+        startDate,
+        endDate,
+      );
+      countResult.fold((e) => null, (v) => _salesCount = v);
 
       // Load daily sales for chart
-      _dailySales = await _salesDao.getDailySales(startDate, endDate);
+      final dailySalesResult = await _reportsRepository.getDailySales(
+        startDate,
+        endDate,
+      );
+      dailySalesResult.fold((e) => null, (v) => _dailySales = v);
 
       // Load top products
-      _topProducts = await _salesDao.getTopSellingProducts(5);
-
-      // Load product names
-      for (final product in _topProducts) {
-        final p = await _productDao.getProductByUuid(product['productUuid']);
-        if (p != null) {
-          _productNames[product['productUuid']] = p.name;
-        }
-      }
+      final topProductsResult = await _reportsRepository.getTopSellingProducts(
+        5,
+      );
+      topProductsResult.fold((e) => null, (v) => _topProducts = v);
     } catch (e) {
       debugPrint('Error loading report data: $e');
     }
@@ -307,8 +314,7 @@ class _ReportsPageState extends State<ReportsPage> {
                               getTitlesWidget: (value, meta) {
                                 final index = value.toInt();
                                 if (index >= 0 && index < _dailySales.length) {
-                                  final date =
-                                      _dailySales[index]['date'] as DateTime;
+                                  final date = _dailySales[index].date;
                                   return Padding(
                                     padding: const EdgeInsets.only(top: 8),
                                     child: Text(
@@ -334,8 +340,7 @@ class _ReportsPageState extends State<ReportsPage> {
                         borderData: FlBorderData(show: false),
                         gridData: const FlGridData(show: false),
                         barGroups: _dailySales.asMap().entries.map((entry) {
-                          final revenue =
-                              (entry.value['revenue'] as double?) ?? 0.0;
+                          final revenue = entry.value.revenue;
                           return BarChartGroupData(
                             x: entry.key,
                             barRods: [
@@ -363,7 +368,7 @@ class _ReportsPageState extends State<ReportsPage> {
     if (_dailySales.isEmpty) return 1000000;
     double max = 0;
     for (final day in _dailySales) {
-      final revenue = (day['revenue'] as double?) ?? 0.0;
+      final revenue = day.revenue;
       if (revenue > max) max = revenue;
     }
     return max > 0 ? max : 1000000;
@@ -404,11 +409,9 @@ class _ReportsPageState extends State<ReportsPage> {
             else
               ...List.generate(_topProducts.length, (index) {
                 final product = _topProducts[index];
-                final name =
-                    _productNames[product['productUuid']] ??
-                    l10n.unknownProduct;
-                final quantity = product['quantity'] as int;
-                final revenue = (product['revenue'] as double?) ?? 0.0;
+                final name = product.productName;
+                final quantity = product.quantity;
+                final revenue = product.revenue;
 
                 return ListTile(
                   leading: CircleAvatar(

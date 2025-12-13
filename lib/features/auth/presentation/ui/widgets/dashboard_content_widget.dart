@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:orbiq/core/di/injection.dart';
-import 'package:orbiq/core/database/daos/product_dao.dart';
-import 'package:orbiq/core/database/daos/sales_dao.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
-import 'package:orbiq/core/shared/product/data/mappers/product_mapper.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
+import 'package:orbiq/features/auth/domain/repositories/dashboard_repository.dart';
 
 /// Dashboard with inventory overview, low stock alerts, and today's sales summary
 class DashboardContentWidget extends StatefulWidget {
@@ -31,14 +29,12 @@ class _DashboardContentWidgetState extends State<DashboardContentWidget> {
   double _todayProfit = 0;
   int _todayInvoiceCount = 0;
 
-  late ProductDao _productDao;
-  late SalesDao _salesDao;
+  late DashboardRepository _dashboardRepository;
 
   @override
   void initState() {
     super.initState();
-    _productDao = getIt<ProductDao>();
-    _salesDao = getIt<SalesDao>();
+    _dashboardRepository = getIt<DashboardRepository>();
     _loadDashboardData();
   }
 
@@ -46,29 +42,35 @@ class _DashboardContentWidgetState extends State<DashboardContentWidget> {
     setState(() => _isLoading = true);
 
     try {
-      // Product summary
-      _productCount = await _productDao.getProductCount();
-      _lowStockCount = await _productDao.getLowStockCount();
-      _outOfStockCount = await _productDao.getOutOfStockCount();
-      _inventoryValue = await _productDao.getTotalInventoryValue();
+      // Product summary using Repository (Clean Architecture)
+      final productCountResult = await _dashboardRepository.getProductCount();
+      productCountResult.fold((e) => null, (v) => _productCount = v);
 
-      // Low stock products (uses same logic as products_management_page)
-      final lowStockDrift = await _productDao.getLowStockProductsList();
-      _lowStockProducts = lowStockDrift
-          .map((p) => ProductMapper.toEntity(p))
-          .toList();
+      final lowStockCountResult = await _dashboardRepository.getLowStockCount();
+      lowStockCountResult.fold((e) => null, (v) => _lowStockCount = v);
+
+      final outOfStockResult = await _dashboardRepository.getOutOfStockCount();
+      outOfStockResult.fold((e) => null, (v) => _outOfStockCount = v);
+
+      final inventoryResult = await _dashboardRepository
+          .getTotalInventoryValue();
+      inventoryResult.fold((e) => null, (v) => _inventoryValue = v);
+
+      // Low stock products
+      final lowStockProductsResult = await _dashboardRepository
+          .getLowStockProductsList();
+      lowStockProductsResult.fold((e) => null, (v) => _lowStockProducts = v);
 
       // Today's sales
-      final now = DateTime.now();
-      final startOfDay = DateTime(now.year, now.month, now.day);
-      final endOfDay = startOfDay.add(const Duration(days: 1));
+      final todayRevenueResult = await _dashboardRepository.getTodayRevenue();
+      todayRevenueResult.fold((e) => null, (v) => _todaySales = v);
 
-      _todaySales = await _salesDao.getRevenueInDateRange(startOfDay, endOfDay);
-      _todayProfit = await _salesDao.getProfitInDateRange(startOfDay, endOfDay);
-      _todayInvoiceCount = await _salesDao.getSalesCountInDateRange(
-        startOfDay,
-        endOfDay,
-      );
+      final todayProfitResult = await _dashboardRepository.getTodayProfit();
+      todayProfitResult.fold((e) => null, (v) => _todayProfit = v);
+
+      final todayInvoiceResult = await _dashboardRepository
+          .getTodayInvoiceCount();
+      todayInvoiceResult.fold((e) => null, (v) => _todayInvoiceCount = v);
     } catch (e) {
       debugPrint('Error loading dashboard: $e');
     }

@@ -52,4 +52,17 @@ class ProductStockRepositoryImpl implements ProductStockRepository {
       return Left('خطا در بروزرسانی موجودی و قیمت: $e');
     }
   }
+
+  @override
+  Future<Either<String, void>> updateOriginalPrice(
+    String uuid,
+    double newPrice,
+  ) async {
+    try {
+      await _productDao.updateOriginalPrice(uuid, newPrice);
+      return const Right(null);
+    } catch (e) {
+      return Left('خطا در بروزرسانی قیمت: $e');
+    }
+  }
 }
