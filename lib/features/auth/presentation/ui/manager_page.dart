@@ -192,6 +192,7 @@ class _ManagerPageState extends State<ManagerPage> {
   }
 
   Widget _buildPlaceholder(String title) {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -200,7 +201,7 @@ class _ManagerPageState extends State<ManagerPage> {
           const SizedBox(height: 16),
           Text(title, style: TextStyle(fontSize: 24, color: Colors.grey[600])),
           const SizedBox(height: 8),
-          const Text("Coming Soon"),
+          Text(l10n.comingSoon),
         ],
       ),
     );

@@ -2379,6 +2379,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quick Sale'**
   String get quickSale;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get comingSoon;
+
+  /// No description provided for @updatePasswordButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Password'**
+  String get updatePasswordButton;
+
+  /// No description provided for @firstLoginMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'First login detected, please set a new password.'**
+  String get firstLoginMessage;
+
+  /// No description provided for @userNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'User not found.'**
+  String get userNotFound;
+
+  /// No description provided for @logoutFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to log out.'**
+  String get logoutFailed;
+
+  /// No description provided for @addUserFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add user: {error}'**
+  String addUserFailed(Object error);
 }
 
 class _AppLocalizationsDelegate

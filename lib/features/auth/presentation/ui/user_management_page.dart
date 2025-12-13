@@ -4,6 +4,7 @@ import 'package:orbiq/features/auth/presentation/controller/auth_bloc.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_event.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_state.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
+import 'package:orbiq/features/auth/presentation/utils/auth_error_helper.dart';
 
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});
@@ -23,18 +24,25 @@ class UserManagementPageState extends State<UserManagementPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.userManagement),
-        backgroundColor: Colors.blue,
+        backgroundColor: colorScheme.primary,
         elevation: 0,
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthFailure) {
+            final errorMessage = getLocalizedErrorMessage(
+              l10n,
+              state.failureType,
+              extraMessage: state.extraMessage,
+            );
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('${l10n.errorPrefix} ${state.message}'),
+                content: Text('${l10n.errorPrefix} $errorMessage'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -55,7 +63,10 @@ class UserManagementPageState extends State<UserManagementPage> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.blue.shade200, Colors.blue.shade600],
+              colors: [
+                colorScheme.primary.withValues(alpha: 0.3),
+                colorScheme.primary.withValues(alpha: 0.8),
+              ],
             ),
           ),
           child: Center(
@@ -72,10 +83,10 @@ class UserManagementPageState extends State<UserManagementPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.person_add,
                           size: 64,
-                          color: Colors.blue,
+                          color: colorScheme.primary,
                         ),
                         const SizedBox(height: 24),
                         if (_errorMessage != null)
@@ -129,8 +140,8 @@ class UserManagementPageState extends State<UserManagementPage> {
                         ElevatedButton(
                           onPressed: _addUser,
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.blue,
+                            foregroundColor: colorScheme.onPrimary,
+                            backgroundColor: colorScheme.primary,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 32,
                               vertical: 16,

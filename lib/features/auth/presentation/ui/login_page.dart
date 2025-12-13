@@ -5,6 +5,7 @@ import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_bloc.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_event.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_state.dart';
+import 'package:orbiq/features/auth/presentation/utils/auth_error_helper.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -56,9 +57,14 @@ class LoginPageState extends State<LoginPage> {
               state.username,
             );
           } else if (state is AuthFailure) {
+            final errorMessage = getLocalizedErrorMessage(
+              l10n,
+              state.failureType,
+              extraMessage: state.extraMessage,
+            );
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ).showSnackBar(SnackBar(content: Text(errorMessage)));
           }
         },
         builder: (context, state) {

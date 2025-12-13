@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/user_entity.dart';
+import '../../domain/failures/failure.dart';
 
 sealed class AuthState extends Equatable {
   const AuthState();
@@ -39,12 +40,13 @@ class AuthFirstLogin extends AuthState {
 }
 
 class AuthFailure extends AuthState {
-  final String message;
+  final AuthFailureType failureType;
+  final String? extraMessage;
 
-  const AuthFailure(this.message);
+  const AuthFailure({required this.failureType, this.extraMessage});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [failureType, extraMessage];
 }
 
 class PasswordUpdateSuccess extends AuthState {

@@ -24,7 +24,8 @@ class SellerPage extends StatelessWidget {
         actions: [
           BlocBuilder<ThemeBloc, ThemeState>(
             builder: (context, themeState) {
-              final isDarkMode = themeState is ThemeLoaded &&
+              final isDarkMode =
+                  themeState is ThemeLoaded &&
                   themeState.theme.type == ThemeType.dark;
 
               return IconButton(
@@ -66,8 +67,8 @@ class SellerPage extends StatelessWidget {
                   crossAxisCount: MediaQuery.of(context).size.width > 1000
                       ? 4
                       : MediaQuery.of(context).size.width > 600
-                          ? 3
-                          : 2,
+                      ? 3
+                      : 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                   children: [
@@ -82,7 +83,7 @@ class SellerPage extends StatelessWidget {
                       context,
                       l10n.addProduct,
                       Icons.add_box,
-                      Colors.blue,
+                      Theme.of(context).colorScheme.primary,
                       () => Navigator.pushNamed(context, '/add-product'),
                     ),
                   ],

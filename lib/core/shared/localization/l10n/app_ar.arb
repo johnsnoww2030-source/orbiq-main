@@ -398,5 +398,16 @@
   "reorderPoint": "نقطة إعادة الطلب",
   "viewAll": "عرض الكل",
   "invoices": "الفواتير",
-  "quickSale": "بيع سريع"
+  "quickSale": "بيع سريع",
+  "comingSoon": "قريباً",
+  "updatePasswordButton": "تحديث كلمة المرور",
+  "firstLoginMessage": "تم اكتشاف تسجيل الدخول الأول، يرجى تعيين كلمة مرور جديدة.",
+  "userNotFound": "المستخدم غير موجود.",
+  "logoutFailed": "فشل تسجيل الخروج.",
+  "addUserFailed": "فشل إضافة المستخدم: {error}",
+  "@addUserFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  }
 }

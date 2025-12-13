@@ -6,6 +6,7 @@ import 'package:orbiq/features/auth/presentation/controller/auth_bloc.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_event.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_state.dart';
 import 'package:orbiq/features/auth/presentation/ui/user_management_page.dart';
+import 'package:orbiq/features/auth/presentation/utils/auth_error_helper.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -56,8 +57,13 @@ class _SettingsPageState extends State<SettingsPage>
           _clearPasswordFields();
           Navigator.of(context).pop();
         } else if (state is AuthFailure) {
+          final errorMessage = getLocalizedErrorMessage(
+            l10n,
+            state.failureType,
+            extraMessage: state.extraMessage,
+          );
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+            SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
           );
         }
       },

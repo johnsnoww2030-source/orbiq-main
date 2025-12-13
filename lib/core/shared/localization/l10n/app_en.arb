@@ -398,5 +398,16 @@
   "viewAll": "View All",
   "invoices": "Invoices",
   "priceNotSet": "Price Not Set",
-  "quickSale": "Quick Sale"
+  "quickSale": "Quick Sale",
+  "comingSoon": "Coming Soon",
+  "updatePasswordButton": "Update Password",
+  "firstLoginMessage": "First login detected, please set a new password.",
+  "userNotFound": "User not found.",
+  "logoutFailed": "Failed to log out.",
+  "addUserFailed": "Failed to add user: {error}",
+  "@addUserFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  }
 }

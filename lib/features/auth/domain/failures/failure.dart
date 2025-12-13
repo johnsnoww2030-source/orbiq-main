@@ -1,4 +1,15 @@
 // domain/failures/failure.dart
+
+/// Enum for identifying failure types (for localization in UI)
+enum AuthFailureType {
+  invalidCredentials,
+  firstLogin,
+  userNotFound,
+  logoutFailed,
+  addUserFailed,
+  general,
+}
+
 abstract class Failure {
   final String message;
 
@@ -6,7 +17,9 @@ abstract class Failure {
 }
 
 class LoginFailure extends Failure {
-  LoginFailure(super.message);
+  final AuthFailureType type;
+
+  LoginFailure({required this.type, String? message}) : super(message ?? '');
 }
 
 class NetworkFailure extends Failure {
@@ -14,9 +27,11 @@ class NetworkFailure extends Failure {
 }
 
 class GeneralFailure extends Failure {
-  GeneralFailure(super.message);
+  final AuthFailureType type;
+
+  GeneralFailure({required this.type, String? message}) : super(message ?? '');
 }
 
 class FirstLoginFailure extends Failure {
-  FirstLoginFailure(super.message);
+  FirstLoginFailure([super.message = '']);
 }

@@ -1160,4 +1160,25 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get quickSale => 'فروش سریع';
+
+  @override
+  String get comingSoon => 'به زودی';
+
+  @override
+  String get updatePasswordButton => 'تغییر رمز عبور';
+
+  @override
+  String get firstLoginMessage =>
+      'اولین ورود مدیر، لطفا رمز عبور جدید را تنظیم کنید.';
+
+  @override
+  String get userNotFound => 'کاربر یافت نشد.';
+
+  @override
+  String get logoutFailed => 'خروج از سیستم ناموفق بود.';
+
+  @override
+  String addUserFailed(Object error) {
+    return 'افزودن کاربر ناموفق: $error';
+  }
 }

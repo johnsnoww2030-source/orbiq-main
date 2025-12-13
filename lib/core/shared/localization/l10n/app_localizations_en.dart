@@ -1160,4 +1160,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quickSale => 'Quick Sale';
+
+  @override
+  String get comingSoon => 'Coming Soon';
+
+  @override
+  String get updatePasswordButton => 'Update Password';
+
+  @override
+  String get firstLoginMessage =>
+      'First login detected, please set a new password.';
+
+  @override
+  String get userNotFound => 'User not found.';
+
+  @override
+  String get logoutFailed => 'Failed to log out.';
+
+  @override
+  String addUserFailed(Object error) {
+    return 'Failed to add user: $error';
+  }
 }

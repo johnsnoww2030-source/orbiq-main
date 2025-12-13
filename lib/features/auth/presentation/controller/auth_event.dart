@@ -12,10 +12,7 @@ class LoginRequested extends AuthEvent {
   LoginRequested(this.username, this.password);
 
   @override
-  List<Object> get props => [
-        username,
-        password
-      ];
+  List<Object> get props => [username, password];
 }
 
 class UpdatePasswordRequested extends AuthEvent {
@@ -25,10 +22,7 @@ class UpdatePasswordRequested extends AuthEvent {
   UpdatePasswordRequested({required this.username, required this.newPassword});
 
   @override
-  List<Object> get props => [
-        username,
-        newPassword
-      ];
+  List<Object> get props => [username, newPassword];
 }
 
 class LogoutRequested extends AuthEvent {
@@ -37,9 +31,7 @@ class LogoutRequested extends AuthEvent {
   LogoutRequested({required this.userId});
 
   @override
-  List<Object> get props => [
-        userId
-      ];
+  List<Object> get props => [userId];
 }
 
 class AddUserRequested extends AuthEvent {
@@ -56,13 +48,5 @@ class AddUserRequested extends AuthEvent {
   });
 
   @override
-  List<Object> get props => [
-        username,
-        password,
-        role,
-        nickname,
-      ];
+  List<Object> get props => [username, password, role, nickname];
 }
-
-// اضافه کردن این کلاس جدید در انتهای فایل
-class RefreshAuth extends AuthEvent {}

@@ -1156,4 +1156,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get quickSale => 'بيع سريع';
+
+  @override
+  String get comingSoon => 'قريباً';
+
+  @override
+  String get updatePasswordButton => 'تحديث كلمة المرور';
+
+  @override
+  String get firstLoginMessage =>
+      'تم اكتشاف تسجيل الدخول الأول، يرجى تعيين كلمة مرور جديدة.';
+
+  @override
+  String get userNotFound => 'المستخدم غير موجود.';
+
+  @override
+  String get logoutFailed => 'فشل تسجيل الخروج.';
+
+  @override
+  String addUserFailed(Object error) {
+    return 'فشل إضافة المستخدم: $error';
+  }
 }

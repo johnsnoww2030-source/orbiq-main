@@ -39,8 +39,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (failure) {
         if (failure is FirstLoginFailure) {
           emit(AuthFirstLogin(event.username));
+        } else if (failure is LoginFailure) {
+          emit(AuthFailure(failureType: failure.type));
+        } else if (failure is GeneralFailure) {
+          emit(
+            AuthFailure(
+              failureType: failure.type,
+              extraMessage: failure.message,
+            ),
+          );
         } else {
-          emit(AuthFailure(failure.message));
+          emit(const AuthFailure(failureType: AuthFailureType.general));
         }
       },
       (user) {
@@ -64,10 +73,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       event.newPassword,
     );
 
-    result.fold(
-      (failure) => emit(AuthFailure(failure.message)),
-      (_) => emit(const PasswordUpdateSuccess()),
-    );
+    result.fold((failure) {
+      if (failure is GeneralFailure) {
+        emit(
+          AuthFailure(failureType: failure.type, extraMessage: failure.message),
+        );
+      } else {
+        emit(const AuthFailure(failureType: AuthFailureType.general));
+      }
+    }, (_) => emit(const PasswordUpdateSuccess()));
   }
 
   Future<void> _onLogoutRequested(
@@ -78,10 +92,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     final result = await logoutUseCase.execute(event.userId);
 
-    result.fold(
-      (failure) => emit(AuthFailure(failure.message)),
-      (_) => emit(const UnauthenticatedState()),
-    );
+    result.fold((failure) {
+      if (failure is GeneralFailure) {
+        emit(AuthFailure(failureType: failure.type));
+      } else {
+        emit(const AuthFailure(failureType: AuthFailureType.logoutFailed));
+      }
+    }, (_) => emit(const UnauthenticatedState()));
   }
 
   Future<void> _onAddUserRequested(
@@ -99,12 +116,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       event.nickname,
     );
 
-    result.fold((failure) => emit(AuthFailure(failure.message)), (_) {
-      emit(const UserAddedSuccess());
-      // Restore previous state if it was success
-      if (previousState is AuthSuccess) {
-        emit(previousState);
-      }
-    });
+    result.fold(
+      (failure) {
+        if (failure is GeneralFailure) {
+          emit(
+            AuthFailure(
+              failureType: failure.type,
+              extraMessage: failure.message,
+            ),
+          );
+        } else {
+          emit(const AuthFailure(failureType: AuthFailureType.addUserFailed));
+        }
+      },
+      (_) {
+        emit(const UserAddedSuccess());
+        // Restore previous state if it was success
+        if (previousState is AuthSuccess) {
+          emit(previousState);
+        }
+      },
+    );
   }
 }

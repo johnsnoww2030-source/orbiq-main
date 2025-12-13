@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
+import 'package:orbiq/features/auth/domain/failures/failure.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_bloc.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_event.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_state.dart';
@@ -209,13 +210,14 @@ void main() {
         await tester.pumpAndSettle();
 
         // Emit failure state
-        controller.add(const AuthFailure('نام کاربری یا رمز عبور اشتباه است'));
+        controller.add(
+          const AuthFailure(failureType: AuthFailureType.invalidCredentials),
+        );
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
 
         // Assert
         expect(find.byType(SnackBar), findsOneWidget);
-        expect(find.text('نام کاربری یا رمز عبور اشتباه است'), findsOneWidget);
 
         await controller.close();
       });

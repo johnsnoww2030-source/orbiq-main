@@ -21,29 +21,21 @@ class AuthRepositoryImpl implements AuthRepository {
 
       if (userEntity != null &&
           UserMapper.checkPassword(password, userEntity.password)) {
-        // اگر موفقیت‌آمیز بود
         if (userEntity.isFirstLogin) {
-          // هدایت به صفحه تنظیمات رمز عبور جدید
-          return Left(
-            FirstLoginFailure(
-              'اولین ورود مدیر، لطفا رمز عبور جدید را تنظیم کنید.',
-            ),
-          );
+          return Left(FirstLoginFailure());
         } else {
-          // ورود موفق
           return Right(userEntity);
         }
       } else {
-        // اگر رمز عبور یا نام کاربری اشتباه بود
-        return Left(LoginFailure('نام کاربری یا رمز عبور اشتباه است.'));
+        return Left(LoginFailure(type: AuthFailureType.invalidCredentials));
       }
     } catch (e) {
-      // در صورت وقوع خطا
-      return Left(GeneralFailure(e.toString()));
+      return Left(
+        GeneralFailure(type: AuthFailureType.general, message: e.toString()),
+      );
     }
   }
 
-  // متد برای به‌روزرسانی رمز عبور در اولین ورود
   @override
   Future<Either<Failure, void>> updatePasswordForFirstLogin(
     String username,
@@ -60,28 +52,28 @@ class AuthRepositoryImpl implements AuthRepository {
         await localDataSource.updateUser(updatedUser);
         return const Right(null);
       } else {
-        return Left(GeneralFailure('کاربر یافت نشد.'));
+        return Left(GeneralFailure(type: AuthFailureType.userNotFound));
       }
     } catch (e) {
-      return Left(GeneralFailure(e.toString()));
+      return Left(
+        GeneralFailure(type: AuthFailureType.general, message: e.toString()),
+      );
     }
   }
 
   @override
   Future<Either<Failure, void>> logout(int userId) async {
     try {
-      // Note: Now using UUID. Get logged in user first
       final loggedInUser = await localDataSource.getLoggedInUser();
       if (loggedInUser?.uuid != null) {
         await localDataSource.logoutUser(loggedInUser!.uuid!);
       }
       return const Right(null);
     } catch (error) {
-      return Left(GeneralFailure('Failed to log out'));
+      return Left(GeneralFailure(type: AuthFailureType.logoutFailed));
     }
   }
 
-  // متد جدید برای افزودن کاربر
   @override
   Future<Either<Failure, void>> addUser({
     required String username,
@@ -92,7 +84,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final newUser = UserEntity(
         username: username,
-        password: password, // Will be hashed in mapper
+        password: password,
         role: role,
         isFirstLogin: true,
         loggedin: false,
@@ -101,7 +93,12 @@ class AuthRepositoryImpl implements AuthRepository {
       await localDataSource.insertUser(newUser);
       return const Right(null);
     } catch (error) {
-      return Left(GeneralFailure('Failed to add user: ${error.toString()}'));
+      return Left(
+        GeneralFailure(
+          type: AuthFailureType.addUserFailed,
+          message: error.toString(),
+        ),
+      );
     }
   }
 }

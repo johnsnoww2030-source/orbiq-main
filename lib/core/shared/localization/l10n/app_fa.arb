@@ -401,5 +401,16 @@
   "viewAll": "مشاهده همه",
   "invoices": "فاکتورها",
   "priceNotSet": "قیمت تعیین نشده",
-  "quickSale": "فروش سریع"
+  "quickSale": "فروش سریع",
+  "comingSoon": "به زودی",
+  "updatePasswordButton": "تغییر رمز عبور",
+  "firstLoginMessage": "اولین ورود مدیر، لطفا رمز عبور جدید را تنظیم کنید.",
+  "userNotFound": "کاربر یافت نشد.",
+  "logoutFailed": "خروج از سیستم ناموفق بود.",
+  "addUserFailed": "افزودن کاربر ناموفق: {error}",
+  "@addUserFailed": {
+    "placeholders": {
+      "error": {}
+    }
+  }
 }
