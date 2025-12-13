@@ -1157,4 +1157,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get priceNotSet => 'قیمت تعیین نشده';
+
+  @override
+  String get quickSale => 'فروش سریع';
 }

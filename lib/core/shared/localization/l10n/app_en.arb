@@ -397,5 +397,6 @@
   "reorderPoint": "Reorder Point",
   "viewAll": "View All",
   "invoices": "Invoices",
-  "priceNotSet": "Price Not Set"
+  "priceNotSet": "Price Not Set",
+  "quickSale": "Quick Sale"
 }

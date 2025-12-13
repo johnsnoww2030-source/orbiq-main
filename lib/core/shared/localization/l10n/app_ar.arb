@@ -397,5 +397,6 @@
   "stock": "المخزون",
   "reorderPoint": "نقطة إعادة الطلب",
   "viewAll": "عرض الكل",
-  "invoices": "الفواتير"
+  "invoices": "الفواتير",
+  "quickSale": "بيع سريع"
 }

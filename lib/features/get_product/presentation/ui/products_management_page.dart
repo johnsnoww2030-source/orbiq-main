@@ -11,8 +11,7 @@ import 'package:orbiq/features/auth/presentation/controller/auth_state.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_bloc.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_event.dart';
 import 'package:orbiq/features/get_product/presentation/controllers/bloc/get_product_state.dart';
-// TODO: Replace with Sales Module (PRD)
-// Removed: CartBloc, CartEvent, CartState, PaymentPage
+import 'package:orbiq/features/sales/presentation/ui/add_sale_page.dart';
 import 'package:orbiq/features/barcode_reader/presentation/controller/chat_bloc.dart';
 import 'package:orbiq/features/barcode_reader/presentation/controller/chat_state.dart';
 import 'package:orbiq/core/shared/currency/presentation/controller/currency_bloc.dart';
@@ -49,7 +48,7 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
       final formatter = NumberFormat(isInt ? '#,##0' : '#,##0.##');
       return '${formatter.format(converted)} ${state.selectedCurrency.symbol}';
     }
-    return '${NumberFormat('#,##0').format(price)} تومان';
+    return '${NumberFormat('#,##0').format(price)} ${AppLocalizations.of(context).currency}';
   }
 
   @override
@@ -141,20 +140,39 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
   }
 
   Widget _buildMobileFAB(BuildContext context) {
-    return FloatingActionButton(
-      heroTag: 'add',
-      onPressed: () {
-        final bloc = context.read<GetProductBloc>();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const AddProductPage()),
-        ).then((result) {
-          if (result == true && mounted) {
-            bloc.add(ProductsLoadRequested());
-          }
-        });
-      },
-      child: const Icon(Icons.add),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Quick Sale button
+        FloatingActionButton.small(
+          heroTag: 'quickSale',
+          backgroundColor: Colors.green,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddSalePage()),
+            );
+          },
+          child: const Icon(Icons.point_of_sale, size: 20),
+        ),
+        const SizedBox(height: 8),
+        // Add Product button
+        FloatingActionButton(
+          heroTag: 'add',
+          onPressed: () {
+            final bloc = context.read<GetProductBloc>();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddProductPage()),
+            ).then((result) {
+              if (result == true && mounted) {
+                bloc.add(ProductsLoadRequested());
+              }
+            });
+          },
+          child: const Icon(Icons.add),
+        ),
+      ],
     );
   }
 
@@ -412,6 +430,26 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
               ),
             ),
             const SizedBox(width: 12),
+            // Quick Sale button
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddSalePage()),
+                );
+              },
+              icon: const Icon(Icons.point_of_sale, size: 18),
+              label: Text(l10n.quickSale),
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.green,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            // New Product button
             FilledButton.icon(
               onPressed: () {
                 final bloc = context.read<GetProductBloc>();
@@ -698,7 +736,17 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
-          // TODO: Show product details
+          final bloc = context.read<GetProductBloc>();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditProductPage(product: product),
+            ),
+          ).then((result) {
+            if (result == true && mounted) {
+              bloc.add(ProductsLoadRequested());
+            }
+          });
         },
         child: Padding(
           padding: const EdgeInsets.all(12.0),

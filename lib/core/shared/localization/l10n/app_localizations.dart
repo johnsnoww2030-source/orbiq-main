@@ -2373,6 +2373,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Price Not Set'**
   String get priceNotSet;
+
+  /// No description provided for @quickSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Sale'**
+  String get quickSale;
 }
 
 class _AppLocalizationsDelegate

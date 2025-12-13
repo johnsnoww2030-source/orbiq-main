@@ -1157,4 +1157,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get priceNotSet => 'Price Not Set';
+
+  @override
+  String get quickSale => 'Quick Sale';
 }

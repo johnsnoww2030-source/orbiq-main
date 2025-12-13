@@ -400,5 +400,6 @@
   "reorderPoint": "نقطه سفارش",
   "viewAll": "مشاهده همه",
   "invoices": "فاکتورها",
-  "priceNotSet": "قیمت تعیین نشده"
+  "priceNotSet": "قیمت تعیین نشده",
+  "quickSale": "فروش سریع"
 }

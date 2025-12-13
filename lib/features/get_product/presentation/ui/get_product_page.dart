@@ -46,7 +46,7 @@ class ProductListPageState extends State<ProductListPage>
       final formatter = NumberFormat(isInt ? '#,##0' : '#,##0.##');
       return '${formatter.format(converted)} ${state.selectedCurrency.symbol}';
     }
-    return '${NumberFormat('#,##0').format(price)} تومان';
+    return '${NumberFormat('#,##0').format(price)} ${AppLocalizations.of(context).currency}';
   }
 
   @override
