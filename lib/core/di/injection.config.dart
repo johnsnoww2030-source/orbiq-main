@@ -390,7 +390,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i640.ProductBloc(
         addProduct: gh<_i161.AddProduct>(),
         updateProduct: gh<_i1056.UpdateProductUseCase>(),
-        getProductsUseCase: gh<_i642.GetProductsUseCase>(),
       ),
     );
     return this;

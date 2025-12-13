@@ -1,6 +1,6 @@
-import 'package:orbiq/features/upgrader/data/model/version_info_model.dart';
+import 'package:orbiq/features/upgrader/domain/entities/version_info_entity.dart';
 
 abstract class VersionRepository {
-  Future<VersionInfoModel?> getVersionInfo();
+  Future<VersionInfoEntity?> getVersionInfo();
   Future<void> downloadAndInstallUpdate(String url);
 }

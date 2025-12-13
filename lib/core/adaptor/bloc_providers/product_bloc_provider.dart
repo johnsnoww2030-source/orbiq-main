@@ -26,7 +26,6 @@ List<BlocProvider> productBlocProviders(AppDatabase database) {
     BlocProvider<ProductBloc>(
       create: (context) => ProductBloc(
         addProduct: AddProductUsecase(addProductRepository),
-        getProductsUseCase: GetProductsUseCase(getProductRepository),
         updateProduct: updateProductUseCase,
       ),
     ),
