@@ -129,6 +129,10 @@ import '../shared/localization/domain/usecases/save_language_usecase.dart'
     as _i383;
 import '../shared/localization/presentation/controller/language_bloc.dart'
     as _i32;
+import '../shared/product/data/repositories/product_stock_repository_impl.dart'
+    as _i436;
+import '../shared/product/domain/repositories/product_stock_repository.dart'
+    as _i990;
 import '../shared/theme/data/data_sources/local/theme_local_data_source.dart'
     as _i222;
 import '../shared/theme/data/repositories/theme_repository_impl.dart' as _i107;
@@ -242,12 +246,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i924.ProductDao>(),
       ),
     );
-    gh.factory<_i220.PurchaseRepository>(
-      () => _i254.PurchaseRepositoryImpl(
-        gh<_i588.PurchaseLocalDataSource>(),
-        gh<_i924.ProductDao>(),
-        gh<_i273.EventService>(),
-      ),
+    gh.factory<_i990.ProductStockRepository>(
+      () => _i436.ProductStockRepositoryImpl(gh<_i924.ProductDao>()),
     );
     gh.lazySingleton<_i85.ProductRepository>(
       () => _i675.ProductRepositoryImpl(gh<_i924.ProductDao>()),
@@ -263,13 +263,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i418.DownloadAndInstallUpdate>(
       () => _i418.DownloadAndInstallUpdate(gh<_i85.VersionRepository>()),
-    );
-    gh.factory<_i434.SalesRepository>(
-      () => _i779.SalesRepositoryImpl(
-        gh<_i929.SalesLocalDataSource>(),
-        gh<_i924.ProductDao>(),
-        gh<_i273.EventService>(),
-      ),
     );
     gh.lazySingleton<_i222.ThemeLocalDataSource>(
       () => _i222.ThemeLocalDataSource(gh<_i905.ThemeDao>()),
@@ -314,6 +307,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i387.UpdatePasswordUseCase>(
       () => _i387.UpdatePasswordUseCase(gh<_i787.AuthRepository>()),
     );
+    gh.factory<_i434.SalesRepository>(
+      () => _i779.SalesRepositoryImpl(
+        gh<_i929.SalesLocalDataSource>(),
+        gh<_i990.ProductStockRepository>(),
+        gh<_i273.EventService>(),
+      ),
+    );
     gh.lazySingleton<_i645.LanguageRepository>(
       () => _i789.LanguageRepositoryImpl(gh<_i149.LanguageLocalDataSource>()),
     );
@@ -323,8 +323,12 @@ extension GetItInjectableX on _i174.GetIt {
         downloadAndInstallUpdate: gh<_i418.DownloadAndInstallUpdate>(),
       ),
     );
-    gh.factory<_i796.PurchaseBloc>(
-      () => _i796.PurchaseBloc(gh<_i220.PurchaseRepository>()),
+    gh.factory<_i220.PurchaseRepository>(
+      () => _i254.PurchaseRepositoryImpl(
+        gh<_i588.PurchaseLocalDataSource>(),
+        gh<_i990.ProductStockRepository>(),
+        gh<_i273.EventService>(),
+      ),
     );
     gh.factory<_i816.AddUserUseCase>(
       () => _i816.AddUserUseCase(gh<_i787.AuthRepository>()),
@@ -378,6 +382,9 @@ extension GetItInjectableX on _i174.GetIt {
         getThemeUseCase: gh<_i473.GetThemeUseCase>(),
         saveThemeUseCase: gh<_i374.SaveThemeUseCase>(),
       ),
+    );
+    gh.factory<_i796.PurchaseBloc>(
+      () => _i796.PurchaseBloc(gh<_i220.PurchaseRepository>()),
     );
     gh.factory<_i640.ProductBloc>(
       () => _i640.ProductBloc(

@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:orbiq/core/database/daos/product_dao.dart';
 import 'package:orbiq/core/services/event_service.dart';
+import 'package:orbiq/core/shared/product/domain/repositories/product_stock_repository.dart';
 import 'package:orbiq/features/sales/data/data_sources/sales_local_data_source.dart';
 import 'package:orbiq/features/sales/domain/entities/sales_entity.dart';
 import 'package:orbiq/features/sales/domain/repositories/sales_repository.dart';
@@ -11,12 +11,12 @@ import 'package:orbiq/features/sales/domain/repositories/sales_repository.dart';
 @Injectable(as: SalesRepository)
 class SalesRepositoryImpl implements SalesRepository {
   final SalesLocalDataSource _localDataSource;
-  final ProductDao _productDao;
+  final ProductStockRepository _productStockRepository;
   final EventService _eventService;
 
   SalesRepositoryImpl(
     this._localDataSource,
-    this._productDao,
+    this._productStockRepository,
     this._eventService,
   );
 
@@ -53,7 +53,10 @@ class SalesRepositoryImpl implements SalesRepository {
 
       for (final item in sale.items) {
         // Get current product for stock and avgBuyPrice
-        final product = await _productDao.getProductByUuid(item.productUuid);
+        final productResult = await _productStockRepository.getProductByUuid(
+          item.productUuid,
+        );
+        final product = productResult.fold((error) => null, (p) => p);
         if (product == null) {
           return Left('محصول ${item.productName ?? item.productUuid} یافت نشد');
         }
@@ -95,10 +98,12 @@ class SalesRepositoryImpl implements SalesRepository {
 
       // 4. Decrease stock for each product + log events
       for (final item in itemsWithCost) {
-        final product = await _productDao.getProductByUuid(item.productUuid);
-        if (product != null) {
+        final productResult = await _productStockRepository.getProductByUuid(
+          item.productUuid,
+        );
+        await productResult.fold((error) async {}, (product) async {
           final newStock = product.currentStock - item.quantity;
-          await _productDao.updateStock(item.productUuid, newStock);
+          await _productStockRepository.updateStock(item.productUuid, newStock);
 
           // Log stock removed event
           await _eventService.logStockRemoved(
@@ -108,7 +113,7 @@ class SalesRepositoryImpl implements SalesRepository {
             unitPrice: item.unitSellPrice,
             saleId: invoiceUuid,
           );
-        }
+        });
       }
 
       // 5. Log sale created event

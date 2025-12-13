@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:orbiq/core/database/daos/product_dao.dart';
 import 'package:orbiq/core/services/event_service.dart';
+import 'package:orbiq/core/shared/product/domain/repositories/product_stock_repository.dart';
 import 'package:orbiq/features/purchase/data/data_sources/purchase_local_data_source.dart';
 import 'package:orbiq/features/purchase/domain/entities/purchase_entity.dart';
 import 'package:orbiq/features/purchase/domain/repositories/purchase_repository.dart';
@@ -10,12 +10,12 @@ import 'package:orbiq/features/purchase/domain/repositories/purchase_repository.
 @Injectable(as: PurchaseRepository)
 class PurchaseRepositoryImpl implements PurchaseRepository {
   final PurchaseLocalDataSource _localDataSource;
-  final ProductDao _productDao;
+  final ProductStockRepository _productStockRepository;
   final EventService _eventService;
 
   PurchaseRepositoryImpl(
     this._localDataSource,
-    this._productDao,
+    this._productStockRepository,
     this._eventService,
   );
 
@@ -67,7 +67,7 @@ class PurchaseRepositoryImpl implements PurchaseRepository {
 
       // 4. Update stock and WAC for each product + log events
       for (final item in purchase.items) {
-        await _productDao.updateStockAndWAC(
+        await _productStockRepository.updateStockAndWAC(
           uuid: item.productUuid,
           additionalQty: item.quantity,
           newUnitPrice: item.unitBuyPrice,
