@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:orbiq/core/shared/currency/domain/entities/currency_code.dart';
+import 'package:orbiq/core/shared/currency/presentation/controller/currency_bloc.dart';
+import 'package:orbiq/core/shared/currency/presentation/controller/currency_state.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/features/sales/domain/entities/sales_entity.dart';
 import 'package:orbiq/features/sales/presentation/controller/sales_bloc.dart';
@@ -246,8 +249,18 @@ class _SalesPageState extends State<SalesPage> {
   }
 
   String _formatCurrency(double amount) {
-    final format = NumberFormat('#,##0');
-    return '${format.format(amount)} تومان';
+    final currencyState = context.watch<CurrencyBloc>().state;
+    if (currencyState is CurrencyLoaded) {
+      final rate = currencyState.rates[currencyState.selectedCurrency] ?? 1.0;
+      final converted = amount / rate;
+      final isInt =
+          currencyState.selectedCurrency == CurrencyCode.toman ||
+          currencyState.selectedCurrency == CurrencyCode.rial ||
+          currencyState.selectedCurrency == CurrencyCode.dinar;
+      final formatter = NumberFormat(isInt ? '#,##0' : '#,##0.##');
+      return '${formatter.format(converted)} ${currencyState.selectedCurrency.symbol}';
+    }
+    return '${NumberFormat('#,##0').format(amount)} ${AppLocalizations.of(context).currency}';
   }
 
   void _navigateToAddSale() async {
