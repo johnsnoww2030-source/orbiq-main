@@ -11,6 +11,7 @@ import 'package:orbiq/features/purchase/presentation/controller/purchase_state.d
 import 'package:orbiq/features/purchase/domain/entities/purchase_entity.dart';
 import 'package:orbiq/features/purchase/presentation/ui/purchase_invoice_detail_page.dart';
 import 'add_purchase_page.dart';
+import 'package:orbiq/features/exports/presentation/ui/export_widget.dart';
 
 /// Purchase list page - shows all purchase invoices
 class PurchasePage extends StatefulWidget {
@@ -87,6 +88,19 @@ class _PurchasePageState extends State<PurchasePage> {
                     icon: const Icon(Icons.add),
                     label: Text(l10n.newPurchase),
                   ),
+                // Export button
+                BlocBuilder<PurchaseBloc, PurchaseState>(
+                  builder: (context, state) {
+                    if (state is PurchasesLoaded &&
+                        state.purchases.isNotEmpty) {
+                      return ExportWidget(
+                        data: _buildPurchaseExportData(state.purchases, l10n),
+                        fileNamePrefix: 'purchase_invoices',
+                      );
+                    }
+                    return const SizedBox();
+                  },
+                ),
               ],
             ),
           ),
@@ -242,5 +256,30 @@ class _PurchasePageState extends State<PurchasePage> {
         builder: (context) => PurchaseInvoiceDetailPage(purchase: purchase),
       ),
     );
+  }
+
+  /// Build export data for purchase invoices
+  List<List<dynamic>> _buildPurchaseExportData(
+    List<PurchaseEntity> purchases,
+    AppLocalizations l10n,
+  ) {
+    final data = <List<dynamic>>[];
+    final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
+    final priceFormat = NumberFormat('#,##0');
+
+    // Header row
+    data.add([l10n.suppliers, l10n.date, l10n.items, l10n.total]);
+
+    // Data rows
+    for (final purchase in purchases) {
+      data.add([
+        purchase.supplierName ?? l10n.unknownSupplier,
+        dateFormat.format(purchase.purchaseDate),
+        '${purchase.items.length}',
+        priceFormat.format(purchase.finalTotal),
+      ]);
+    }
+
+    return data;
   }
 }

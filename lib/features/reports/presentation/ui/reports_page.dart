@@ -7,6 +7,7 @@ import 'package:orbiq/features/reports/domain/entities/report_data.dart';
 import 'package:orbiq/features/reports/presentation/controller/reports_bloc.dart';
 import 'package:orbiq/features/reports/presentation/controller/reports_event.dart';
 import 'package:orbiq/features/reports/presentation/controller/reports_state.dart';
+import 'package:orbiq/features/exports/presentation/ui/export_widget.dart';
 
 /// Reports Page - shows sales summary, profit chart, and top products
 /// Uses BLoC pattern following Clean Architecture
@@ -19,7 +20,24 @@ class ReportsPage extends StatelessWidget {
     final isDesktop = MediaQuery.of(context).size.width > 800;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.reports), centerTitle: true),
+      appBar: AppBar(
+        title: Text(l10n.reports),
+        centerTitle: true,
+        actions: [
+          BlocBuilder<ReportsBloc, ReportsState>(
+            builder: (context, state) {
+              if (state is ReportsLoaded) {
+                return ExportWidget(
+                  data: _buildExportData(state, l10n),
+                  fileNamePrefix: 'reports',
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: BlocConsumer<ReportsBloc, ReportsState>(
         listener: (context, state) {
           if (state is ReportsError) {
@@ -452,5 +470,50 @@ class ReportsPage extends StatelessWidget {
       default:
         return Colors.blueGrey;
     }
+  }
+
+  /// Build export data for PDF/Excel export
+  List<List<dynamic>> _buildExportData(
+    ReportsLoaded state,
+    AppLocalizations l10n,
+  ) {
+    final priceFormat = NumberFormat('#,##0');
+    final data = <List<dynamic>>[];
+
+    // Header row
+    data.add([l10n.reports, '', '', '']);
+
+    // Summary section
+    data.add([l10n.totalSales, priceFormat.format(state.totalRevenue), '', '']);
+    data.add([l10n.totalProfit, priceFormat.format(state.totalProfit), '', '']);
+    data.add([l10n.salesCount, '${state.salesCount}', '', '']);
+    data.add(['', '', '', '']);
+
+    // Daily sales section
+    data.add([l10n.salesChart, '', '', '']);
+    data.add([l10n.date, l10n.totalSales, '', '']);
+    for (final day in state.dailySales) {
+      data.add([
+        '${day.date.year}/${day.date.month}/${day.date.day}',
+        priceFormat.format(day.revenue),
+        '',
+        '',
+      ]);
+    }
+    data.add(['', '', '', '']);
+
+    // Top products section
+    data.add([l10n.topProducts, '', '', '']);
+    data.add([l10n.productName, l10n.quantity, l10n.totalSales, '']);
+    for (final product in state.topProducts) {
+      data.add([
+        product.productName,
+        '${product.quantity}',
+        priceFormat.format(product.revenue),
+        '',
+      ]);
+    }
+
+    return data;
   }
 }

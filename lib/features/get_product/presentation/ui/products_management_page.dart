@@ -17,6 +17,7 @@ import 'package:orbiq/features/barcode_reader/presentation/controller/chat_state
 import 'package:orbiq/core/shared/currency/presentation/controller/currency_bloc.dart';
 import 'package:orbiq/core/shared/currency/presentation/controller/currency_state.dart';
 import 'package:orbiq/core/shared/currency/domain/entities/currency_code.dart';
+import 'package:orbiq/features/exports/presentation/ui/export_widget.dart';
 
 class ProductsManagementPage extends StatefulWidget {
   const ProductsManagementPage({super.key});
@@ -429,6 +430,19 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
                 foregroundColor: Theme.of(context).primaryColor,
               ),
             ),
+            const SizedBox(width: 8),
+            // Export button
+            BlocBuilder<GetProductBloc, GetProductState>(
+              builder: (context, state) {
+                if (state is ProductLoaded && state.products.isNotEmpty) {
+                  return ExportWidget(
+                    data: _buildProductsExportData(state.products, l10n),
+                    fileNamePrefix: 'products',
+                  );
+                }
+                return const SizedBox();
+              },
+            ),
             const SizedBox(width: 12),
             // Quick Sale button
             FilledButton.icon(
@@ -827,5 +841,29 @@ class _ProductsManagementPageState extends State<ProductsManagementPage>
         ),
       ),
     );
+  }
+
+  /// Build export data for products list
+  List<List<dynamic>> _buildProductsExportData(
+    List<ProductEntity> products,
+    AppLocalizations l10n,
+  ) {
+    final data = <List<dynamic>>[];
+    final priceFormat = NumberFormat('#,##0');
+
+    // Header row
+    data.add([l10n.productName, l10n.serialNumber, l10n.stock, l10n.price]);
+
+    // Data rows
+    for (final product in products) {
+      data.add([
+        product.name,
+        product.serialNumber,
+        '${product.currentStock}',
+        priceFormat.format(product.originalPrice),
+      ]);
+    }
+
+    return data;
   }
 }

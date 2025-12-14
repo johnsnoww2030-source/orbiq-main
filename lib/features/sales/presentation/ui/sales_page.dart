@@ -11,6 +11,7 @@ import 'package:orbiq/features/sales/presentation/controller/sales_event.dart';
 import 'package:orbiq/features/sales/presentation/controller/sales_state.dart';
 import 'package:orbiq/features/sales/presentation/ui/add_sale_page.dart';
 import 'package:orbiq/features/sales/presentation/ui/sales_invoice_detail_page.dart';
+import 'package:orbiq/features/exports/presentation/ui/export_widget.dart';
 
 /// Sales list page showing all sales invoices
 class SalesPage extends StatefulWidget {
@@ -141,6 +142,18 @@ class _SalesPageState extends State<SalesPage> {
                 return const SizedBox();
               },
             ),
+          // Export button
+          BlocBuilder<SalesBloc, SalesState>(
+            builder: (context, state) {
+              if (state is SalesLoaded && state.sales.isNotEmpty) {
+                return ExportWidget(
+                  data: _buildSalesExportData(state.sales, l10n),
+                  fileNamePrefix: 'sales_invoices',
+                );
+              }
+              return const SizedBox();
+            },
+          ),
         ],
       ),
     );
@@ -280,5 +293,31 @@ class _SalesPageState extends State<SalesPage> {
         builder: (context) => SalesInvoiceDetailPage(sale: sale),
       ),
     );
+  }
+
+  /// Build export data for sales invoices
+  List<List<dynamic>> _buildSalesExportData(
+    List<SalesEntity> sales,
+    AppLocalizations l10n,
+  ) {
+    final data = <List<dynamic>>[];
+    final dateFormat = DateFormat('yyyy/MM/dd HH:mm');
+    final priceFormat = NumberFormat('#,##0');
+
+    // Header row
+    data.add([l10n.customers, l10n.date, l10n.items, l10n.total, l10n.profit]);
+
+    // Data rows
+    for (final sale in sales) {
+      data.add([
+        sale.customerInfo ?? l10n.unknownCustomer,
+        dateFormat.format(sale.invoiceDate),
+        '${sale.items.length}',
+        priceFormat.format(sale.totalAmount),
+        priceFormat.format(sale.totalProfit),
+      ]);
+    }
+
+    return data;
   }
 }
