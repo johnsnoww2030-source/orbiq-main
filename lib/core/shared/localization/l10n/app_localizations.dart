@@ -2415,6 +2415,100 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to add user: {error}'**
   String addUserFailed(Object error);
+
+  /// No description provided for @failureDatabaseError.
+  ///
+  /// In en, this message translates to:
+  /// **'Database operation error'**
+  String get failureDatabaseError;
+
+  /// No description provided for @failureSaleNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale not found'**
+  String get failureSaleNotFound;
+
+  /// No description provided for @failureInsufficientStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient stock for {productName} (available: {available}, requested: {requested})'**
+  String failureInsufficientStock(
+    Object productName,
+    Object available,
+    Object requested,
+  );
+
+  /// No description provided for @failureProductNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Product not found'**
+  String get failureProductNotFound;
+
+  /// No description provided for @failureStatusUpdateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update status'**
+  String get failureStatusUpdateError;
+
+  /// No description provided for @failurePurchaseNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase not found'**
+  String get failurePurchaseNotFound;
+
+  /// No description provided for @failureValidationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid data'**
+  String get failureValidationError;
+
+  /// No description provided for @failureEmptyItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Items list is empty'**
+  String get failureEmptyItems;
+
+  /// No description provided for @failureStockRollback.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to rollback stock'**
+  String get failureStockRollback;
+
+  /// No description provided for @failurePdfExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to generate PDF'**
+  String get failurePdfExport;
+
+  /// No description provided for @failureExcelExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to generate Excel'**
+  String get failureExcelExport;
+
+  /// No description provided for @failureFileSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save file'**
+  String get failureFileSystem;
+
+  /// No description provided for @failureFontLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load font'**
+  String get failureFontLoad;
+
+  /// No description provided for @failureNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Network connection error'**
+  String get failureNetworkError;
+
+  /// No description provided for @failureFirstLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'First login - please change your password'**
+  String get failureFirstLogin;
 }
 
 class _AppLocalizationsDelegate

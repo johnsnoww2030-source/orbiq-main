@@ -1,5 +1,7 @@
 // domain/failures/failure.dart
 
+import 'package:equatable/equatable.dart';
+
 /// Enum for identifying failure types (for localization in UI)
 enum AuthFailureType {
   invalidCredentials,
@@ -10,28 +12,39 @@ enum AuthFailureType {
   general,
 }
 
-abstract class Failure {
+abstract class Failure extends Equatable {
   final String message;
 
-  Failure(this.message);
+  const Failure(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }
 
 class LoginFailure extends Failure {
   final AuthFailureType type;
 
-  LoginFailure({required this.type, String? message}) : super(message ?? '');
+  const LoginFailure({required this.type, String message = ''})
+    : super(message);
+
+  @override
+  List<Object?> get props => [message, type];
 }
 
 class NetworkFailure extends Failure {
-  NetworkFailure(super.message);
+  const NetworkFailure([super.message = 'Network error']);
 }
 
 class GeneralFailure extends Failure {
   final AuthFailureType type;
 
-  GeneralFailure({required this.type, String? message}) : super(message ?? '');
+  const GeneralFailure({required this.type, String message = ''})
+    : super(message);
+
+  @override
+  List<Object?> get props => [message, type];
 }
 
 class FirstLoginFailure extends Failure {
-  FirstLoginFailure([super.message = '']);
+  const FirstLoginFailure([super.message = 'First login required']);
 }

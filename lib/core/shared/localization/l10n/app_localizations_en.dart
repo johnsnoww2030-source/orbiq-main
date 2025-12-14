@@ -1181,4 +1181,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String addUserFailed(Object error) {
     return 'Failed to add user: $error';
   }
+
+  @override
+  String get failureDatabaseError => 'Database operation error';
+
+  @override
+  String get failureSaleNotFound => 'Sale not found';
+
+  @override
+  String failureInsufficientStock(
+    Object productName,
+    Object available,
+    Object requested,
+  ) {
+    return 'Insufficient stock for $productName (available: $available, requested: $requested)';
+  }
+
+  @override
+  String get failureProductNotFound => 'Product not found';
+
+  @override
+  String get failureStatusUpdateError => 'Failed to update status';
+
+  @override
+  String get failurePurchaseNotFound => 'Purchase not found';
+
+  @override
+  String get failureValidationError => 'Invalid data';
+
+  @override
+  String get failureEmptyItems => 'Items list is empty';
+
+  @override
+  String get failureStockRollback => 'Failed to rollback stock';
+
+  @override
+  String get failurePdfExport => 'Failed to generate PDF';
+
+  @override
+  String get failureExcelExport => 'Failed to generate Excel';
+
+  @override
+  String get failureFileSystem => 'Failed to save file';
+
+  @override
+  String get failureFontLoad => 'Failed to load font';
+
+  @override
+  String get failureNetworkError => 'Network connection error';
+
+  @override
+  String get failureFirstLogin => 'First login - please change your password';
 }

@@ -1152,7 +1152,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get viewAll => 'عرض الكل';
 
   @override
-  String get priceNotSet => 'Price Not Set';
+  String get priceNotSet => 'السعر غير محدد';
 
   @override
   String get quickSale => 'بيع سريع';
@@ -1177,4 +1177,55 @@ class AppLocalizationsAr extends AppLocalizations {
   String addUserFailed(Object error) {
     return 'فشل إضافة المستخدم: $error';
   }
+
+  @override
+  String get failureDatabaseError => 'خطأ في عملية قاعدة البيانات';
+
+  @override
+  String get failureSaleNotFound => 'لم يتم العثور على البيع';
+
+  @override
+  String failureInsufficientStock(
+    Object productName,
+    Object available,
+    Object requested,
+  ) {
+    return 'المخزون غير كافي لـ $productName (متاح: $available، مطلوب: $requested)';
+  }
+
+  @override
+  String get failureProductNotFound => 'لم يتم العثور على المنتج';
+
+  @override
+  String get failureStatusUpdateError => 'فشل تحديث الحالة';
+
+  @override
+  String get failurePurchaseNotFound => 'لم يتم العثور على الشراء';
+
+  @override
+  String get failureValidationError => 'بيانات غير صالحة';
+
+  @override
+  String get failureEmptyItems => 'قائمة العناصر فارغة';
+
+  @override
+  String get failureStockRollback => 'فشل استعادة المخزون';
+
+  @override
+  String get failurePdfExport => 'فشل إنشاء PDF';
+
+  @override
+  String get failureExcelExport => 'فشل إنشاء Excel';
+
+  @override
+  String get failureFileSystem => 'فشل حفظ الملف';
+
+  @override
+  String get failureFontLoad => 'فشل تحميل الخط';
+
+  @override
+  String get failureNetworkError => 'خطأ في الاتصال بالشبكة';
+
+  @override
+  String get failureFirstLogin => 'تسجيل الدخول الأول - يرجى تغيير كلمة المرور';
 }

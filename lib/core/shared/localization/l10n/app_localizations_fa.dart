@@ -1181,4 +1181,55 @@ class AppLocalizationsFa extends AppLocalizations {
   String addUserFailed(Object error) {
     return 'افزودن کاربر ناموفق: $error';
   }
+
+  @override
+  String get failureDatabaseError => 'خطا در عملیات دیتابیس';
+
+  @override
+  String get failureSaleNotFound => 'فروش مورد نظر یافت نشد';
+
+  @override
+  String failureInsufficientStock(
+    Object productName,
+    Object available,
+    Object requested,
+  ) {
+    return 'موجودی $productName کافی نیست (موجود: $available، درخواست: $requested)';
+  }
+
+  @override
+  String get failureProductNotFound => 'محصول یافت نشد';
+
+  @override
+  String get failureStatusUpdateError => 'خطا در بروزرسانی وضعیت';
+
+  @override
+  String get failurePurchaseNotFound => 'خرید مورد نظر یافت نشد';
+
+  @override
+  String get failureValidationError => 'اطلاعات نامعتبر است';
+
+  @override
+  String get failureEmptyItems => 'لیست اقلام خالی است';
+
+  @override
+  String get failureStockRollback => 'خطا در بازگردانی موجودی';
+
+  @override
+  String get failurePdfExport => 'خطا در تولید PDF';
+
+  @override
+  String get failureExcelExport => 'خطا در تولید Excel';
+
+  @override
+  String get failureFileSystem => 'خطا در ذخیره فایل';
+
+  @override
+  String get failureFontLoad => 'خطا در بارگذاری فونت';
+
+  @override
+  String get failureNetworkError => 'خطای اتصال به شبکه';
+
+  @override
+  String get failureFirstLogin => 'اولین ورود - لطفا رمز عبور را تغییر دهید';
 }

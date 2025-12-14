@@ -398,6 +398,7 @@
   "reorderPoint": "نقطة إعادة الطلب",
   "viewAll": "عرض الكل",
   "invoices": "الفواتير",
+  "priceNotSet": "السعر غير محدد",
   "quickSale": "بيع سريع",
   "comingSoon": "قريباً",
   "updatePasswordButton": "تحديث كلمة المرور",
@@ -409,5 +410,27 @@
     "placeholders": {
       "error": {}
     }
-  }
+  },
+  "failureDatabaseError": "خطأ في عملية قاعدة البيانات",
+  "failureSaleNotFound": "لم يتم العثور على البيع",
+  "failureInsufficientStock": "المخزون غير كافي لـ {productName} (متاح: {available}، مطلوب: {requested})",
+  "@failureInsufficientStock": {
+    "placeholders": {
+      "productName": {},
+      "available": {},
+      "requested": {}
+    }
+  },
+  "failureProductNotFound": "لم يتم العثور على المنتج",
+  "failureStatusUpdateError": "فشل تحديث الحالة",
+  "failurePurchaseNotFound": "لم يتم العثور على الشراء",
+  "failureValidationError": "بيانات غير صالحة",
+  "failureEmptyItems": "قائمة العناصر فارغة",
+  "failureStockRollback": "فشل استعادة المخزون",
+  "failurePdfExport": "فشل إنشاء PDF",
+  "failureExcelExport": "فشل إنشاء Excel",
+  "failureFileSystem": "فشل حفظ الملف",
+  "failureFontLoad": "فشل تحميل الخط",
+  "failureNetworkError": "خطأ في الاتصال بالشبكة",
+  "failureFirstLogin": "تسجيل الدخول الأول - يرجى تغيير كلمة المرور"
 }

@@ -4,6 +4,7 @@ import 'package:orbiq/core/services/event_service.dart';
 import 'package:orbiq/core/shared/product/domain/repositories/product_stock_repository.dart';
 import 'package:orbiq/features/sales/data/data_sources/sales_local_data_source.dart';
 import 'package:orbiq/features/sales/domain/entities/sales_entity.dart';
+import 'package:orbiq/features/sales/domain/failures/sales_failure.dart';
 import 'package:orbiq/features/sales/domain/repositories/sales_repository.dart';
 
 /// Repository implementation for Sales operations
@@ -21,30 +22,30 @@ class SalesRepositoryImpl implements SalesRepository {
   );
 
   @override
-  Future<Either<String, List<SalesEntity>>> getAllSales() async {
+  Future<Either<SalesFailure, List<SalesEntity>>> getAllSales() async {
     try {
       final sales = await _localDataSource.getAllSales();
       return Right(sales);
     } catch (e) {
-      return Left('خطا در دریافت لیست فروش‌ها: $e');
+      return const Left(SalesDatabaseFailure());
     }
   }
 
   @override
-  Future<Either<String, SalesEntity>> getSalesByUuid(String uuid) async {
+  Future<Either<SalesFailure, SalesEntity>> getSalesByUuid(String uuid) async {
     try {
       final sale = await _localDataSource.getSaleByUuid(uuid);
       if (sale == null) {
-        return const Left('فروش مورد نظر یافت نشد');
+        return const Left(SalesNotFoundFailure());
       }
       return Right(sale);
     } catch (e) {
-      return Left('خطا در دریافت اطلاعات فروش: $e');
+      return const Left(SalesDatabaseFailure());
     }
   }
 
   @override
-  Future<Either<String, SalesEntity>> createSale(SalesEntity sale) async {
+  Future<Either<SalesFailure, SalesEntity>> createSale(SalesEntity sale) async {
     try {
       // 1. Validate stock and get costAtSale for each item
       final List<SalesItemEntity> itemsWithCost = [];
@@ -58,13 +59,19 @@ class SalesRepositoryImpl implements SalesRepository {
         );
         final product = productResult.fold((error) => null, (p) => p);
         if (product == null) {
-          return Left('محصول ${item.productName ?? item.productUuid} یافت نشد');
+          return Left(
+            ProductNotFoundForSaleFailure(productId: item.productUuid),
+          );
         }
 
         // Check stock availability
         if (product.currentStock < item.quantity) {
           return Left(
-            'موجودی ${product.name} کافی نیست (موجود: ${product.currentStock})',
+            InsufficientStockFailure(
+              productName: product.name,
+              available: product.currentStock,
+              requested: item.quantity,
+            ),
           );
         }
 
@@ -132,12 +139,12 @@ class SalesRepositoryImpl implements SalesRepository {
 
       return Right(saleWithTotals.copyWith(invoiceUuid: invoiceUuid));
     } catch (e) {
-      return Left('خطا در ثبت فروش: $e');
+      return const Left(SalesDatabaseFailure());
     }
   }
 
   @override
-  Future<Either<String, void>> updateSaleStatus(
+  Future<Either<SalesFailure, void>> updateSaleStatus(
     String uuid,
     String status,
   ) async {
@@ -145,48 +152,48 @@ class SalesRepositoryImpl implements SalesRepository {
       await _localDataSource.updateStatus(uuid, status);
       return const Right(null);
     } catch (e) {
-      return Left('خطا در بروزرسانی وضعیت: $e');
+      return const Left(SalesStatusUpdateFailure());
     }
   }
 
   @override
-  Future<Either<String, void>> deleteSale(String uuid) async {
+  Future<Either<SalesFailure, void>> deleteSale(String uuid) async {
     try {
       // Note: In production, you might want to restore stock
       await _localDataSource.deleteSale(uuid);
       return const Right(null);
     } catch (e) {
-      return Left('خطا در حذف فروش: $e');
+      return const Left(SalesDatabaseFailure());
     }
   }
 
   @override
-  Future<Either<String, List<SalesEntity>>> getTodaySales() async {
+  Future<Either<SalesFailure, List<SalesEntity>>> getTodaySales() async {
     try {
       final sales = await _localDataSource.getTodaySales();
       return Right(sales);
     } catch (e) {
-      return Left('خطا در دریافت فروش‌های امروز: $e');
+      return const Left(SalesDatabaseFailure());
     }
   }
 
   @override
-  Future<Either<String, double>> getTotalRevenue() async {
+  Future<Either<SalesFailure, double>> getTotalRevenue() async {
     try {
       final revenue = await _localDataSource.getTotalRevenue();
       return Right(revenue);
     } catch (e) {
-      return Left('خطا در محاسبه درآمد: $e');
+      return const Left(SalesDatabaseFailure());
     }
   }
 
   @override
-  Future<Either<String, double>> getTotalProfit() async {
+  Future<Either<SalesFailure, double>> getTotalProfit() async {
     try {
       final profit = await _localDataSource.getTotalProfit();
       return Right(profit);
     } catch (e) {
-      return Left('خطا در محاسبه سود: $e');
+      return const Left(SalesDatabaseFailure());
     }
   }
 

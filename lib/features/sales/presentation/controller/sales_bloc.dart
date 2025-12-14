@@ -28,7 +28,9 @@ class SalesBloc extends Bloc<SalesEvent, SalesState> {
 
     final result = await _repository.getAllSales();
 
-    await result.fold((error) async => emit(SalesError(error)), (sales) async {
+    await result.fold((failure) async => emit(SalesError(failure.message)), (
+      sales,
+    ) async {
       final revenueResult = await _repository.getTotalRevenue();
       final profitResult = await _repository.getTotalProfit();
 
@@ -59,7 +61,7 @@ class SalesBloc extends Bloc<SalesEvent, SalesState> {
 
     final result = await _repository.createSale(event.sale);
     result.fold(
-      (error) => emit(SalesError(error)),
+      (failure) => emit(SalesError(failure.message)),
       (sale) => emit(SaleCreated(sale)),
     );
   }
@@ -72,7 +74,7 @@ class SalesBloc extends Bloc<SalesEvent, SalesState> {
 
     final result = await _repository.deleteSale(event.uuid);
     result.fold(
-      (error) => emit(SalesError(error)),
+      (failure) => emit(SalesError(failure.message)),
       (_) => emit(const SaleDeleted()),
     );
   }
@@ -85,7 +87,7 @@ class SalesBloc extends Bloc<SalesEvent, SalesState> {
 
     final result = await _repository.getSalesByUuid(event.uuid);
     result.fold(
-      (error) => emit(SalesError(error)),
+      (failure) => emit(SalesError(failure.message)),
       (sale) => emit(SalesDetailsLoaded(sale)),
     );
   }
@@ -97,7 +99,7 @@ class SalesBloc extends Bloc<SalesEvent, SalesState> {
     emit(const SalesLoading());
 
     final result = await _repository.getTodaySales();
-    result.fold((error) => emit(SalesError(error)), (sales) async {
+    result.fold((failure) => emit(SalesError(failure.message)), (sales) async {
       double revenue = 0.0;
       double profit = 0.0;
 

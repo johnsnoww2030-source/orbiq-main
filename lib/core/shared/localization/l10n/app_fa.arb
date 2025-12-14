@@ -412,5 +412,27 @@
     "placeholders": {
       "error": {}
     }
-  }
+  },
+  "failureDatabaseError": "خطا در عملیات دیتابیس",
+  "failureSaleNotFound": "فروش مورد نظر یافت نشد",
+  "failureInsufficientStock": "موجودی {productName} کافی نیست (موجود: {available}، درخواست: {requested})",
+  "@failureInsufficientStock": {
+    "placeholders": {
+      "productName": {},
+      "available": {},
+      "requested": {}
+    }
+  },
+  "failureProductNotFound": "محصول یافت نشد",
+  "failureStatusUpdateError": "خطا در بروزرسانی وضعیت",
+  "failurePurchaseNotFound": "خرید مورد نظر یافت نشد",
+  "failureValidationError": "اطلاعات نامعتبر است",
+  "failureEmptyItems": "لیست اقلام خالی است",
+  "failureStockRollback": "خطا در بازگردانی موجودی",
+  "failurePdfExport": "خطا در تولید PDF",
+  "failureExcelExport": "خطا در تولید Excel",
+  "failureFileSystem": "خطا در ذخیره فایل",
+  "failureFontLoad": "خطا در بارگذاری فونت",
+  "failureNetworkError": "خطای اتصال به شبکه",
+  "failureFirstLogin": "اولین ورود - لطفا رمز عبور را تغییر دهید"
 }

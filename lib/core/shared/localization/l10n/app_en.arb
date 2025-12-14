@@ -409,5 +409,27 @@
     "placeholders": {
       "error": {}
     }
-  }
+  },
+  "failureDatabaseError": "Database operation error",
+  "failureSaleNotFound": "Sale not found",
+  "failureInsufficientStock": "Insufficient stock for {productName} (available: {available}, requested: {requested})",
+  "@failureInsufficientStock": {
+    "placeholders": {
+      "productName": {},
+      "available": {},
+      "requested": {}
+    }
+  },
+  "failureProductNotFound": "Product not found",
+  "failureStatusUpdateError": "Failed to update status",
+  "failurePurchaseNotFound": "Purchase not found",
+  "failureValidationError": "Invalid data",
+  "failureEmptyItems": "Items list is empty",
+  "failureStockRollback": "Failed to rollback stock",
+  "failurePdfExport": "Failed to generate PDF",
+  "failureExcelExport": "Failed to generate Excel",
+  "failureFileSystem": "Failed to save file",
+  "failureFontLoad": "Failed to load font",
+  "failureNetworkError": "Network connection error",
+  "failureFirstLogin": "First login - please change your password"
 }
