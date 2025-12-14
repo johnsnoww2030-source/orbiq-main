@@ -90,7 +90,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(const AuthLoading());
 
-    final result = await logoutUseCase.execute(event.userId);
+    final result = await logoutUseCase.execute(event.userUuid);
 
     result.fold((failure) {
       if (failure is GeneralFailure) {

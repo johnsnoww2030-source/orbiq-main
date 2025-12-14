@@ -25,13 +25,14 @@ class UpdatePasswordRequested extends AuthEvent {
   List<Object> get props => [username, newPassword];
 }
 
+/// رویداد خروج از سیستم - استفاده از uuid به جای userId
 class LogoutRequested extends AuthEvent {
-  final int userId;
+  final String userUuid;
 
-  LogoutRequested({required this.userId});
+  LogoutRequested({required this.userUuid});
 
   @override
-  List<Object> get props => [userId];
+  List<Object> get props => [userUuid];
 }
 
 class AddUserRequested extends AuthEvent {

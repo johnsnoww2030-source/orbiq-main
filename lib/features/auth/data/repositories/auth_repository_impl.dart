@@ -62,12 +62,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, void>> logout(int userId) async {
+  Future<Either<Failure, void>> logout(String userUuid) async {
     try {
-      final loggedInUser = await localDataSource.getLoggedInUser();
-      if (loggedInUser?.uuid != null) {
-        await localDataSource.logoutUser(loggedInUser!.uuid!);
-      }
+      await localDataSource.logoutUser(userUuid);
       return const Right(null);
     } catch (error) {
       return Left(GeneralFailure(type: AuthFailureType.logoutFailed));

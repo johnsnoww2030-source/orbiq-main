@@ -194,30 +194,30 @@ void main() {
     });
 
     group('LogoutRequested', () {
-      const testUserId = 1;
+      const testUserUuid = 'test-uuid';
 
       blocTest<AuthBloc, AuthState>(
         'emits [AuthLoading, UnauthenticatedState] when logout succeeds',
         build: () {
           when(
-            () => mockLogoutUseCase.execute(testUserId),
+            () => mockLogoutUseCase.execute(testUserUuid),
           ).thenAnswer((_) async => const Right(null));
           return authBloc;
         },
-        act: (bloc) => bloc.add(LogoutRequested(userId: testUserId)),
+        act: (bloc) => bloc.add(LogoutRequested(userUuid: testUserUuid)),
         expect: () => [const AuthLoading(), const UnauthenticatedState()],
       );
 
       blocTest<AuthBloc, AuthState>(
         'emits [AuthLoading, AuthFailure] when logout fails',
         build: () {
-          when(() => mockLogoutUseCase.execute(testUserId)).thenAnswer(
+          when(() => mockLogoutUseCase.execute(testUserUuid)).thenAnswer(
             (_) async =>
                 Left(GeneralFailure(type: AuthFailureType.logoutFailed)),
           );
           return authBloc;
         },
-        act: (bloc) => bloc.add(LogoutRequested(userId: testUserId)),
+        act: (bloc) => bloc.add(LogoutRequested(userUuid: testUserUuid)),
         expect: () => [
           const AuthLoading(),
           const AuthFailure(failureType: AuthFailureType.logoutFailed),

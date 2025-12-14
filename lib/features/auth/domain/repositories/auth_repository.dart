@@ -7,10 +7,13 @@ abstract class AuthRepository {
   Future<Either<Failure, UserEntity>> login(String username, String password);
 
   //عملیات تغییر رمزعبور در اولین ورود
-  Future<Either<Failure, void>> updatePasswordForFirstLogin(String username, String newPassword);
+  Future<Either<Failure, void>> updatePasswordForFirstLogin(
+    String username,
+    String newPassword,
+  );
 
-  //متد خروج کاربر
-  Future<Either<Failure, void>> logout(int userId);
+  /// متد خروج کاربر با استفاده از uuid
+  Future<Either<Failure, void>> logout(String userUuid);
 
   Future<Either<Failure, void>> addUser({
     required String username,
@@ -18,10 +21,4 @@ abstract class AuthRepository {
     required String role,
     required String nickname,
   });
-
-  // // عملیات ثبت‌نام
-  // Future<Either<Failure, void>> registerUser(UserEntity userEntity);
-
-  // // عملیات تغییر رمز عبور
-  // Future<Either<Failure, void>> changePassword(int userId, String newPassword);
 }

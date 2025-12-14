@@ -9,8 +9,8 @@ class LogoutUseCase {
 
   LogoutUseCase(this.authRepository);
 
-  Future<Either<Failure, void>> execute(int userId) async {
-    // فراخوانی مخزن و دریافت نتیجه (موفقیت یا خطا)
-    return await authRepository.logout(userId);
+  /// اجرای خروج با استفاده از uuid
+  Future<Either<Failure, void>> execute(String userUuid) async {
+    return await authRepository.logout(userUuid);
   }
 }
