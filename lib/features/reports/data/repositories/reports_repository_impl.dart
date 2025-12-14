@@ -1,106 +1,85 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
-import 'package:orbiq/core/database/daos/sales_dao.dart';
-import 'package:orbiq/core/database/daos/product_dao.dart';
+import 'package:orbiq/features/reports/data/data_sources/reports_local_data_source.dart';
 import 'package:orbiq/features/reports/domain/entities/report_data.dart';
+import 'package:orbiq/features/reports/domain/failures/reports_failure.dart';
 import 'package:orbiq/features/reports/domain/repositories/reports_repository.dart';
 
-/// Implementation of ReportsRepository using SalesDao and ProductDao
+/// Implementation of ReportsRepository using ReportsLocalDataSource
+/// Follows Clean Architecture patterns
 @Injectable(as: ReportsRepository)
 class ReportsRepositoryImpl implements ReportsRepository {
-  final SalesDao _salesDao;
-  final ProductDao _productDao;
+  final ReportsLocalDataSource _dataSource;
 
-  ReportsRepositoryImpl(this._salesDao, this._productDao);
+  ReportsRepositoryImpl(this._dataSource);
 
   @override
-  Future<Either<String, double>> getRevenueInDateRange(
+  Future<Either<ReportsFailure, double>> getRevenueInDateRange(
     DateTime startDate,
     DateTime endDate,
   ) async {
     try {
-      final revenue = await _salesDao.getRevenueInDateRange(startDate, endDate);
+      final revenue = await _dataSource.getRevenueInDateRange(
+        startDate,
+        endDate,
+      );
       return Right(revenue);
     } catch (e) {
-      return Left('خطا در دریافت درآمد: $e');
+      return const Left(RevenueLoadFailure());
     }
   }
 
   @override
-  Future<Either<String, double>> getProfitInDateRange(
+  Future<Either<ReportsFailure, double>> getProfitInDateRange(
     DateTime startDate,
     DateTime endDate,
   ) async {
     try {
-      final profit = await _salesDao.getProfitInDateRange(startDate, endDate);
+      final profit = await _dataSource.getProfitInDateRange(startDate, endDate);
       return Right(profit);
     } catch (e) {
-      return Left('خطا در دریافت سود: $e');
+      return const Left(ProfitLoadFailure());
     }
   }
 
   @override
-  Future<Either<String, int>> getSalesCountInDateRange(
+  Future<Either<ReportsFailure, int>> getSalesCountInDateRange(
     DateTime startDate,
     DateTime endDate,
   ) async {
     try {
-      final count = await _salesDao.getSalesCountInDateRange(
+      final count = await _dataSource.getSalesCountInDateRange(
         startDate,
         endDate,
       );
       return Right(count);
     } catch (e) {
-      return Left('خطا در دریافت تعداد فروش: $e');
+      return const Left(SalesCountLoadFailure());
     }
   }
 
   @override
-  Future<Either<String, List<DailySalesData>>> getDailySales(
+  Future<Either<ReportsFailure, List<DailySalesEntity>>> getDailySales(
     DateTime startDate,
     DateTime endDate,
   ) async {
     try {
-      final dailySales = await _salesDao.getDailySales(startDate, endDate);
-      final result = dailySales
-          .map(
-            (map) => DailySalesData(
-              date: map['date'] as DateTime,
-              revenue: (map['revenue'] as double?) ?? 0.0,
-            ),
-          )
-          .toList();
-      return Right(result);
+      final dailySales = await _dataSource.getDailySales(startDate, endDate);
+      return Right(dailySales);
     } catch (e) {
-      return Left('خطا در دریافت فروش روزانه: $e');
+      return const Left(DailySalesLoadFailure());
     }
   }
 
   @override
-  Future<Either<String, List<TopProductData>>> getTopSellingProducts(
+  Future<Either<ReportsFailure, List<TopProductEntity>>> getTopSellingProducts(
     int limit,
   ) async {
     try {
-      final topProducts = await _salesDao.getTopSellingProducts(limit);
-      final result = <TopProductData>[];
-
-      for (final product in topProducts) {
-        final productUuid = product['productUuid'] as String;
-        final p = await _productDao.getProductByUuid(productUuid);
-
-        result.add(
-          TopProductData(
-            productUuid: productUuid,
-            productName: p?.name ?? 'Unknown',
-            quantity: product['quantity'] as int,
-            revenue: (product['revenue'] as double?) ?? 0.0,
-          ),
-        );
-      }
-
-      return Right(result);
+      final topProducts = await _dataSource.getTopSellingProducts(limit);
+      return Right(topProducts);
     } catch (e) {
-      return Left('خطا در دریافت پرفروش‌ترین محصولات: $e');
+      return const Left(TopProductsLoadFailure());
     }
   }
 }

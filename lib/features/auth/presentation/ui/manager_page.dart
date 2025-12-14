@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:orbiq/core/di/injection.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/core/shared/theme/domain/entities/theme_entity.dart';
 import 'package:orbiq/features/auth/presentation/controller/auth_bloc.dart';
@@ -15,6 +16,8 @@ import 'package:orbiq/features/auth/presentation/ui/widgets/dashboard_content_wi
 // Removed: payment_report_page.dart
 import 'package:orbiq/features/get_product/presentation/ui/products_management_page.dart';
 import 'package:orbiq/features/reports/presentation/ui/reports_page.dart';
+import 'package:orbiq/features/reports/presentation/controller/reports_bloc.dart';
+import 'package:orbiq/features/reports/presentation/controller/reports_event.dart';
 import 'package:orbiq/features/purchase/presentation/ui/purchase_page.dart';
 import 'package:orbiq/features/sales/presentation/ui/sales_page.dart';
 import 'package:orbiq/features/auth/presentation/ui/settings_page.dart';
@@ -183,7 +186,11 @@ class _ManagerPageState extends State<ManagerPage> {
       case 6: // Stocktaking
         return _buildPlaceholder("Stocktaking");
       case 7: // Reports
-        return const ReportsPage();
+        return BlocProvider(
+          create: (context) =>
+              getIt<ReportsBloc>()..add(const ReportsLoadRequested()),
+          child: const ReportsPage(),
+        );
       case 8: // Settings
         return const SettingsPage();
       default:

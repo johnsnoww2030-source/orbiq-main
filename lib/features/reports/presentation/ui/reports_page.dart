@@ -1,101 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-import 'package:orbiq/core/di/injection.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/features/reports/domain/entities/report_data.dart';
-import 'package:orbiq/features/reports/domain/repositories/reports_repository.dart';
+import 'package:orbiq/features/reports/presentation/controller/reports_bloc.dart';
+import 'package:orbiq/features/reports/presentation/controller/reports_event.dart';
+import 'package:orbiq/features/reports/presentation/controller/reports_state.dart';
 
 /// Reports Page - shows sales summary, profit chart, and top products
-class ReportsPage extends StatefulWidget {
+/// Uses BLoC pattern following Clean Architecture
+class ReportsPage extends StatelessWidget {
   const ReportsPage({super.key});
-
-  @override
-  State<ReportsPage> createState() => _ReportsPageState();
-}
-
-class _ReportsPageState extends State<ReportsPage> {
-  int _selectedPeriod = 0; // 0=today, 1=this week, 2=this month
-  bool _isLoading = true;
-
-  // Report data
-  double _totalRevenue = 0;
-  double _totalProfit = 0;
-  int _salesCount = 0;
-  List<DailySalesData> _dailySales = [];
-  List<TopProductData> _topProducts = [];
-
-  late ReportsRepository _reportsRepository;
-
-  @override
-  void initState() {
-    super.initState();
-    _reportsRepository = getIt<ReportsRepository>();
-    _loadReportData();
-  }
-
-  Future<void> _loadReportData() async {
-    setState(() => _isLoading = true);
-
-    final now = DateTime.now();
-    DateTime startDate;
-    DateTime endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
-
-    switch (_selectedPeriod) {
-      case 0: // Today
-        startDate = DateTime(now.year, now.month, now.day);
-        break;
-      case 1: // This week
-        startDate = now.subtract(Duration(days: now.weekday - 1));
-        startDate = DateTime(startDate.year, startDate.month, startDate.day);
-        break;
-      case 2: // This month
-        startDate = DateTime(now.year, now.month, 1);
-        break;
-      default:
-        startDate = DateTime(now.year, now.month, now.day);
-    }
-
-    try {
-      // Load summary data using Repository (Clean Architecture)
-      final revenueResult = await _reportsRepository.getRevenueInDateRange(
-        startDate,
-        endDate,
-      );
-      revenueResult.fold((e) => null, (v) => _totalRevenue = v);
-
-      final profitResult = await _reportsRepository.getProfitInDateRange(
-        startDate,
-        endDate,
-      );
-      profitResult.fold((e) => null, (v) => _totalProfit = v);
-
-      final countResult = await _reportsRepository.getSalesCountInDateRange(
-        startDate,
-        endDate,
-      );
-      countResult.fold((e) => null, (v) => _salesCount = v);
-
-      // Load daily sales for chart
-      final dailySalesResult = await _reportsRepository.getDailySales(
-        startDate,
-        endDate,
-      );
-      dailySalesResult.fold((e) => null, (v) => _dailySales = v);
-
-      // Load top products
-      final topProductsResult = await _reportsRepository.getTopSellingProducts(
-        5,
-      );
-      topProductsResult.fold((e) => null, (v) => _topProducts = v);
-    } catch (e) {
-      debugPrint('Error loading report data: $e');
-    }
-
-    if (mounted) {
-      setState(() => _isLoading = false);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,119 +20,190 @@ class _ReportsPageState extends State<ReportsPage> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.reports), centerTitle: true),
-      body: Column(
-        children: [
-          // Time filter tabs
-          _buildPeriodTabs(l10n),
+      body: BlocConsumer<ReportsBloc, ReportsState>(
+        listener: (context, state) {
+          if (state is ReportsError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Column(
+            children: [
+              // Time filter tabs
+              _buildPeriodTabs(context, l10n, state),
 
-          // Content
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: _loadReportData,
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(16),
-                      child: isDesktop
-                          ? _buildDesktopLayout(l10n)
-                          : _buildMobileLayout(l10n),
-                    ),
-                  ),
+              // Content
+              Expanded(child: _buildContent(context, l10n, state, isDesktop)),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildPeriodTabs(
+    BuildContext context,
+    AppLocalizations l10n,
+    ReportsState state,
+  ) {
+    final selectedPeriod = state is ReportsLoaded ? state.selectedPeriod : 0;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          _buildPeriodChip(context, 0, l10n.today, selectedPeriod),
+          const SizedBox(width: 8),
+          _buildPeriodChip(context, 1, l10n.thisWeek, selectedPeriod),
+          const SizedBox(width: 8),
+          _buildPeriodChip(context, 2, l10n.thisMonth, selectedPeriod),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPeriodChip(
+    BuildContext context,
+    int period,
+    String label,
+    int selectedPeriod,
+  ) {
+    final isSelected = selectedPeriod == period;
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        if (selected) {
+          context.read<ReportsBloc>().add(PeriodChanged(period));
+        }
+      },
+    );
+  }
+
+  Widget _buildContent(
+    BuildContext context,
+    AppLocalizations l10n,
+    ReportsState state,
+    bool isDesktop,
+  ) {
+    if (state is ReportsLoading || state is ReportsInitial) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state is ReportsLoaded) {
+      return RefreshIndicator(
+        onRefresh: () async {
+          context.read<ReportsBloc>().add(const ReportsRefreshRequested());
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16),
+          child: isDesktop
+              ? _buildDesktopLayout(context, l10n, state)
+              : _buildMobileLayout(context, l10n, state),
+        ),
+      );
+    }
+
+    // Error or unknown state
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error_outline, size: 64, color: Colors.grey),
+          const SizedBox(height: 16),
+          Text(l10n.error, style: const TextStyle(color: Colors.grey)),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              context.read<ReportsBloc>().add(const ReportsLoadRequested());
+            },
+            child: Text(l10n.error),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPeriodTabs(AppLocalizations l10n) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          _buildPeriodChip(0, l10n.today, l10n),
-          const SizedBox(width: 8),
-          _buildPeriodChip(1, l10n.thisWeek, l10n),
-          const SizedBox(width: 8),
-          _buildPeriodChip(2, l10n.thisMonth, l10n),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPeriodChip(int period, String label, AppLocalizations l10n) {
-    final isSelected = _selectedPeriod == period;
-    return ChoiceChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (selected) {
-        if (selected) {
-          setState(() => _selectedPeriod = period);
-          _loadReportData();
-        }
-      },
-    );
-  }
-
-  Widget _buildDesktopLayout(AppLocalizations l10n) {
+  Widget _buildDesktopLayout(
+    BuildContext context,
+    AppLocalizations l10n,
+    ReportsLoaded state,
+  ) {
     return Column(
       children: [
         // Summary cards row
-        _buildSummaryCards(l10n),
+        _buildSummaryCards(context, l10n, state),
         const SizedBox(height: 24),
         // Chart and top products side by side
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(flex: 2, child: _buildSalesChart(l10n)),
+            Expanded(flex: 2, child: _buildSalesChart(context, l10n, state)),
             const SizedBox(width: 16),
-            Expanded(child: _buildTopProducts(l10n)),
+            Expanded(child: _buildTopProducts(context, l10n, state)),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildMobileLayout(AppLocalizations l10n) {
+  Widget _buildMobileLayout(
+    BuildContext context,
+    AppLocalizations l10n,
+    ReportsLoaded state,
+  ) {
     return Column(
       children: [
-        _buildSummaryCards(l10n),
+        _buildSummaryCards(context, l10n, state),
         const SizedBox(height: 24),
-        _buildSalesChart(l10n),
+        _buildSalesChart(context, l10n, state),
         const SizedBox(height: 24),
-        _buildTopProducts(l10n),
+        _buildTopProducts(context, l10n, state),
       ],
     );
   }
 
-  Widget _buildSummaryCards(AppLocalizations l10n) {
+  Widget _buildSummaryCards(
+    BuildContext context,
+    AppLocalizations l10n,
+    ReportsLoaded state,
+  ) {
     final priceFormat = NumberFormat('#,##0');
 
     return Row(
       children: [
         Expanded(
           child: _buildSummaryCard(
+            context,
             Icons.attach_money,
             l10n.totalSales,
-            priceFormat.format(_totalRevenue),
+            priceFormat.format(state.totalRevenue),
             Colors.blue,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: _buildSummaryCard(
+            context,
             Icons.trending_up,
             l10n.totalProfit,
-            priceFormat.format(_totalProfit),
+            priceFormat.format(state.totalProfit),
             Colors.green,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: _buildSummaryCard(
+            context,
             Icons.receipt,
             l10n.salesCount,
-            '$_salesCount',
+            '${state.salesCount}',
             Colors.purple,
           ),
         ),
@@ -225,6 +212,7 @@ class _ReportsPageState extends State<ReportsPage> {
   }
 
   Widget _buildSummaryCard(
+    BuildContext context,
     IconData icon,
     String label,
     String value,
@@ -263,7 +251,11 @@ class _ReportsPageState extends State<ReportsPage> {
     );
   }
 
-  Widget _buildSalesChart(AppLocalizations l10n) {
+  Widget _buildSalesChart(
+    BuildContext context,
+    AppLocalizations l10n,
+    ReportsLoaded state,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -279,7 +271,7 @@ class _ReportsPageState extends State<ReportsPage> {
             const SizedBox(height: 24),
             SizedBox(
               height: 220,
-              child: _dailySales.isEmpty
+              child: state.dailySales.isEmpty
                   ? Center(
                       child: Text(
                         l10n.noData,
@@ -289,7 +281,7 @@ class _ReportsPageState extends State<ReportsPage> {
                   : BarChart(
                       BarChartData(
                         alignment: BarChartAlignment.spaceAround,
-                        maxY: _getMaxRevenue() * 1.2,
+                        maxY: _getMaxRevenue(state.dailySales) * 1.2,
                         barTouchData: BarTouchData(
                           touchTooltipData: BarTouchTooltipData(
                             getTooltipItem: (group, groupIndex, rod, rodIndex) {
@@ -313,8 +305,9 @@ class _ReportsPageState extends State<ReportsPage> {
                               showTitles: true,
                               getTitlesWidget: (value, meta) {
                                 final index = value.toInt();
-                                if (index >= 0 && index < _dailySales.length) {
-                                  final date = _dailySales[index].date;
+                                if (index >= 0 &&
+                                    index < state.dailySales.length) {
+                                  final date = state.dailySales[index].date;
                                   return Padding(
                                     padding: const EdgeInsets.only(top: 8),
                                     child: Text(
@@ -339,7 +332,9 @@ class _ReportsPageState extends State<ReportsPage> {
                         ),
                         borderData: FlBorderData(show: false),
                         gridData: const FlGridData(show: false),
-                        barGroups: _dailySales.asMap().entries.map((entry) {
+                        barGroups: state.dailySales.asMap().entries.map((
+                          entry,
+                        ) {
                           final revenue = entry.value.revenue;
                           return BarChartGroupData(
                             x: entry.key,
@@ -364,17 +359,21 @@ class _ReportsPageState extends State<ReportsPage> {
     );
   }
 
-  double _getMaxRevenue() {
-    if (_dailySales.isEmpty) return 1000000;
+  double _getMaxRevenue(List<DailySalesEntity> dailySales) {
+    if (dailySales.isEmpty) return 1000000;
     double max = 0;
-    for (final day in _dailySales) {
+    for (final day in dailySales) {
       final revenue = day.revenue;
       if (revenue > max) max = revenue;
     }
     return max > 0 ? max : 1000000;
   }
 
-  Widget _buildTopProducts(AppLocalizations l10n) {
+  Widget _buildTopProducts(
+    BuildContext context,
+    AppLocalizations l10n,
+    ReportsLoaded state,
+  ) {
     final priceFormat = NumberFormat('#,##0');
 
     return Card(
@@ -396,7 +395,7 @@ class _ReportsPageState extends State<ReportsPage> {
               ],
             ),
             const Divider(),
-            if (_topProducts.isEmpty)
+            if (state.topProducts.isEmpty)
               Padding(
                 padding: const EdgeInsets.all(24),
                 child: Center(
@@ -407,8 +406,8 @@ class _ReportsPageState extends State<ReportsPage> {
                 ),
               )
             else
-              ...List.generate(_topProducts.length, (index) {
-                final product = _topProducts[index];
+              ...List.generate(state.topProducts.length, (index) {
+                final product = state.topProducts[index];
                 final name = product.productName;
                 final quantity = product.quantity;
                 final revenue = product.revenue;

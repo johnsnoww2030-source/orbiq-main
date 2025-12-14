@@ -1,24 +1,24 @@
 import 'package:equatable/equatable.dart';
 
 /// Data class for daily sales chart
-class DailySalesData extends Equatable {
+class DailySalesEntity extends Equatable {
   final DateTime date;
   final double revenue;
 
-  const DailySalesData({required this.date, required this.revenue});
+  const DailySalesEntity({required this.date, required this.revenue});
 
   @override
   List<Object?> get props => [date, revenue];
 }
 
 /// Data class for top selling products
-class TopProductData extends Equatable {
+class TopProductEntity extends Equatable {
   final String productUuid;
   final String productName;
   final int quantity;
   final double revenue;
 
-  const TopProductData({
+  const TopProductEntity({
     required this.productUuid,
     required this.productName,
     required this.quantity,

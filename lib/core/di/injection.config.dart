@@ -93,10 +93,14 @@ import '../../features/purchase/domain/repositories/purchase_repository.dart'
     as _i220;
 import '../../features/purchase/presentation/controller/purchase_bloc.dart'
     as _i796;
+import '../../features/reports/data/data_sources/reports_local_data_source.dart'
+    as _i260;
 import '../../features/reports/data/repositories/reports_repository_impl.dart'
     as _i227;
 import '../../features/reports/domain/repositories/reports_repository.dart'
     as _i808;
+import '../../features/reports/presentation/controller/reports_bloc.dart'
+    as _i241;
 import '../../features/sales/data/data_sources/sales_local_data_source.dart'
     as _i929;
 import '../../features/sales/data/repositories/sales_repository_impl.dart'
@@ -242,12 +246,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i22.UpdateService>(),
       ),
     );
-    gh.factory<_i808.ReportsRepository>(
-      () => _i227.ReportsRepositoryImpl(
-        gh<_i340.SalesDao>(),
-        gh<_i924.ProductDao>(),
-      ),
-    );
     gh.lazySingleton<_i273.EventService>(
       () => _i273.EventService(gh<_i565.EventDao>()),
     );
@@ -266,6 +264,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i85.ProductRepository>(
       () => _i675.ProductRepositoryImpl(gh<_i924.ProductDao>()),
     );
+    gh.factory<_i260.ReportsLocalDataSource>(
+      () => _i260.ReportsLocalDataSource(
+        gh<_i340.SalesDao>(),
+        gh<_i924.ProductDao>(),
+      ),
+    );
     gh.factory<_i929.SalesLocalDataSource>(
       () => _i929.SalesLocalDataSource(
         gh<_i340.SalesDao>(),
@@ -277,6 +281,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i418.DownloadAndInstallUpdate>(
       () => _i418.DownloadAndInstallUpdate(gh<_i85.VersionRepository>()),
+    );
+    gh.factory<_i808.ReportsRepository>(
+      () => _i227.ReportsRepositoryImpl(gh<_i260.ReportsLocalDataSource>()),
+    );
+    gh.factory<_i241.ReportsBloc>(
+      () => _i241.ReportsBloc(gh<_i808.ReportsRepository>()),
     );
     gh.lazySingleton<_i222.ThemeLocalDataSource>(
       () => _i222.ThemeLocalDataSource(gh<_i905.ThemeDao>()),
