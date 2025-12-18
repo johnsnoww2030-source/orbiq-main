@@ -218,6 +218,62 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _baseCurrencyCodeMeta = const VerificationMeta(
+    'baseCurrencyCode',
+  );
+  @override
+  late final GeneratedColumn<String> baseCurrencyCode = GeneratedColumn<String>(
+    'base_currency_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('IRR'),
+  );
+  static const VerificationMeta _costExchangeRateMeta = const VerificationMeta(
+    'costExchangeRate',
+  );
+  @override
+  late final GeneratedColumn<double> costExchangeRate = GeneratedColumn<double>(
+    'cost_exchange_rate',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _minPriceMeta = const VerificationMeta(
+    'minPrice',
+  );
+  @override
+  late final GeneratedColumn<double> minPrice = GeneratedColumn<double>(
+    'min_price',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sellingPriceMeta = const VerificationMeta(
+    'sellingPrice',
+  );
+  @override
+  late final GeneratedColumn<double> sellingPrice = GeneratedColumn<double>(
+    'selling_price',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _maxPriceMeta = const VerificationMeta(
+    'maxPrice',
+  );
+  @override
+  late final GeneratedColumn<double> maxPrice = GeneratedColumn<double>(
+    'max_price',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -261,6 +317,11 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     avgBuyPrice,
     minMarginPercent,
     syncStatus,
+    baseCurrencyCode,
+    costExchangeRate,
+    minPrice,
+    sellingPrice,
+    maxPrice,
     createdAt,
     updatedAt,
   ];
@@ -453,6 +514,45 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
         syncStatus.isAcceptableOrUnknown(data['sync_status']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('base_currency_code')) {
+      context.handle(
+        _baseCurrencyCodeMeta,
+        baseCurrencyCode.isAcceptableOrUnknown(
+          data['base_currency_code']!,
+          _baseCurrencyCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('cost_exchange_rate')) {
+      context.handle(
+        _costExchangeRateMeta,
+        costExchangeRate.isAcceptableOrUnknown(
+          data['cost_exchange_rate']!,
+          _costExchangeRateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('min_price')) {
+      context.handle(
+        _minPriceMeta,
+        minPrice.isAcceptableOrUnknown(data['min_price']!, _minPriceMeta),
+      );
+    }
+    if (data.containsKey('selling_price')) {
+      context.handle(
+        _sellingPriceMeta,
+        sellingPrice.isAcceptableOrUnknown(
+          data['selling_price']!,
+          _sellingPriceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('max_price')) {
+      context.handle(
+        _maxPriceMeta,
+        maxPrice.isAcceptableOrUnknown(data['max_price']!, _maxPriceMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -554,6 +654,26 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
         DriftSqlType.int,
         data['${effectivePrefix}sync_status'],
       )!,
+      baseCurrencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}base_currency_code'],
+      )!,
+      costExchangeRate: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}cost_exchange_rate'],
+      ),
+      minPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}min_price'],
+      ),
+      sellingPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}selling_price'],
+      ),
+      maxPrice: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}max_price'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -591,6 +711,11 @@ class Product extends DataClass implements Insertable<Product> {
   final double avgBuyPrice;
   final int minMarginPercent;
   final int syncStatus;
+  final String baseCurrencyCode;
+  final double? costExchangeRate;
+  final double? minPrice;
+  final double? sellingPrice;
+  final double? maxPrice;
   final DateTime createdAt;
   final DateTime updatedAt;
   const Product({
@@ -613,6 +738,11 @@ class Product extends DataClass implements Insertable<Product> {
     required this.avgBuyPrice,
     required this.minMarginPercent,
     required this.syncStatus,
+    required this.baseCurrencyCode,
+    this.costExchangeRate,
+    this.minPrice,
+    this.sellingPrice,
+    this.maxPrice,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -642,6 +772,19 @@ class Product extends DataClass implements Insertable<Product> {
     map['avg_buy_price'] = Variable<double>(avgBuyPrice);
     map['min_margin_percent'] = Variable<int>(minMarginPercent);
     map['sync_status'] = Variable<int>(syncStatus);
+    map['base_currency_code'] = Variable<String>(baseCurrencyCode);
+    if (!nullToAbsent || costExchangeRate != null) {
+      map['cost_exchange_rate'] = Variable<double>(costExchangeRate);
+    }
+    if (!nullToAbsent || minPrice != null) {
+      map['min_price'] = Variable<double>(minPrice);
+    }
+    if (!nullToAbsent || sellingPrice != null) {
+      map['selling_price'] = Variable<double>(sellingPrice);
+    }
+    if (!nullToAbsent || maxPrice != null) {
+      map['max_price'] = Variable<double>(maxPrice);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -672,6 +815,19 @@ class Product extends DataClass implements Insertable<Product> {
       avgBuyPrice: Value(avgBuyPrice),
       minMarginPercent: Value(minMarginPercent),
       syncStatus: Value(syncStatus),
+      baseCurrencyCode: Value(baseCurrencyCode),
+      costExchangeRate: costExchangeRate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(costExchangeRate),
+      minPrice: minPrice == null && nullToAbsent
+          ? const Value.absent()
+          : Value(minPrice),
+      sellingPrice: sellingPrice == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sellingPrice),
+      maxPrice: maxPrice == null && nullToAbsent
+          ? const Value.absent()
+          : Value(maxPrice),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -704,6 +860,11 @@ class Product extends DataClass implements Insertable<Product> {
       avgBuyPrice: serializer.fromJson<double>(json['avgBuyPrice']),
       minMarginPercent: serializer.fromJson<int>(json['minMarginPercent']),
       syncStatus: serializer.fromJson<int>(json['syncStatus']),
+      baseCurrencyCode: serializer.fromJson<String>(json['baseCurrencyCode']),
+      costExchangeRate: serializer.fromJson<double?>(json['costExchangeRate']),
+      minPrice: serializer.fromJson<double?>(json['minPrice']),
+      sellingPrice: serializer.fromJson<double?>(json['sellingPrice']),
+      maxPrice: serializer.fromJson<double?>(json['maxPrice']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -731,6 +892,11 @@ class Product extends DataClass implements Insertable<Product> {
       'avgBuyPrice': serializer.toJson<double>(avgBuyPrice),
       'minMarginPercent': serializer.toJson<int>(minMarginPercent),
       'syncStatus': serializer.toJson<int>(syncStatus),
+      'baseCurrencyCode': serializer.toJson<String>(baseCurrencyCode),
+      'costExchangeRate': serializer.toJson<double?>(costExchangeRate),
+      'minPrice': serializer.toJson<double?>(minPrice),
+      'sellingPrice': serializer.toJson<double?>(sellingPrice),
+      'maxPrice': serializer.toJson<double?>(maxPrice),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -756,6 +922,11 @@ class Product extends DataClass implements Insertable<Product> {
     double? avgBuyPrice,
     int? minMarginPercent,
     int? syncStatus,
+    String? baseCurrencyCode,
+    Value<double?> costExchangeRate = const Value.absent(),
+    Value<double?> minPrice = const Value.absent(),
+    Value<double?> sellingPrice = const Value.absent(),
+    Value<double?> maxPrice = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => Product(
@@ -782,6 +953,13 @@ class Product extends DataClass implements Insertable<Product> {
     avgBuyPrice: avgBuyPrice ?? this.avgBuyPrice,
     minMarginPercent: minMarginPercent ?? this.minMarginPercent,
     syncStatus: syncStatus ?? this.syncStatus,
+    baseCurrencyCode: baseCurrencyCode ?? this.baseCurrencyCode,
+    costExchangeRate: costExchangeRate.present
+        ? costExchangeRate.value
+        : this.costExchangeRate,
+    minPrice: minPrice.present ? minPrice.value : this.minPrice,
+    sellingPrice: sellingPrice.present ? sellingPrice.value : this.sellingPrice,
+    maxPrice: maxPrice.present ? maxPrice.value : this.maxPrice,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -834,6 +1012,17 @@ class Product extends DataClass implements Insertable<Product> {
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      baseCurrencyCode: data.baseCurrencyCode.present
+          ? data.baseCurrencyCode.value
+          : this.baseCurrencyCode,
+      costExchangeRate: data.costExchangeRate.present
+          ? data.costExchangeRate.value
+          : this.costExchangeRate,
+      minPrice: data.minPrice.present ? data.minPrice.value : this.minPrice,
+      sellingPrice: data.sellingPrice.present
+          ? data.sellingPrice.value
+          : this.sellingPrice,
+      maxPrice: data.maxPrice.present ? data.maxPrice.value : this.maxPrice,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -861,6 +1050,11 @@ class Product extends DataClass implements Insertable<Product> {
           ..write('avgBuyPrice: $avgBuyPrice, ')
           ..write('minMarginPercent: $minMarginPercent, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('baseCurrencyCode: $baseCurrencyCode, ')
+          ..write('costExchangeRate: $costExchangeRate, ')
+          ..write('minPrice: $minPrice, ')
+          ..write('sellingPrice: $sellingPrice, ')
+          ..write('maxPrice: $maxPrice, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -888,6 +1082,11 @@ class Product extends DataClass implements Insertable<Product> {
     avgBuyPrice,
     minMarginPercent,
     syncStatus,
+    baseCurrencyCode,
+    costExchangeRate,
+    minPrice,
+    sellingPrice,
+    maxPrice,
     createdAt,
     updatedAt,
   ]);
@@ -914,6 +1113,11 @@ class Product extends DataClass implements Insertable<Product> {
           other.avgBuyPrice == this.avgBuyPrice &&
           other.minMarginPercent == this.minMarginPercent &&
           other.syncStatus == this.syncStatus &&
+          other.baseCurrencyCode == this.baseCurrencyCode &&
+          other.costExchangeRate == this.costExchangeRate &&
+          other.minPrice == this.minPrice &&
+          other.sellingPrice == this.sellingPrice &&
+          other.maxPrice == this.maxPrice &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -938,6 +1142,11 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<double> avgBuyPrice;
   final Value<int> minMarginPercent;
   final Value<int> syncStatus;
+  final Value<String> baseCurrencyCode;
+  final Value<double?> costExchangeRate;
+  final Value<double?> minPrice;
+  final Value<double?> sellingPrice;
+  final Value<double?> maxPrice;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -961,6 +1170,11 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.avgBuyPrice = const Value.absent(),
     this.minMarginPercent = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.baseCurrencyCode = const Value.absent(),
+    this.costExchangeRate = const Value.absent(),
+    this.minPrice = const Value.absent(),
+    this.sellingPrice = const Value.absent(),
+    this.maxPrice = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -985,6 +1199,11 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.avgBuyPrice = const Value.absent(),
     this.minMarginPercent = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.baseCurrencyCode = const Value.absent(),
+    this.costExchangeRate = const Value.absent(),
+    this.minPrice = const Value.absent(),
+    this.sellingPrice = const Value.absent(),
+    this.maxPrice = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -1022,6 +1241,11 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Expression<double>? avgBuyPrice,
     Expression<int>? minMarginPercent,
     Expression<int>? syncStatus,
+    Expression<String>? baseCurrencyCode,
+    Expression<double>? costExchangeRate,
+    Expression<double>? minPrice,
+    Expression<double>? sellingPrice,
+    Expression<double>? maxPrice,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -1046,6 +1270,11 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       if (avgBuyPrice != null) 'avg_buy_price': avgBuyPrice,
       if (minMarginPercent != null) 'min_margin_percent': minMarginPercent,
       if (syncStatus != null) 'sync_status': syncStatus,
+      if (baseCurrencyCode != null) 'base_currency_code': baseCurrencyCode,
+      if (costExchangeRate != null) 'cost_exchange_rate': costExchangeRate,
+      if (minPrice != null) 'min_price': minPrice,
+      if (sellingPrice != null) 'selling_price': sellingPrice,
+      if (maxPrice != null) 'max_price': maxPrice,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -1072,6 +1301,11 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Value<double>? avgBuyPrice,
     Value<int>? minMarginPercent,
     Value<int>? syncStatus,
+    Value<String>? baseCurrencyCode,
+    Value<double?>? costExchangeRate,
+    Value<double?>? minPrice,
+    Value<double?>? sellingPrice,
+    Value<double?>? maxPrice,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -1096,6 +1330,11 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       avgBuyPrice: avgBuyPrice ?? this.avgBuyPrice,
       minMarginPercent: minMarginPercent ?? this.minMarginPercent,
       syncStatus: syncStatus ?? this.syncStatus,
+      baseCurrencyCode: baseCurrencyCode ?? this.baseCurrencyCode,
+      costExchangeRate: costExchangeRate ?? this.costExchangeRate,
+      minPrice: minPrice ?? this.minPrice,
+      sellingPrice: sellingPrice ?? this.sellingPrice,
+      maxPrice: maxPrice ?? this.maxPrice,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -1162,6 +1401,21 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     if (syncStatus.present) {
       map['sync_status'] = Variable<int>(syncStatus.value);
     }
+    if (baseCurrencyCode.present) {
+      map['base_currency_code'] = Variable<String>(baseCurrencyCode.value);
+    }
+    if (costExchangeRate.present) {
+      map['cost_exchange_rate'] = Variable<double>(costExchangeRate.value);
+    }
+    if (minPrice.present) {
+      map['min_price'] = Variable<double>(minPrice.value);
+    }
+    if (sellingPrice.present) {
+      map['selling_price'] = Variable<double>(sellingPrice.value);
+    }
+    if (maxPrice.present) {
+      map['max_price'] = Variable<double>(maxPrice.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1196,6 +1450,11 @@ class ProductsCompanion extends UpdateCompanion<Product> {
           ..write('avgBuyPrice: $avgBuyPrice, ')
           ..write('minMarginPercent: $minMarginPercent, ')
           ..write('syncStatus: $syncStatus, ')
+          ..write('baseCurrencyCode: $baseCurrencyCode, ')
+          ..write('costExchangeRate: $costExchangeRate, ')
+          ..write('minPrice: $minPrice, ')
+          ..write('sellingPrice: $sellingPrice, ')
+          ..write('maxPrice: $maxPrice, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -2988,6 +3247,39 @@ class $SalesItemsTable extends SalesItems
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _exchangeRateAtSaleMeta =
+      const VerificationMeta('exchangeRateAtSale');
+  @override
+  late final GeneratedColumn<double> exchangeRateAtSale =
+      GeneratedColumn<double>(
+        'exchange_rate_at_sale',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _costExchangeRateMeta = const VerificationMeta(
+    'costExchangeRate',
+  );
+  @override
+  late final GeneratedColumn<double> costExchangeRate = GeneratedColumn<double>(
+    'cost_exchange_rate',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _profitIrrMeta = const VerificationMeta(
+    'profitIrr',
+  );
+  @override
+  late final GeneratedColumn<double> profitIrr = GeneratedColumn<double>(
+    'profit_irr',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     itemUuid,
@@ -2998,6 +3290,9 @@ class $SalesItemsTable extends SalesItems
     costAtSale,
     totalPrice,
     profit,
+    exchangeRateAtSale,
+    costExchangeRate,
+    profitIrr,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3087,6 +3382,30 @@ class $SalesItemsTable extends SalesItems
     } else if (isInserting) {
       context.missing(_profitMeta);
     }
+    if (data.containsKey('exchange_rate_at_sale')) {
+      context.handle(
+        _exchangeRateAtSaleMeta,
+        exchangeRateAtSale.isAcceptableOrUnknown(
+          data['exchange_rate_at_sale']!,
+          _exchangeRateAtSaleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('cost_exchange_rate')) {
+      context.handle(
+        _costExchangeRateMeta,
+        costExchangeRate.isAcceptableOrUnknown(
+          data['cost_exchange_rate']!,
+          _costExchangeRateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('profit_irr')) {
+      context.handle(
+        _profitIrrMeta,
+        profitIrr.isAcceptableOrUnknown(data['profit_irr']!, _profitIrrMeta),
+      );
+    }
     return context;
   }
 
@@ -3128,6 +3447,18 @@ class $SalesItemsTable extends SalesItems
         DriftSqlType.double,
         data['${effectivePrefix}profit'],
       )!,
+      exchangeRateAtSale: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}exchange_rate_at_sale'],
+      ),
+      costExchangeRate: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}cost_exchange_rate'],
+      ),
+      profitIrr: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}profit_irr'],
+      ),
     );
   }
 
@@ -3146,6 +3477,9 @@ class SalesItem extends DataClass implements Insertable<SalesItem> {
   final double costAtSale;
   final double totalPrice;
   final double profit;
+  final double? exchangeRateAtSale;
+  final double? costExchangeRate;
+  final double? profitIrr;
   const SalesItem({
     required this.itemUuid,
     required this.invoiceUuid,
@@ -3155,6 +3489,9 @@ class SalesItem extends DataClass implements Insertable<SalesItem> {
     required this.costAtSale,
     required this.totalPrice,
     required this.profit,
+    this.exchangeRateAtSale,
+    this.costExchangeRate,
+    this.profitIrr,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3167,6 +3504,15 @@ class SalesItem extends DataClass implements Insertable<SalesItem> {
     map['cost_at_sale'] = Variable<double>(costAtSale);
     map['total_price'] = Variable<double>(totalPrice);
     map['profit'] = Variable<double>(profit);
+    if (!nullToAbsent || exchangeRateAtSale != null) {
+      map['exchange_rate_at_sale'] = Variable<double>(exchangeRateAtSale);
+    }
+    if (!nullToAbsent || costExchangeRate != null) {
+      map['cost_exchange_rate'] = Variable<double>(costExchangeRate);
+    }
+    if (!nullToAbsent || profitIrr != null) {
+      map['profit_irr'] = Variable<double>(profitIrr);
+    }
     return map;
   }
 
@@ -3180,6 +3526,15 @@ class SalesItem extends DataClass implements Insertable<SalesItem> {
       costAtSale: Value(costAtSale),
       totalPrice: Value(totalPrice),
       profit: Value(profit),
+      exchangeRateAtSale: exchangeRateAtSale == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exchangeRateAtSale),
+      costExchangeRate: costExchangeRate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(costExchangeRate),
+      profitIrr: profitIrr == null && nullToAbsent
+          ? const Value.absent()
+          : Value(profitIrr),
     );
   }
 
@@ -3197,6 +3552,11 @@ class SalesItem extends DataClass implements Insertable<SalesItem> {
       costAtSale: serializer.fromJson<double>(json['costAtSale']),
       totalPrice: serializer.fromJson<double>(json['totalPrice']),
       profit: serializer.fromJson<double>(json['profit']),
+      exchangeRateAtSale: serializer.fromJson<double?>(
+        json['exchangeRateAtSale'],
+      ),
+      costExchangeRate: serializer.fromJson<double?>(json['costExchangeRate']),
+      profitIrr: serializer.fromJson<double?>(json['profitIrr']),
     );
   }
   @override
@@ -3211,6 +3571,9 @@ class SalesItem extends DataClass implements Insertable<SalesItem> {
       'costAtSale': serializer.toJson<double>(costAtSale),
       'totalPrice': serializer.toJson<double>(totalPrice),
       'profit': serializer.toJson<double>(profit),
+      'exchangeRateAtSale': serializer.toJson<double?>(exchangeRateAtSale),
+      'costExchangeRate': serializer.toJson<double?>(costExchangeRate),
+      'profitIrr': serializer.toJson<double?>(profitIrr),
     };
   }
 
@@ -3223,6 +3586,9 @@ class SalesItem extends DataClass implements Insertable<SalesItem> {
     double? costAtSale,
     double? totalPrice,
     double? profit,
+    Value<double?> exchangeRateAtSale = const Value.absent(),
+    Value<double?> costExchangeRate = const Value.absent(),
+    Value<double?> profitIrr = const Value.absent(),
   }) => SalesItem(
     itemUuid: itemUuid ?? this.itemUuid,
     invoiceUuid: invoiceUuid ?? this.invoiceUuid,
@@ -3232,6 +3598,13 @@ class SalesItem extends DataClass implements Insertable<SalesItem> {
     costAtSale: costAtSale ?? this.costAtSale,
     totalPrice: totalPrice ?? this.totalPrice,
     profit: profit ?? this.profit,
+    exchangeRateAtSale: exchangeRateAtSale.present
+        ? exchangeRateAtSale.value
+        : this.exchangeRateAtSale,
+    costExchangeRate: costExchangeRate.present
+        ? costExchangeRate.value
+        : this.costExchangeRate,
+    profitIrr: profitIrr.present ? profitIrr.value : this.profitIrr,
   );
   SalesItem copyWithCompanion(SalesItemsCompanion data) {
     return SalesItem(
@@ -3253,6 +3626,13 @@ class SalesItem extends DataClass implements Insertable<SalesItem> {
           ? data.totalPrice.value
           : this.totalPrice,
       profit: data.profit.present ? data.profit.value : this.profit,
+      exchangeRateAtSale: data.exchangeRateAtSale.present
+          ? data.exchangeRateAtSale.value
+          : this.exchangeRateAtSale,
+      costExchangeRate: data.costExchangeRate.present
+          ? data.costExchangeRate.value
+          : this.costExchangeRate,
+      profitIrr: data.profitIrr.present ? data.profitIrr.value : this.profitIrr,
     );
   }
 
@@ -3266,7 +3646,10 @@ class SalesItem extends DataClass implements Insertable<SalesItem> {
           ..write('unitSellPrice: $unitSellPrice, ')
           ..write('costAtSale: $costAtSale, ')
           ..write('totalPrice: $totalPrice, ')
-          ..write('profit: $profit')
+          ..write('profit: $profit, ')
+          ..write('exchangeRateAtSale: $exchangeRateAtSale, ')
+          ..write('costExchangeRate: $costExchangeRate, ')
+          ..write('profitIrr: $profitIrr')
           ..write(')'))
         .toString();
   }
@@ -3281,6 +3664,9 @@ class SalesItem extends DataClass implements Insertable<SalesItem> {
     costAtSale,
     totalPrice,
     profit,
+    exchangeRateAtSale,
+    costExchangeRate,
+    profitIrr,
   );
   @override
   bool operator ==(Object other) =>
@@ -3293,7 +3679,10 @@ class SalesItem extends DataClass implements Insertable<SalesItem> {
           other.unitSellPrice == this.unitSellPrice &&
           other.costAtSale == this.costAtSale &&
           other.totalPrice == this.totalPrice &&
-          other.profit == this.profit);
+          other.profit == this.profit &&
+          other.exchangeRateAtSale == this.exchangeRateAtSale &&
+          other.costExchangeRate == this.costExchangeRate &&
+          other.profitIrr == this.profitIrr);
 }
 
 class SalesItemsCompanion extends UpdateCompanion<SalesItem> {
@@ -3305,6 +3694,9 @@ class SalesItemsCompanion extends UpdateCompanion<SalesItem> {
   final Value<double> costAtSale;
   final Value<double> totalPrice;
   final Value<double> profit;
+  final Value<double?> exchangeRateAtSale;
+  final Value<double?> costExchangeRate;
+  final Value<double?> profitIrr;
   final Value<int> rowid;
   const SalesItemsCompanion({
     this.itemUuid = const Value.absent(),
@@ -3315,6 +3707,9 @@ class SalesItemsCompanion extends UpdateCompanion<SalesItem> {
     this.costAtSale = const Value.absent(),
     this.totalPrice = const Value.absent(),
     this.profit = const Value.absent(),
+    this.exchangeRateAtSale = const Value.absent(),
+    this.costExchangeRate = const Value.absent(),
+    this.profitIrr = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SalesItemsCompanion.insert({
@@ -3326,6 +3721,9 @@ class SalesItemsCompanion extends UpdateCompanion<SalesItem> {
     required double costAtSale,
     required double totalPrice,
     required double profit,
+    this.exchangeRateAtSale = const Value.absent(),
+    this.costExchangeRate = const Value.absent(),
+    this.profitIrr = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : itemUuid = Value(itemUuid),
        invoiceUuid = Value(invoiceUuid),
@@ -3344,6 +3742,9 @@ class SalesItemsCompanion extends UpdateCompanion<SalesItem> {
     Expression<double>? costAtSale,
     Expression<double>? totalPrice,
     Expression<double>? profit,
+    Expression<double>? exchangeRateAtSale,
+    Expression<double>? costExchangeRate,
+    Expression<double>? profitIrr,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3355,6 +3756,10 @@ class SalesItemsCompanion extends UpdateCompanion<SalesItem> {
       if (costAtSale != null) 'cost_at_sale': costAtSale,
       if (totalPrice != null) 'total_price': totalPrice,
       if (profit != null) 'profit': profit,
+      if (exchangeRateAtSale != null)
+        'exchange_rate_at_sale': exchangeRateAtSale,
+      if (costExchangeRate != null) 'cost_exchange_rate': costExchangeRate,
+      if (profitIrr != null) 'profit_irr': profitIrr,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3368,6 +3773,9 @@ class SalesItemsCompanion extends UpdateCompanion<SalesItem> {
     Value<double>? costAtSale,
     Value<double>? totalPrice,
     Value<double>? profit,
+    Value<double?>? exchangeRateAtSale,
+    Value<double?>? costExchangeRate,
+    Value<double?>? profitIrr,
     Value<int>? rowid,
   }) {
     return SalesItemsCompanion(
@@ -3379,6 +3787,9 @@ class SalesItemsCompanion extends UpdateCompanion<SalesItem> {
       costAtSale: costAtSale ?? this.costAtSale,
       totalPrice: totalPrice ?? this.totalPrice,
       profit: profit ?? this.profit,
+      exchangeRateAtSale: exchangeRateAtSale ?? this.exchangeRateAtSale,
+      costExchangeRate: costExchangeRate ?? this.costExchangeRate,
+      profitIrr: profitIrr ?? this.profitIrr,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3410,6 +3821,15 @@ class SalesItemsCompanion extends UpdateCompanion<SalesItem> {
     if (profit.present) {
       map['profit'] = Variable<double>(profit.value);
     }
+    if (exchangeRateAtSale.present) {
+      map['exchange_rate_at_sale'] = Variable<double>(exchangeRateAtSale.value);
+    }
+    if (costExchangeRate.present) {
+      map['cost_exchange_rate'] = Variable<double>(costExchangeRate.value);
+    }
+    if (profitIrr.present) {
+      map['profit_irr'] = Variable<double>(profitIrr.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3427,6 +3847,9 @@ class SalesItemsCompanion extends UpdateCompanion<SalesItem> {
           ..write('costAtSale: $costAtSale, ')
           ..write('totalPrice: $totalPrice, ')
           ..write('profit: $profit, ')
+          ..write('exchangeRateAtSale: $exchangeRateAtSale, ')
+          ..write('costExchangeRate: $costExchangeRate, ')
+          ..write('profitIrr: $profitIrr, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -4140,6 +4563,40 @@ class $PurchaseItemsTable extends PurchaseItems
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _currencyCodeMeta = const VerificationMeta(
+    'currencyCode',
+  );
+  @override
+  late final GeneratedColumn<String> currencyCode = GeneratedColumn<String>(
+    'currency_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('IRR'),
+  );
+  static const VerificationMeta _exchangeRateAtPurchaseMeta =
+      const VerificationMeta('exchangeRateAtPurchase');
+  @override
+  late final GeneratedColumn<double> exchangeRateAtPurchase =
+      GeneratedColumn<double>(
+        'exchange_rate_at_purchase',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _costInBaseCurrencyMeta =
+      const VerificationMeta('costInBaseCurrency');
+  @override
+  late final GeneratedColumn<double> costInBaseCurrency =
+      GeneratedColumn<double>(
+        'cost_in_base_currency',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     itemUuid,
@@ -4148,6 +4605,9 @@ class $PurchaseItemsTable extends PurchaseItems
     quantity,
     unitBuyPrice,
     totalPrice,
+    currencyCode,
+    exchangeRateAtPurchase,
+    costInBaseCurrency,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4218,6 +4678,33 @@ class $PurchaseItemsTable extends PurchaseItems
     } else if (isInserting) {
       context.missing(_totalPriceMeta);
     }
+    if (data.containsKey('currency_code')) {
+      context.handle(
+        _currencyCodeMeta,
+        currencyCode.isAcceptableOrUnknown(
+          data['currency_code']!,
+          _currencyCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('exchange_rate_at_purchase')) {
+      context.handle(
+        _exchangeRateAtPurchaseMeta,
+        exchangeRateAtPurchase.isAcceptableOrUnknown(
+          data['exchange_rate_at_purchase']!,
+          _exchangeRateAtPurchaseMeta,
+        ),
+      );
+    }
+    if (data.containsKey('cost_in_base_currency')) {
+      context.handle(
+        _costInBaseCurrencyMeta,
+        costInBaseCurrency.isAcceptableOrUnknown(
+          data['cost_in_base_currency']!,
+          _costInBaseCurrencyMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -4251,6 +4738,18 @@ class $PurchaseItemsTable extends PurchaseItems
         DriftSqlType.double,
         data['${effectivePrefix}total_price'],
       )!,
+      currencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_code'],
+      )!,
+      exchangeRateAtPurchase: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}exchange_rate_at_purchase'],
+      ),
+      costInBaseCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}cost_in_base_currency'],
+      ),
     );
   }
 
@@ -4267,6 +4766,9 @@ class PurchaseItem extends DataClass implements Insertable<PurchaseItem> {
   final int quantity;
   final double unitBuyPrice;
   final double totalPrice;
+  final String currencyCode;
+  final double? exchangeRateAtPurchase;
+  final double? costInBaseCurrency;
   const PurchaseItem({
     required this.itemUuid,
     required this.purchaseUuid,
@@ -4274,6 +4776,9 @@ class PurchaseItem extends DataClass implements Insertable<PurchaseItem> {
     required this.quantity,
     required this.unitBuyPrice,
     required this.totalPrice,
+    required this.currencyCode,
+    this.exchangeRateAtPurchase,
+    this.costInBaseCurrency,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4284,6 +4789,15 @@ class PurchaseItem extends DataClass implements Insertable<PurchaseItem> {
     map['quantity'] = Variable<int>(quantity);
     map['unit_buy_price'] = Variable<double>(unitBuyPrice);
     map['total_price'] = Variable<double>(totalPrice);
+    map['currency_code'] = Variable<String>(currencyCode);
+    if (!nullToAbsent || exchangeRateAtPurchase != null) {
+      map['exchange_rate_at_purchase'] = Variable<double>(
+        exchangeRateAtPurchase,
+      );
+    }
+    if (!nullToAbsent || costInBaseCurrency != null) {
+      map['cost_in_base_currency'] = Variable<double>(costInBaseCurrency);
+    }
     return map;
   }
 
@@ -4295,6 +4809,13 @@ class PurchaseItem extends DataClass implements Insertable<PurchaseItem> {
       quantity: Value(quantity),
       unitBuyPrice: Value(unitBuyPrice),
       totalPrice: Value(totalPrice),
+      currencyCode: Value(currencyCode),
+      exchangeRateAtPurchase: exchangeRateAtPurchase == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exchangeRateAtPurchase),
+      costInBaseCurrency: costInBaseCurrency == null && nullToAbsent
+          ? const Value.absent()
+          : Value(costInBaseCurrency),
     );
   }
 
@@ -4310,6 +4831,13 @@ class PurchaseItem extends DataClass implements Insertable<PurchaseItem> {
       quantity: serializer.fromJson<int>(json['quantity']),
       unitBuyPrice: serializer.fromJson<double>(json['unitBuyPrice']),
       totalPrice: serializer.fromJson<double>(json['totalPrice']),
+      currencyCode: serializer.fromJson<String>(json['currencyCode']),
+      exchangeRateAtPurchase: serializer.fromJson<double?>(
+        json['exchangeRateAtPurchase'],
+      ),
+      costInBaseCurrency: serializer.fromJson<double?>(
+        json['costInBaseCurrency'],
+      ),
     );
   }
   @override
@@ -4322,6 +4850,11 @@ class PurchaseItem extends DataClass implements Insertable<PurchaseItem> {
       'quantity': serializer.toJson<int>(quantity),
       'unitBuyPrice': serializer.toJson<double>(unitBuyPrice),
       'totalPrice': serializer.toJson<double>(totalPrice),
+      'currencyCode': serializer.toJson<String>(currencyCode),
+      'exchangeRateAtPurchase': serializer.toJson<double?>(
+        exchangeRateAtPurchase,
+      ),
+      'costInBaseCurrency': serializer.toJson<double?>(costInBaseCurrency),
     };
   }
 
@@ -4332,6 +4865,9 @@ class PurchaseItem extends DataClass implements Insertable<PurchaseItem> {
     int? quantity,
     double? unitBuyPrice,
     double? totalPrice,
+    String? currencyCode,
+    Value<double?> exchangeRateAtPurchase = const Value.absent(),
+    Value<double?> costInBaseCurrency = const Value.absent(),
   }) => PurchaseItem(
     itemUuid: itemUuid ?? this.itemUuid,
     purchaseUuid: purchaseUuid ?? this.purchaseUuid,
@@ -4339,6 +4875,13 @@ class PurchaseItem extends DataClass implements Insertable<PurchaseItem> {
     quantity: quantity ?? this.quantity,
     unitBuyPrice: unitBuyPrice ?? this.unitBuyPrice,
     totalPrice: totalPrice ?? this.totalPrice,
+    currencyCode: currencyCode ?? this.currencyCode,
+    exchangeRateAtPurchase: exchangeRateAtPurchase.present
+        ? exchangeRateAtPurchase.value
+        : this.exchangeRateAtPurchase,
+    costInBaseCurrency: costInBaseCurrency.present
+        ? costInBaseCurrency.value
+        : this.costInBaseCurrency,
   );
   PurchaseItem copyWithCompanion(PurchaseItemsCompanion data) {
     return PurchaseItem(
@@ -4356,6 +4899,15 @@ class PurchaseItem extends DataClass implements Insertable<PurchaseItem> {
       totalPrice: data.totalPrice.present
           ? data.totalPrice.value
           : this.totalPrice,
+      currencyCode: data.currencyCode.present
+          ? data.currencyCode.value
+          : this.currencyCode,
+      exchangeRateAtPurchase: data.exchangeRateAtPurchase.present
+          ? data.exchangeRateAtPurchase.value
+          : this.exchangeRateAtPurchase,
+      costInBaseCurrency: data.costInBaseCurrency.present
+          ? data.costInBaseCurrency.value
+          : this.costInBaseCurrency,
     );
   }
 
@@ -4367,7 +4919,10 @@ class PurchaseItem extends DataClass implements Insertable<PurchaseItem> {
           ..write('productUuid: $productUuid, ')
           ..write('quantity: $quantity, ')
           ..write('unitBuyPrice: $unitBuyPrice, ')
-          ..write('totalPrice: $totalPrice')
+          ..write('totalPrice: $totalPrice, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('exchangeRateAtPurchase: $exchangeRateAtPurchase, ')
+          ..write('costInBaseCurrency: $costInBaseCurrency')
           ..write(')'))
         .toString();
   }
@@ -4380,6 +4935,9 @@ class PurchaseItem extends DataClass implements Insertable<PurchaseItem> {
     quantity,
     unitBuyPrice,
     totalPrice,
+    currencyCode,
+    exchangeRateAtPurchase,
+    costInBaseCurrency,
   );
   @override
   bool operator ==(Object other) =>
@@ -4390,7 +4948,10 @@ class PurchaseItem extends DataClass implements Insertable<PurchaseItem> {
           other.productUuid == this.productUuid &&
           other.quantity == this.quantity &&
           other.unitBuyPrice == this.unitBuyPrice &&
-          other.totalPrice == this.totalPrice);
+          other.totalPrice == this.totalPrice &&
+          other.currencyCode == this.currencyCode &&
+          other.exchangeRateAtPurchase == this.exchangeRateAtPurchase &&
+          other.costInBaseCurrency == this.costInBaseCurrency);
 }
 
 class PurchaseItemsCompanion extends UpdateCompanion<PurchaseItem> {
@@ -4400,6 +4961,9 @@ class PurchaseItemsCompanion extends UpdateCompanion<PurchaseItem> {
   final Value<int> quantity;
   final Value<double> unitBuyPrice;
   final Value<double> totalPrice;
+  final Value<String> currencyCode;
+  final Value<double?> exchangeRateAtPurchase;
+  final Value<double?> costInBaseCurrency;
   final Value<int> rowid;
   const PurchaseItemsCompanion({
     this.itemUuid = const Value.absent(),
@@ -4408,6 +4972,9 @@ class PurchaseItemsCompanion extends UpdateCompanion<PurchaseItem> {
     this.quantity = const Value.absent(),
     this.unitBuyPrice = const Value.absent(),
     this.totalPrice = const Value.absent(),
+    this.currencyCode = const Value.absent(),
+    this.exchangeRateAtPurchase = const Value.absent(),
+    this.costInBaseCurrency = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PurchaseItemsCompanion.insert({
@@ -4417,6 +4984,9 @@ class PurchaseItemsCompanion extends UpdateCompanion<PurchaseItem> {
     required int quantity,
     required double unitBuyPrice,
     required double totalPrice,
+    this.currencyCode = const Value.absent(),
+    this.exchangeRateAtPurchase = const Value.absent(),
+    this.costInBaseCurrency = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : itemUuid = Value(itemUuid),
        purchaseUuid = Value(purchaseUuid),
@@ -4431,6 +5001,9 @@ class PurchaseItemsCompanion extends UpdateCompanion<PurchaseItem> {
     Expression<int>? quantity,
     Expression<double>? unitBuyPrice,
     Expression<double>? totalPrice,
+    Expression<String>? currencyCode,
+    Expression<double>? exchangeRateAtPurchase,
+    Expression<double>? costInBaseCurrency,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4440,6 +5013,11 @@ class PurchaseItemsCompanion extends UpdateCompanion<PurchaseItem> {
       if (quantity != null) 'quantity': quantity,
       if (unitBuyPrice != null) 'unit_buy_price': unitBuyPrice,
       if (totalPrice != null) 'total_price': totalPrice,
+      if (currencyCode != null) 'currency_code': currencyCode,
+      if (exchangeRateAtPurchase != null)
+        'exchange_rate_at_purchase': exchangeRateAtPurchase,
+      if (costInBaseCurrency != null)
+        'cost_in_base_currency': costInBaseCurrency,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4451,6 +5029,9 @@ class PurchaseItemsCompanion extends UpdateCompanion<PurchaseItem> {
     Value<int>? quantity,
     Value<double>? unitBuyPrice,
     Value<double>? totalPrice,
+    Value<String>? currencyCode,
+    Value<double?>? exchangeRateAtPurchase,
+    Value<double?>? costInBaseCurrency,
     Value<int>? rowid,
   }) {
     return PurchaseItemsCompanion(
@@ -4460,6 +5041,10 @@ class PurchaseItemsCompanion extends UpdateCompanion<PurchaseItem> {
       quantity: quantity ?? this.quantity,
       unitBuyPrice: unitBuyPrice ?? this.unitBuyPrice,
       totalPrice: totalPrice ?? this.totalPrice,
+      currencyCode: currencyCode ?? this.currencyCode,
+      exchangeRateAtPurchase:
+          exchangeRateAtPurchase ?? this.exchangeRateAtPurchase,
+      costInBaseCurrency: costInBaseCurrency ?? this.costInBaseCurrency,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4485,6 +5070,17 @@ class PurchaseItemsCompanion extends UpdateCompanion<PurchaseItem> {
     if (totalPrice.present) {
       map['total_price'] = Variable<double>(totalPrice.value);
     }
+    if (currencyCode.present) {
+      map['currency_code'] = Variable<String>(currencyCode.value);
+    }
+    if (exchangeRateAtPurchase.present) {
+      map['exchange_rate_at_purchase'] = Variable<double>(
+        exchangeRateAtPurchase.value,
+      );
+    }
+    if (costInBaseCurrency.present) {
+      map['cost_in_base_currency'] = Variable<double>(costInBaseCurrency.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4500,6 +5096,9 @@ class PurchaseItemsCompanion extends UpdateCompanion<PurchaseItem> {
           ..write('quantity: $quantity, ')
           ..write('unitBuyPrice: $unitBuyPrice, ')
           ..write('totalPrice: $totalPrice, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('exchangeRateAtPurchase: $exchangeRateAtPurchase, ')
+          ..write('costInBaseCurrency: $costInBaseCurrency, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -5026,6 +5625,1120 @@ class EventsCompanion extends UpdateCompanion<Event> {
   }
 }
 
+class $ExchangeRateEventsTable extends ExchangeRateEvents
+    with TableInfo<$ExchangeRateEventsTable, ExchangeRateEventData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExchangeRateEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _currencyCodeMeta = const VerificationMeta(
+    'currencyCode',
+  );
+  @override
+  late final GeneratedColumn<String> currencyCode = GeneratedColumn<String>(
+    'currency_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rateMeta = const VerificationMeta('rate');
+  @override
+  late final GeneratedColumn<double> rate = GeneratedColumn<double>(
+    'rate',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recordedAtMeta = const VerificationMeta(
+    'recordedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> recordedAt = GeneratedColumn<DateTime>(
+    'recorded_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _confidenceMeta = const VerificationMeta(
+    'confidence',
+  );
+  @override
+  late final GeneratedColumn<double> confidence = GeneratedColumn<double>(
+    'confidence',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1.0),
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recordedByMeta = const VerificationMeta(
+    'recordedBy',
+  );
+  @override
+  late final GeneratedColumn<String> recordedBy = GeneratedColumn<String>(
+    'recorded_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    currencyCode,
+    rate,
+    recordedAt,
+    source,
+    confidence,
+    notes,
+    recordedBy,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'exchange_rate_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExchangeRateEventData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('currency_code')) {
+      context.handle(
+        _currencyCodeMeta,
+        currencyCode.isAcceptableOrUnknown(
+          data['currency_code']!,
+          _currencyCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_currencyCodeMeta);
+    }
+    if (data.containsKey('rate')) {
+      context.handle(
+        _rateMeta,
+        rate.isAcceptableOrUnknown(data['rate']!, _rateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rateMeta);
+    }
+    if (data.containsKey('recorded_at')) {
+      context.handle(
+        _recordedAtMeta,
+        recordedAt.isAcceptableOrUnknown(data['recorded_at']!, _recordedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordedAtMeta);
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceMeta);
+    }
+    if (data.containsKey('confidence')) {
+      context.handle(
+        _confidenceMeta,
+        confidence.isAcceptableOrUnknown(data['confidence']!, _confidenceMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('recorded_by')) {
+      context.handle(
+        _recordedByMeta,
+        recordedBy.isAcceptableOrUnknown(data['recorded_by']!, _recordedByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recordedByMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExchangeRateEventData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExchangeRateEventData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      currencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_code'],
+      )!,
+      rate: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}rate'],
+      )!,
+      recordedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}recorded_at'],
+      )!,
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      confidence: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}confidence'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      recordedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recorded_by'],
+      )!,
+    );
+  }
+
+  @override
+  $ExchangeRateEventsTable createAlias(String alias) {
+    return $ExchangeRateEventsTable(attachedDatabase, alias);
+  }
+}
+
+class ExchangeRateEventData extends DataClass
+    implements Insertable<ExchangeRateEventData> {
+  /// Auto-increment primary key
+  final int id;
+
+  /// Currency code (USD, EUR, AED)
+  final String currencyCode;
+
+  /// Exchange rate to base currency (IRR)
+  final double rate;
+
+  /// Timestamp when rate was recorded (Immutable 🔒)
+  final DateTime recordedAt;
+
+  /// Source of the rate: manual, api_bonbast, api_tgju, market_avg, correction
+  final String source;
+
+  /// Confidence score (0.0 to 1.0)
+  final double confidence;
+
+  /// Optional notes
+  final String? notes;
+
+  /// User UUID who recorded this rate
+  final String recordedBy;
+  const ExchangeRateEventData({
+    required this.id,
+    required this.currencyCode,
+    required this.rate,
+    required this.recordedAt,
+    required this.source,
+    required this.confidence,
+    this.notes,
+    required this.recordedBy,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['currency_code'] = Variable<String>(currencyCode);
+    map['rate'] = Variable<double>(rate);
+    map['recorded_at'] = Variable<DateTime>(recordedAt);
+    map['source'] = Variable<String>(source);
+    map['confidence'] = Variable<double>(confidence);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['recorded_by'] = Variable<String>(recordedBy);
+    return map;
+  }
+
+  ExchangeRateEventsCompanion toCompanion(bool nullToAbsent) {
+    return ExchangeRateEventsCompanion(
+      id: Value(id),
+      currencyCode: Value(currencyCode),
+      rate: Value(rate),
+      recordedAt: Value(recordedAt),
+      source: Value(source),
+      confidence: Value(confidence),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      recordedBy: Value(recordedBy),
+    );
+  }
+
+  factory ExchangeRateEventData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExchangeRateEventData(
+      id: serializer.fromJson<int>(json['id']),
+      currencyCode: serializer.fromJson<String>(json['currencyCode']),
+      rate: serializer.fromJson<double>(json['rate']),
+      recordedAt: serializer.fromJson<DateTime>(json['recordedAt']),
+      source: serializer.fromJson<String>(json['source']),
+      confidence: serializer.fromJson<double>(json['confidence']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      recordedBy: serializer.fromJson<String>(json['recordedBy']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'currencyCode': serializer.toJson<String>(currencyCode),
+      'rate': serializer.toJson<double>(rate),
+      'recordedAt': serializer.toJson<DateTime>(recordedAt),
+      'source': serializer.toJson<String>(source),
+      'confidence': serializer.toJson<double>(confidence),
+      'notes': serializer.toJson<String?>(notes),
+      'recordedBy': serializer.toJson<String>(recordedBy),
+    };
+  }
+
+  ExchangeRateEventData copyWith({
+    int? id,
+    String? currencyCode,
+    double? rate,
+    DateTime? recordedAt,
+    String? source,
+    double? confidence,
+    Value<String?> notes = const Value.absent(),
+    String? recordedBy,
+  }) => ExchangeRateEventData(
+    id: id ?? this.id,
+    currencyCode: currencyCode ?? this.currencyCode,
+    rate: rate ?? this.rate,
+    recordedAt: recordedAt ?? this.recordedAt,
+    source: source ?? this.source,
+    confidence: confidence ?? this.confidence,
+    notes: notes.present ? notes.value : this.notes,
+    recordedBy: recordedBy ?? this.recordedBy,
+  );
+  ExchangeRateEventData copyWithCompanion(ExchangeRateEventsCompanion data) {
+    return ExchangeRateEventData(
+      id: data.id.present ? data.id.value : this.id,
+      currencyCode: data.currencyCode.present
+          ? data.currencyCode.value
+          : this.currencyCode,
+      rate: data.rate.present ? data.rate.value : this.rate,
+      recordedAt: data.recordedAt.present
+          ? data.recordedAt.value
+          : this.recordedAt,
+      source: data.source.present ? data.source.value : this.source,
+      confidence: data.confidence.present
+          ? data.confidence.value
+          : this.confidence,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      recordedBy: data.recordedBy.present
+          ? data.recordedBy.value
+          : this.recordedBy,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExchangeRateEventData(')
+          ..write('id: $id, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('rate: $rate, ')
+          ..write('recordedAt: $recordedAt, ')
+          ..write('source: $source, ')
+          ..write('confidence: $confidence, ')
+          ..write('notes: $notes, ')
+          ..write('recordedBy: $recordedBy')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    currencyCode,
+    rate,
+    recordedAt,
+    source,
+    confidence,
+    notes,
+    recordedBy,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExchangeRateEventData &&
+          other.id == this.id &&
+          other.currencyCode == this.currencyCode &&
+          other.rate == this.rate &&
+          other.recordedAt == this.recordedAt &&
+          other.source == this.source &&
+          other.confidence == this.confidence &&
+          other.notes == this.notes &&
+          other.recordedBy == this.recordedBy);
+}
+
+class ExchangeRateEventsCompanion
+    extends UpdateCompanion<ExchangeRateEventData> {
+  final Value<int> id;
+  final Value<String> currencyCode;
+  final Value<double> rate;
+  final Value<DateTime> recordedAt;
+  final Value<String> source;
+  final Value<double> confidence;
+  final Value<String?> notes;
+  final Value<String> recordedBy;
+  const ExchangeRateEventsCompanion({
+    this.id = const Value.absent(),
+    this.currencyCode = const Value.absent(),
+    this.rate = const Value.absent(),
+    this.recordedAt = const Value.absent(),
+    this.source = const Value.absent(),
+    this.confidence = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.recordedBy = const Value.absent(),
+  });
+  ExchangeRateEventsCompanion.insert({
+    this.id = const Value.absent(),
+    required String currencyCode,
+    required double rate,
+    required DateTime recordedAt,
+    required String source,
+    this.confidence = const Value.absent(),
+    this.notes = const Value.absent(),
+    required String recordedBy,
+  }) : currencyCode = Value(currencyCode),
+       rate = Value(rate),
+       recordedAt = Value(recordedAt),
+       source = Value(source),
+       recordedBy = Value(recordedBy);
+  static Insertable<ExchangeRateEventData> custom({
+    Expression<int>? id,
+    Expression<String>? currencyCode,
+    Expression<double>? rate,
+    Expression<DateTime>? recordedAt,
+    Expression<String>? source,
+    Expression<double>? confidence,
+    Expression<String>? notes,
+    Expression<String>? recordedBy,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (currencyCode != null) 'currency_code': currencyCode,
+      if (rate != null) 'rate': rate,
+      if (recordedAt != null) 'recorded_at': recordedAt,
+      if (source != null) 'source': source,
+      if (confidence != null) 'confidence': confidence,
+      if (notes != null) 'notes': notes,
+      if (recordedBy != null) 'recorded_by': recordedBy,
+    });
+  }
+
+  ExchangeRateEventsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? currencyCode,
+    Value<double>? rate,
+    Value<DateTime>? recordedAt,
+    Value<String>? source,
+    Value<double>? confidence,
+    Value<String?>? notes,
+    Value<String>? recordedBy,
+  }) {
+    return ExchangeRateEventsCompanion(
+      id: id ?? this.id,
+      currencyCode: currencyCode ?? this.currencyCode,
+      rate: rate ?? this.rate,
+      recordedAt: recordedAt ?? this.recordedAt,
+      source: source ?? this.source,
+      confidence: confidence ?? this.confidence,
+      notes: notes ?? this.notes,
+      recordedBy: recordedBy ?? this.recordedBy,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (currencyCode.present) {
+      map['currency_code'] = Variable<String>(currencyCode.value);
+    }
+    if (rate.present) {
+      map['rate'] = Variable<double>(rate.value);
+    }
+    if (recordedAt.present) {
+      map['recorded_at'] = Variable<DateTime>(recordedAt.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (confidence.present) {
+      map['confidence'] = Variable<double>(confidence.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (recordedBy.present) {
+      map['recorded_by'] = Variable<String>(recordedBy.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExchangeRateEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('rate: $rate, ')
+          ..write('recordedAt: $recordedAt, ')
+          ..write('source: $source, ')
+          ..write('confidence: $confidence, ')
+          ..write('notes: $notes, ')
+          ..write('recordedBy: $recordedBy')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PricingSettingsTable extends PricingSettings
+    with TableInfo<$PricingSettingsTable, PricingSettingsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PricingSettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _minProfitMarginMeta = const VerificationMeta(
+    'minProfitMargin',
+  );
+  @override
+  late final GeneratedColumn<double> minProfitMargin = GeneratedColumn<double>(
+    'min_profit_margin',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(20.0),
+  );
+  static const VerificationMeta _defaultProfitMarginMeta =
+      const VerificationMeta('defaultProfitMargin');
+  @override
+  late final GeneratedColumn<double> defaultProfitMargin =
+      GeneratedColumn<double>(
+        'default_profit_margin',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(30.0),
+      );
+  static const VerificationMeta _maxProfitMarginMeta = const VerificationMeta(
+    'maxProfitMargin',
+  );
+  @override
+  late final GeneratedColumn<double> maxProfitMargin = GeneratedColumn<double>(
+    'max_profit_margin',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(50.0),
+  );
+  static const VerificationMeta _baseCurrencyMeta = const VerificationMeta(
+    'baseCurrency',
+  );
+  @override
+  late final GeneratedColumn<String> baseCurrency = GeneratedColumn<String>(
+    'base_currency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('IRR'),
+  );
+  static const VerificationMeta _trackCurrenciesMeta = const VerificationMeta(
+    'trackCurrencies',
+  );
+  @override
+  late final GeneratedColumn<String> trackCurrencies = GeneratedColumn<String>(
+    'track_currencies',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('["USD","EUR","AED"]'),
+  );
+  static const VerificationMeta _roundingStepMeta = const VerificationMeta(
+    'roundingStep',
+  );
+  @override
+  late final GeneratedColumn<int> roundingStep = GeneratedColumn<int>(
+    'rounding_step',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(10000),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedByMeta = const VerificationMeta(
+    'updatedBy',
+  );
+  @override
+  late final GeneratedColumn<String> updatedBy = GeneratedColumn<String>(
+    'updated_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    minProfitMargin,
+    defaultProfitMargin,
+    maxProfitMargin,
+    baseCurrency,
+    trackCurrencies,
+    roundingStep,
+    updatedAt,
+    updatedBy,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pricing_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PricingSettingsData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('min_profit_margin')) {
+      context.handle(
+        _minProfitMarginMeta,
+        minProfitMargin.isAcceptableOrUnknown(
+          data['min_profit_margin']!,
+          _minProfitMarginMeta,
+        ),
+      );
+    }
+    if (data.containsKey('default_profit_margin')) {
+      context.handle(
+        _defaultProfitMarginMeta,
+        defaultProfitMargin.isAcceptableOrUnknown(
+          data['default_profit_margin']!,
+          _defaultProfitMarginMeta,
+        ),
+      );
+    }
+    if (data.containsKey('max_profit_margin')) {
+      context.handle(
+        _maxProfitMarginMeta,
+        maxProfitMargin.isAcceptableOrUnknown(
+          data['max_profit_margin']!,
+          _maxProfitMarginMeta,
+        ),
+      );
+    }
+    if (data.containsKey('base_currency')) {
+      context.handle(
+        _baseCurrencyMeta,
+        baseCurrency.isAcceptableOrUnknown(
+          data['base_currency']!,
+          _baseCurrencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('track_currencies')) {
+      context.handle(
+        _trackCurrenciesMeta,
+        trackCurrencies.isAcceptableOrUnknown(
+          data['track_currencies']!,
+          _trackCurrenciesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('rounding_step')) {
+      context.handle(
+        _roundingStepMeta,
+        roundingStep.isAcceptableOrUnknown(
+          data['rounding_step']!,
+          _roundingStepMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('updated_by')) {
+      context.handle(
+        _updatedByMeta,
+        updatedBy.isAcceptableOrUnknown(data['updated_by']!, _updatedByMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PricingSettingsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PricingSettingsData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      minProfitMargin: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}min_profit_margin'],
+      )!,
+      defaultProfitMargin: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}default_profit_margin'],
+      )!,
+      maxProfitMargin: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}max_profit_margin'],
+      )!,
+      baseCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}base_currency'],
+      )!,
+      trackCurrencies: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_currencies'],
+      )!,
+      roundingStep: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rounding_step'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      ),
+      updatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_by'],
+      ),
+    );
+  }
+
+  @override
+  $PricingSettingsTable createAlias(String alias) {
+    return $PricingSettingsTable(attachedDatabase, alias);
+  }
+}
+
+class PricingSettingsData extends DataClass
+    implements Insertable<PricingSettingsData> {
+  /// Primary key - always 1 (singleton)
+  final int id;
+
+  /// Minimum profit margin percentage
+  final double minProfitMargin;
+
+  /// Default profit margin percentage
+  final double defaultProfitMargin;
+
+  /// Maximum profit margin percentage
+  final double maxProfitMargin;
+
+  /// Base currency code (default: IRR)
+  final String baseCurrency;
+
+  /// JSON array of tracked currencies (e.g., ["USD","EUR","AED"])
+  final String trackCurrencies;
+
+  /// Rounding step for price calculation (default: 10000 = 10,000 Toman)
+  final int roundingStep;
+
+  /// Last update timestamp
+  final DateTime? updatedAt;
+
+  /// User UUID who last updated settings
+  final String? updatedBy;
+  const PricingSettingsData({
+    required this.id,
+    required this.minProfitMargin,
+    required this.defaultProfitMargin,
+    required this.maxProfitMargin,
+    required this.baseCurrency,
+    required this.trackCurrencies,
+    required this.roundingStep,
+    this.updatedAt,
+    this.updatedBy,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['min_profit_margin'] = Variable<double>(minProfitMargin);
+    map['default_profit_margin'] = Variable<double>(defaultProfitMargin);
+    map['max_profit_margin'] = Variable<double>(maxProfitMargin);
+    map['base_currency'] = Variable<String>(baseCurrency);
+    map['track_currencies'] = Variable<String>(trackCurrencies);
+    map['rounding_step'] = Variable<int>(roundingStep);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    if (!nullToAbsent || updatedBy != null) {
+      map['updated_by'] = Variable<String>(updatedBy);
+    }
+    return map;
+  }
+
+  PricingSettingsCompanion toCompanion(bool nullToAbsent) {
+    return PricingSettingsCompanion(
+      id: Value(id),
+      minProfitMargin: Value(minProfitMargin),
+      defaultProfitMargin: Value(defaultProfitMargin),
+      maxProfitMargin: Value(maxProfitMargin),
+      baseCurrency: Value(baseCurrency),
+      trackCurrencies: Value(trackCurrencies),
+      roundingStep: Value(roundingStep),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+      updatedBy: updatedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedBy),
+    );
+  }
+
+  factory PricingSettingsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PricingSettingsData(
+      id: serializer.fromJson<int>(json['id']),
+      minProfitMargin: serializer.fromJson<double>(json['minProfitMargin']),
+      defaultProfitMargin: serializer.fromJson<double>(
+        json['defaultProfitMargin'],
+      ),
+      maxProfitMargin: serializer.fromJson<double>(json['maxProfitMargin']),
+      baseCurrency: serializer.fromJson<String>(json['baseCurrency']),
+      trackCurrencies: serializer.fromJson<String>(json['trackCurrencies']),
+      roundingStep: serializer.fromJson<int>(json['roundingStep']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+      updatedBy: serializer.fromJson<String?>(json['updatedBy']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'minProfitMargin': serializer.toJson<double>(minProfitMargin),
+      'defaultProfitMargin': serializer.toJson<double>(defaultProfitMargin),
+      'maxProfitMargin': serializer.toJson<double>(maxProfitMargin),
+      'baseCurrency': serializer.toJson<String>(baseCurrency),
+      'trackCurrencies': serializer.toJson<String>(trackCurrencies),
+      'roundingStep': serializer.toJson<int>(roundingStep),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+      'updatedBy': serializer.toJson<String?>(updatedBy),
+    };
+  }
+
+  PricingSettingsData copyWith({
+    int? id,
+    double? minProfitMargin,
+    double? defaultProfitMargin,
+    double? maxProfitMargin,
+    String? baseCurrency,
+    String? trackCurrencies,
+    int? roundingStep,
+    Value<DateTime?> updatedAt = const Value.absent(),
+    Value<String?> updatedBy = const Value.absent(),
+  }) => PricingSettingsData(
+    id: id ?? this.id,
+    minProfitMargin: minProfitMargin ?? this.minProfitMargin,
+    defaultProfitMargin: defaultProfitMargin ?? this.defaultProfitMargin,
+    maxProfitMargin: maxProfitMargin ?? this.maxProfitMargin,
+    baseCurrency: baseCurrency ?? this.baseCurrency,
+    trackCurrencies: trackCurrencies ?? this.trackCurrencies,
+    roundingStep: roundingStep ?? this.roundingStep,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    updatedBy: updatedBy.present ? updatedBy.value : this.updatedBy,
+  );
+  PricingSettingsData copyWithCompanion(PricingSettingsCompanion data) {
+    return PricingSettingsData(
+      id: data.id.present ? data.id.value : this.id,
+      minProfitMargin: data.minProfitMargin.present
+          ? data.minProfitMargin.value
+          : this.minProfitMargin,
+      defaultProfitMargin: data.defaultProfitMargin.present
+          ? data.defaultProfitMargin.value
+          : this.defaultProfitMargin,
+      maxProfitMargin: data.maxProfitMargin.present
+          ? data.maxProfitMargin.value
+          : this.maxProfitMargin,
+      baseCurrency: data.baseCurrency.present
+          ? data.baseCurrency.value
+          : this.baseCurrency,
+      trackCurrencies: data.trackCurrencies.present
+          ? data.trackCurrencies.value
+          : this.trackCurrencies,
+      roundingStep: data.roundingStep.present
+          ? data.roundingStep.value
+          : this.roundingStep,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      updatedBy: data.updatedBy.present ? data.updatedBy.value : this.updatedBy,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PricingSettingsData(')
+          ..write('id: $id, ')
+          ..write('minProfitMargin: $minProfitMargin, ')
+          ..write('defaultProfitMargin: $defaultProfitMargin, ')
+          ..write('maxProfitMargin: $maxProfitMargin, ')
+          ..write('baseCurrency: $baseCurrency, ')
+          ..write('trackCurrencies: $trackCurrencies, ')
+          ..write('roundingStep: $roundingStep, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('updatedBy: $updatedBy')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    minProfitMargin,
+    defaultProfitMargin,
+    maxProfitMargin,
+    baseCurrency,
+    trackCurrencies,
+    roundingStep,
+    updatedAt,
+    updatedBy,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PricingSettingsData &&
+          other.id == this.id &&
+          other.minProfitMargin == this.minProfitMargin &&
+          other.defaultProfitMargin == this.defaultProfitMargin &&
+          other.maxProfitMargin == this.maxProfitMargin &&
+          other.baseCurrency == this.baseCurrency &&
+          other.trackCurrencies == this.trackCurrencies &&
+          other.roundingStep == this.roundingStep &&
+          other.updatedAt == this.updatedAt &&
+          other.updatedBy == this.updatedBy);
+}
+
+class PricingSettingsCompanion extends UpdateCompanion<PricingSettingsData> {
+  final Value<int> id;
+  final Value<double> minProfitMargin;
+  final Value<double> defaultProfitMargin;
+  final Value<double> maxProfitMargin;
+  final Value<String> baseCurrency;
+  final Value<String> trackCurrencies;
+  final Value<int> roundingStep;
+  final Value<DateTime?> updatedAt;
+  final Value<String?> updatedBy;
+  const PricingSettingsCompanion({
+    this.id = const Value.absent(),
+    this.minProfitMargin = const Value.absent(),
+    this.defaultProfitMargin = const Value.absent(),
+    this.maxProfitMargin = const Value.absent(),
+    this.baseCurrency = const Value.absent(),
+    this.trackCurrencies = const Value.absent(),
+    this.roundingStep = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.updatedBy = const Value.absent(),
+  });
+  PricingSettingsCompanion.insert({
+    this.id = const Value.absent(),
+    this.minProfitMargin = const Value.absent(),
+    this.defaultProfitMargin = const Value.absent(),
+    this.maxProfitMargin = const Value.absent(),
+    this.baseCurrency = const Value.absent(),
+    this.trackCurrencies = const Value.absent(),
+    this.roundingStep = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.updatedBy = const Value.absent(),
+  });
+  static Insertable<PricingSettingsData> custom({
+    Expression<int>? id,
+    Expression<double>? minProfitMargin,
+    Expression<double>? defaultProfitMargin,
+    Expression<double>? maxProfitMargin,
+    Expression<String>? baseCurrency,
+    Expression<String>? trackCurrencies,
+    Expression<int>? roundingStep,
+    Expression<DateTime>? updatedAt,
+    Expression<String>? updatedBy,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (minProfitMargin != null) 'min_profit_margin': minProfitMargin,
+      if (defaultProfitMargin != null)
+        'default_profit_margin': defaultProfitMargin,
+      if (maxProfitMargin != null) 'max_profit_margin': maxProfitMargin,
+      if (baseCurrency != null) 'base_currency': baseCurrency,
+      if (trackCurrencies != null) 'track_currencies': trackCurrencies,
+      if (roundingStep != null) 'rounding_step': roundingStep,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (updatedBy != null) 'updated_by': updatedBy,
+    });
+  }
+
+  PricingSettingsCompanion copyWith({
+    Value<int>? id,
+    Value<double>? minProfitMargin,
+    Value<double>? defaultProfitMargin,
+    Value<double>? maxProfitMargin,
+    Value<String>? baseCurrency,
+    Value<String>? trackCurrencies,
+    Value<int>? roundingStep,
+    Value<DateTime?>? updatedAt,
+    Value<String?>? updatedBy,
+  }) {
+    return PricingSettingsCompanion(
+      id: id ?? this.id,
+      minProfitMargin: minProfitMargin ?? this.minProfitMargin,
+      defaultProfitMargin: defaultProfitMargin ?? this.defaultProfitMargin,
+      maxProfitMargin: maxProfitMargin ?? this.maxProfitMargin,
+      baseCurrency: baseCurrency ?? this.baseCurrency,
+      trackCurrencies: trackCurrencies ?? this.trackCurrencies,
+      roundingStep: roundingStep ?? this.roundingStep,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (minProfitMargin.present) {
+      map['min_profit_margin'] = Variable<double>(minProfitMargin.value);
+    }
+    if (defaultProfitMargin.present) {
+      map['default_profit_margin'] = Variable<double>(
+        defaultProfitMargin.value,
+      );
+    }
+    if (maxProfitMargin.present) {
+      map['max_profit_margin'] = Variable<double>(maxProfitMargin.value);
+    }
+    if (baseCurrency.present) {
+      map['base_currency'] = Variable<String>(baseCurrency.value);
+    }
+    if (trackCurrencies.present) {
+      map['track_currencies'] = Variable<String>(trackCurrencies.value);
+    }
+    if (roundingStep.present) {
+      map['rounding_step'] = Variable<int>(roundingStep.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (updatedBy.present) {
+      map['updated_by'] = Variable<String>(updatedBy.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PricingSettingsCompanion(')
+          ..write('id: $id, ')
+          ..write('minProfitMargin: $minProfitMargin, ')
+          ..write('defaultProfitMargin: $defaultProfitMargin, ')
+          ..write('maxProfitMargin: $maxProfitMargin, ')
+          ..write('baseCurrency: $baseCurrency, ')
+          ..write('trackCurrencies: $trackCurrencies, ')
+          ..write('roundingStep: $roundingStep, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('updatedBy: $updatedBy')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -5040,6 +6753,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $PurchaseItemsTable purchaseItems = $PurchaseItemsTable(this);
   late final $EventsTable events = $EventsTable(this);
+  late final $ExchangeRateEventsTable exchangeRateEvents =
+      $ExchangeRateEventsTable(this);
+  late final $PricingSettingsTable pricingSettings = $PricingSettingsTable(
+    this,
+  );
   late final ProductDao productDao = ProductDao(this as AppDatabase);
   late final UserDao userDao = UserDao(this as AppDatabase);
   late final ThemeDao themeDao = ThemeDao(this as AppDatabase);
@@ -5047,6 +6765,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final SalesDao salesDao = SalesDao(this as AppDatabase);
   late final PurchaseDao purchaseDao = PurchaseDao(this as AppDatabase);
   late final EventDao eventDao = EventDao(this as AppDatabase);
+  late final ExchangeRateDao exchangeRateDao = ExchangeRateDao(
+    this as AppDatabase,
+  );
+  late final PricingSettingsDao pricingSettingsDao = PricingSettingsDao(
+    this as AppDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5061,6 +6785,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     purchaseInvoices,
     purchaseItems,
     events,
+    exchangeRateEvents,
+    pricingSettings,
   ];
 }
 
@@ -5085,6 +6811,11 @@ typedef $$ProductsTableCreateCompanionBuilder =
       Value<double> avgBuyPrice,
       Value<int> minMarginPercent,
       Value<int> syncStatus,
+      Value<String> baseCurrencyCode,
+      Value<double?> costExchangeRate,
+      Value<double?> minPrice,
+      Value<double?> sellingPrice,
+      Value<double?> maxPrice,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<int> rowid,
@@ -5110,6 +6841,11 @@ typedef $$ProductsTableUpdateCompanionBuilder =
       Value<double> avgBuyPrice,
       Value<int> minMarginPercent,
       Value<int> syncStatus,
+      Value<String> baseCurrencyCode,
+      Value<double?> costExchangeRate,
+      Value<double?> minPrice,
+      Value<double?> sellingPrice,
+      Value<double?> maxPrice,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -5266,6 +7002,31 @@ class $$ProductsTableFilterComposer
 
   ColumnFilters<int> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get baseCurrencyCode => $composableBuilder(
+    column: $table.baseCurrencyCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get costExchangeRate => $composableBuilder(
+    column: $table.costExchangeRate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get minPrice => $composableBuilder(
+    column: $table.minPrice,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get sellingPrice => $composableBuilder(
+    column: $table.sellingPrice,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get maxPrice => $composableBuilder(
+    column: $table.maxPrice,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5434,6 +7195,31 @@ class $$ProductsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get baseCurrencyCode => $composableBuilder(
+    column: $table.baseCurrencyCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get costExchangeRate => $composableBuilder(
+    column: $table.costExchangeRate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get minPrice => $composableBuilder(
+    column: $table.minPrice,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get sellingPrice => $composableBuilder(
+    column: $table.sellingPrice,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get maxPrice => $composableBuilder(
+    column: $table.maxPrice,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5539,6 +7325,27 @@ class $$ProductsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get baseCurrencyCode => $composableBuilder(
+    column: $table.baseCurrencyCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get costExchangeRate => $composableBuilder(
+    column: $table.costExchangeRate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get minPrice =>
+      $composableBuilder(column: $table.minPrice, builder: (column) => column);
+
+  GeneratedColumn<double> get sellingPrice => $composableBuilder(
+    column: $table.sellingPrice,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get maxPrice =>
+      $composableBuilder(column: $table.maxPrice, builder: (column) => column);
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -5643,6 +7450,11 @@ class $$ProductsTableTableManager
                 Value<double> avgBuyPrice = const Value.absent(),
                 Value<int> minMarginPercent = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
+                Value<String> baseCurrencyCode = const Value.absent(),
+                Value<double?> costExchangeRate = const Value.absent(),
+                Value<double?> minPrice = const Value.absent(),
+                Value<double?> sellingPrice = const Value.absent(),
+                Value<double?> maxPrice = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5666,6 +7478,11 @@ class $$ProductsTableTableManager
                 avgBuyPrice: avgBuyPrice,
                 minMarginPercent: minMarginPercent,
                 syncStatus: syncStatus,
+                baseCurrencyCode: baseCurrencyCode,
+                costExchangeRate: costExchangeRate,
+                minPrice: minPrice,
+                sellingPrice: sellingPrice,
+                maxPrice: maxPrice,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5691,6 +7508,11 @@ class $$ProductsTableTableManager
                 Value<double> avgBuyPrice = const Value.absent(),
                 Value<int> minMarginPercent = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
+                Value<String> baseCurrencyCode = const Value.absent(),
+                Value<double?> costExchangeRate = const Value.absent(),
+                Value<double?> minPrice = const Value.absent(),
+                Value<double?> sellingPrice = const Value.absent(),
+                Value<double?> maxPrice = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
@@ -5714,6 +7536,11 @@ class $$ProductsTableTableManager
                 avgBuyPrice: avgBuyPrice,
                 minMarginPercent: minMarginPercent,
                 syncStatus: syncStatus,
+                baseCurrencyCode: baseCurrencyCode,
+                costExchangeRate: costExchangeRate,
+                minPrice: minPrice,
+                sellingPrice: sellingPrice,
+                maxPrice: maxPrice,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -6993,6 +8820,9 @@ typedef $$SalesItemsTableCreateCompanionBuilder =
       required double costAtSale,
       required double totalPrice,
       required double profit,
+      Value<double?> exchangeRateAtSale,
+      Value<double?> costExchangeRate,
+      Value<double?> profitIrr,
       Value<int> rowid,
     });
 typedef $$SalesItemsTableUpdateCompanionBuilder =
@@ -7005,6 +8835,9 @@ typedef $$SalesItemsTableUpdateCompanionBuilder =
       Value<double> costAtSale,
       Value<double> totalPrice,
       Value<double> profit,
+      Value<double?> exchangeRateAtSale,
+      Value<double?> costExchangeRate,
+      Value<double?> profitIrr,
       Value<int> rowid,
     });
 
@@ -7096,6 +8929,21 @@ class $$SalesItemsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<double> get exchangeRateAtSale => $composableBuilder(
+    column: $table.exchangeRateAtSale,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get costExchangeRate => $composableBuilder(
+    column: $table.costExchangeRate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get profitIrr => $composableBuilder(
+    column: $table.profitIrr,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$SalesInvoicesTableFilterComposer get invoiceUuid {
     final $$SalesInvoicesTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -7182,6 +9030,21 @@ class $$SalesItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get exchangeRateAtSale => $composableBuilder(
+    column: $table.exchangeRateAtSale,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get costExchangeRate => $composableBuilder(
+    column: $table.costExchangeRate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get profitIrr => $composableBuilder(
+    column: $table.profitIrr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$SalesInvoicesTableOrderingComposer get invoiceUuid {
     final $$SalesInvoicesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -7261,6 +9124,19 @@ class $$SalesItemsTableAnnotationComposer
 
   GeneratedColumn<double> get profit =>
       $composableBuilder(column: $table.profit, builder: (column) => column);
+
+  GeneratedColumn<double> get exchangeRateAtSale => $composableBuilder(
+    column: $table.exchangeRateAtSale,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get costExchangeRate => $composableBuilder(
+    column: $table.costExchangeRate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get profitIrr =>
+      $composableBuilder(column: $table.profitIrr, builder: (column) => column);
 
   $$SalesInvoicesTableAnnotationComposer get invoiceUuid {
     final $$SalesInvoicesTableAnnotationComposer composer = $composerBuilder(
@@ -7345,6 +9221,9 @@ class $$SalesItemsTableTableManager
                 Value<double> costAtSale = const Value.absent(),
                 Value<double> totalPrice = const Value.absent(),
                 Value<double> profit = const Value.absent(),
+                Value<double?> exchangeRateAtSale = const Value.absent(),
+                Value<double?> costExchangeRate = const Value.absent(),
+                Value<double?> profitIrr = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SalesItemsCompanion(
                 itemUuid: itemUuid,
@@ -7355,6 +9234,9 @@ class $$SalesItemsTableTableManager
                 costAtSale: costAtSale,
                 totalPrice: totalPrice,
                 profit: profit,
+                exchangeRateAtSale: exchangeRateAtSale,
+                costExchangeRate: costExchangeRate,
+                profitIrr: profitIrr,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -7367,6 +9249,9 @@ class $$SalesItemsTableTableManager
                 required double costAtSale,
                 required double totalPrice,
                 required double profit,
+                Value<double?> exchangeRateAtSale = const Value.absent(),
+                Value<double?> costExchangeRate = const Value.absent(),
+                Value<double?> profitIrr = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SalesItemsCompanion.insert(
                 itemUuid: itemUuid,
@@ -7377,6 +9262,9 @@ class $$SalesItemsTableTableManager
                 costAtSale: costAtSale,
                 totalPrice: totalPrice,
                 profit: profit,
+                exchangeRateAtSale: exchangeRateAtSale,
+                costExchangeRate: costExchangeRate,
+                profitIrr: profitIrr,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -7891,6 +9779,9 @@ typedef $$PurchaseItemsTableCreateCompanionBuilder =
       required int quantity,
       required double unitBuyPrice,
       required double totalPrice,
+      Value<String> currencyCode,
+      Value<double?> exchangeRateAtPurchase,
+      Value<double?> costInBaseCurrency,
       Value<int> rowid,
     });
 typedef $$PurchaseItemsTableUpdateCompanionBuilder =
@@ -7901,6 +9792,9 @@ typedef $$PurchaseItemsTableUpdateCompanionBuilder =
       Value<int> quantity,
       Value<double> unitBuyPrice,
       Value<double> totalPrice,
+      Value<String> currencyCode,
+      Value<double?> exchangeRateAtPurchase,
+      Value<double?> costInBaseCurrency,
       Value<int> rowid,
     });
 
@@ -7986,6 +9880,21 @@ class $$PurchaseItemsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get exchangeRateAtPurchase => $composableBuilder(
+    column: $table.exchangeRateAtPurchase,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get costInBaseCurrency => $composableBuilder(
+    column: $table.costInBaseCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$PurchaseInvoicesTableFilterComposer get purchaseUuid {
     final $$PurchaseInvoicesTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -8062,6 +9971,21 @@ class $$PurchaseItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get exchangeRateAtPurchase => $composableBuilder(
+    column: $table.exchangeRateAtPurchase,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get costInBaseCurrency => $composableBuilder(
+    column: $table.costInBaseCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$PurchaseInvoicesTableOrderingComposer get purchaseUuid {
     final $$PurchaseInvoicesTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -8131,6 +10055,21 @@ class $$PurchaseItemsTableAnnotationComposer
 
   GeneratedColumn<double> get totalPrice => $composableBuilder(
     column: $table.totalPrice,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get exchangeRateAtPurchase => $composableBuilder(
+    column: $table.exchangeRateAtPurchase,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get costInBaseCurrency => $composableBuilder(
+    column: $table.costInBaseCurrency,
     builder: (column) => column,
   );
 
@@ -8215,6 +10154,9 @@ class $$PurchaseItemsTableTableManager
                 Value<int> quantity = const Value.absent(),
                 Value<double> unitBuyPrice = const Value.absent(),
                 Value<double> totalPrice = const Value.absent(),
+                Value<String> currencyCode = const Value.absent(),
+                Value<double?> exchangeRateAtPurchase = const Value.absent(),
+                Value<double?> costInBaseCurrency = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PurchaseItemsCompanion(
                 itemUuid: itemUuid,
@@ -8223,6 +10165,9 @@ class $$PurchaseItemsTableTableManager
                 quantity: quantity,
                 unitBuyPrice: unitBuyPrice,
                 totalPrice: totalPrice,
+                currencyCode: currencyCode,
+                exchangeRateAtPurchase: exchangeRateAtPurchase,
+                costInBaseCurrency: costInBaseCurrency,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8233,6 +10178,9 @@ class $$PurchaseItemsTableTableManager
                 required int quantity,
                 required double unitBuyPrice,
                 required double totalPrice,
+                Value<String> currencyCode = const Value.absent(),
+                Value<double?> exchangeRateAtPurchase = const Value.absent(),
+                Value<double?> costInBaseCurrency = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PurchaseItemsCompanion.insert(
                 itemUuid: itemUuid,
@@ -8241,6 +10189,9 @@ class $$PurchaseItemsTableTableManager
                 quantity: quantity,
                 unitBuyPrice: unitBuyPrice,
                 totalPrice: totalPrice,
+                currencyCode: currencyCode,
+                exchangeRateAtPurchase: exchangeRateAtPurchase,
+                costInBaseCurrency: costInBaseCurrency,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -8576,6 +10527,570 @@ typedef $$EventsTableProcessedTableManager =
       Event,
       PrefetchHooks Function()
     >;
+typedef $$ExchangeRateEventsTableCreateCompanionBuilder =
+    ExchangeRateEventsCompanion Function({
+      Value<int> id,
+      required String currencyCode,
+      required double rate,
+      required DateTime recordedAt,
+      required String source,
+      Value<double> confidence,
+      Value<String?> notes,
+      required String recordedBy,
+    });
+typedef $$ExchangeRateEventsTableUpdateCompanionBuilder =
+    ExchangeRateEventsCompanion Function({
+      Value<int> id,
+      Value<String> currencyCode,
+      Value<double> rate,
+      Value<DateTime> recordedAt,
+      Value<String> source,
+      Value<double> confidence,
+      Value<String?> notes,
+      Value<String> recordedBy,
+    });
+
+class $$ExchangeRateEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $ExchangeRateEventsTable> {
+  $$ExchangeRateEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get rate => $composableBuilder(
+    column: $table.rate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get confidence => $composableBuilder(
+    column: $table.confidence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordedBy => $composableBuilder(
+    column: $table.recordedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ExchangeRateEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExchangeRateEventsTable> {
+  $$ExchangeRateEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get rate => $composableBuilder(
+    column: $table.rate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get confidence => $composableBuilder(
+    column: $table.confidence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordedBy => $composableBuilder(
+    column: $table.recordedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ExchangeRateEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExchangeRateEventsTable> {
+  $$ExchangeRateEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get currencyCode => $composableBuilder(
+    column: $table.currencyCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get rate =>
+      $composableBuilder(column: $table.rate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get recordedAt => $composableBuilder(
+    column: $table.recordedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<double> get confidence => $composableBuilder(
+    column: $table.confidence,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get recordedBy => $composableBuilder(
+    column: $table.recordedBy,
+    builder: (column) => column,
+  );
+}
+
+class $$ExchangeRateEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ExchangeRateEventsTable,
+          ExchangeRateEventData,
+          $$ExchangeRateEventsTableFilterComposer,
+          $$ExchangeRateEventsTableOrderingComposer,
+          $$ExchangeRateEventsTableAnnotationComposer,
+          $$ExchangeRateEventsTableCreateCompanionBuilder,
+          $$ExchangeRateEventsTableUpdateCompanionBuilder,
+          (
+            ExchangeRateEventData,
+            BaseReferences<
+              _$AppDatabase,
+              $ExchangeRateEventsTable,
+              ExchangeRateEventData
+            >,
+          ),
+          ExchangeRateEventData,
+          PrefetchHooks Function()
+        > {
+  $$ExchangeRateEventsTableTableManager(
+    _$AppDatabase db,
+    $ExchangeRateEventsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExchangeRateEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExchangeRateEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExchangeRateEventsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> currencyCode = const Value.absent(),
+                Value<double> rate = const Value.absent(),
+                Value<DateTime> recordedAt = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<double> confidence = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<String> recordedBy = const Value.absent(),
+              }) => ExchangeRateEventsCompanion(
+                id: id,
+                currencyCode: currencyCode,
+                rate: rate,
+                recordedAt: recordedAt,
+                source: source,
+                confidence: confidence,
+                notes: notes,
+                recordedBy: recordedBy,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String currencyCode,
+                required double rate,
+                required DateTime recordedAt,
+                required String source,
+                Value<double> confidence = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                required String recordedBy,
+              }) => ExchangeRateEventsCompanion.insert(
+                id: id,
+                currencyCode: currencyCode,
+                rate: rate,
+                recordedAt: recordedAt,
+                source: source,
+                confidence: confidence,
+                notes: notes,
+                recordedBy: recordedBy,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ExchangeRateEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ExchangeRateEventsTable,
+      ExchangeRateEventData,
+      $$ExchangeRateEventsTableFilterComposer,
+      $$ExchangeRateEventsTableOrderingComposer,
+      $$ExchangeRateEventsTableAnnotationComposer,
+      $$ExchangeRateEventsTableCreateCompanionBuilder,
+      $$ExchangeRateEventsTableUpdateCompanionBuilder,
+      (
+        ExchangeRateEventData,
+        BaseReferences<
+          _$AppDatabase,
+          $ExchangeRateEventsTable,
+          ExchangeRateEventData
+        >,
+      ),
+      ExchangeRateEventData,
+      PrefetchHooks Function()
+    >;
+typedef $$PricingSettingsTableCreateCompanionBuilder =
+    PricingSettingsCompanion Function({
+      Value<int> id,
+      Value<double> minProfitMargin,
+      Value<double> defaultProfitMargin,
+      Value<double> maxProfitMargin,
+      Value<String> baseCurrency,
+      Value<String> trackCurrencies,
+      Value<int> roundingStep,
+      Value<DateTime?> updatedAt,
+      Value<String?> updatedBy,
+    });
+typedef $$PricingSettingsTableUpdateCompanionBuilder =
+    PricingSettingsCompanion Function({
+      Value<int> id,
+      Value<double> minProfitMargin,
+      Value<double> defaultProfitMargin,
+      Value<double> maxProfitMargin,
+      Value<String> baseCurrency,
+      Value<String> trackCurrencies,
+      Value<int> roundingStep,
+      Value<DateTime?> updatedAt,
+      Value<String?> updatedBy,
+    });
+
+class $$PricingSettingsTableFilterComposer
+    extends Composer<_$AppDatabase, $PricingSettingsTable> {
+  $$PricingSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get minProfitMargin => $composableBuilder(
+    column: $table.minProfitMargin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get defaultProfitMargin => $composableBuilder(
+    column: $table.defaultProfitMargin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get maxProfitMargin => $composableBuilder(
+    column: $table.maxProfitMargin,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get baseCurrency => $composableBuilder(
+    column: $table.baseCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get trackCurrencies => $composableBuilder(
+    column: $table.trackCurrencies,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get roundingStep => $composableBuilder(
+    column: $table.roundingStep,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedBy => $composableBuilder(
+    column: $table.updatedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PricingSettingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PricingSettingsTable> {
+  $$PricingSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get minProfitMargin => $composableBuilder(
+    column: $table.minProfitMargin,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get defaultProfitMargin => $composableBuilder(
+    column: $table.defaultProfitMargin,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get maxProfitMargin => $composableBuilder(
+    column: $table.maxProfitMargin,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get baseCurrency => $composableBuilder(
+    column: $table.baseCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get trackCurrencies => $composableBuilder(
+    column: $table.trackCurrencies,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get roundingStep => $composableBuilder(
+    column: $table.roundingStep,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedBy => $composableBuilder(
+    column: $table.updatedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PricingSettingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PricingSettingsTable> {
+  $$PricingSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<double> get minProfitMargin => $composableBuilder(
+    column: $table.minProfitMargin,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get defaultProfitMargin => $composableBuilder(
+    column: $table.defaultProfitMargin,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get maxProfitMargin => $composableBuilder(
+    column: $table.maxProfitMargin,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get baseCurrency => $composableBuilder(
+    column: $table.baseCurrency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get trackCurrencies => $composableBuilder(
+    column: $table.trackCurrencies,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get roundingStep => $composableBuilder(
+    column: $table.roundingStep,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedBy =>
+      $composableBuilder(column: $table.updatedBy, builder: (column) => column);
+}
+
+class $$PricingSettingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PricingSettingsTable,
+          PricingSettingsData,
+          $$PricingSettingsTableFilterComposer,
+          $$PricingSettingsTableOrderingComposer,
+          $$PricingSettingsTableAnnotationComposer,
+          $$PricingSettingsTableCreateCompanionBuilder,
+          $$PricingSettingsTableUpdateCompanionBuilder,
+          (
+            PricingSettingsData,
+            BaseReferences<
+              _$AppDatabase,
+              $PricingSettingsTable,
+              PricingSettingsData
+            >,
+          ),
+          PricingSettingsData,
+          PrefetchHooks Function()
+        > {
+  $$PricingSettingsTableTableManager(
+    _$AppDatabase db,
+    $PricingSettingsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PricingSettingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PricingSettingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PricingSettingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<double> minProfitMargin = const Value.absent(),
+                Value<double> defaultProfitMargin = const Value.absent(),
+                Value<double> maxProfitMargin = const Value.absent(),
+                Value<String> baseCurrency = const Value.absent(),
+                Value<String> trackCurrencies = const Value.absent(),
+                Value<int> roundingStep = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<String?> updatedBy = const Value.absent(),
+              }) => PricingSettingsCompanion(
+                id: id,
+                minProfitMargin: minProfitMargin,
+                defaultProfitMargin: defaultProfitMargin,
+                maxProfitMargin: maxProfitMargin,
+                baseCurrency: baseCurrency,
+                trackCurrencies: trackCurrencies,
+                roundingStep: roundingStep,
+                updatedAt: updatedAt,
+                updatedBy: updatedBy,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<double> minProfitMargin = const Value.absent(),
+                Value<double> defaultProfitMargin = const Value.absent(),
+                Value<double> maxProfitMargin = const Value.absent(),
+                Value<String> baseCurrency = const Value.absent(),
+                Value<String> trackCurrencies = const Value.absent(),
+                Value<int> roundingStep = const Value.absent(),
+                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<String?> updatedBy = const Value.absent(),
+              }) => PricingSettingsCompanion.insert(
+                id: id,
+                minProfitMargin: minProfitMargin,
+                defaultProfitMargin: defaultProfitMargin,
+                maxProfitMargin: maxProfitMargin,
+                baseCurrency: baseCurrency,
+                trackCurrencies: trackCurrencies,
+                roundingStep: roundingStep,
+                updatedAt: updatedAt,
+                updatedBy: updatedBy,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PricingSettingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PricingSettingsTable,
+      PricingSettingsData,
+      $$PricingSettingsTableFilterComposer,
+      $$PricingSettingsTableOrderingComposer,
+      $$PricingSettingsTableAnnotationComposer,
+      $$PricingSettingsTableCreateCompanionBuilder,
+      $$PricingSettingsTableUpdateCompanionBuilder,
+      (
+        PricingSettingsData,
+        BaseReferences<
+          _$AppDatabase,
+          $PricingSettingsTable,
+          PricingSettingsData
+        >,
+      ),
+      PricingSettingsData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -8598,4 +11113,8 @@ class $AppDatabaseManager {
       $$PurchaseItemsTableTableManager(_db, _db.purchaseItems);
   $$EventsTableTableManager get events =>
       $$EventsTableTableManager(_db, _db.events);
+  $$ExchangeRateEventsTableTableManager get exchangeRateEvents =>
+      $$ExchangeRateEventsTableTableManager(_db, _db.exchangeRateEvents);
+  $$PricingSettingsTableTableManager get pricingSettings =>
+      $$PricingSettingsTableTableManager(_db, _db.pricingSettings);
 }

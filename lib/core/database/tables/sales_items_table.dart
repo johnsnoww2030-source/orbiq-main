@@ -16,6 +16,12 @@ class SalesItems extends Table {
   RealColumn get totalPrice => real()();
   RealColumn get profit => real()();
 
+  // Phase 2: Enhanced profit calculation with currency tracking
+  RealColumn get exchangeRateAtSale => real().nullable()(); // 🔒 Immutable
+  RealColumn get costExchangeRate => real().nullable()(); // 🔒 Immutable
+  RealColumn get profitIrr => real().nullable()(); // 🔒 Immutable
+  // Note: profitUSD is computed, not stored: profitUSD = profitIRR / exchangeRateAtSale
+
   @override
   Set<Column> get primaryKey => {itemUuid};
 }

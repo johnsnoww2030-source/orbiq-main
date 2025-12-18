@@ -16,6 +16,9 @@ import 'tables/sales_items_table.dart';
 import 'tables/purchase_invoices_table.dart';
 import 'tables/purchase_items_table.dart';
 import 'tables/events_table.dart';
+// Phase 2 Tables
+import 'tables/exchange_rate_events_table.dart';
+import 'tables/pricing_settings_table.dart';
 
 // DAOs
 import 'daos/product_dao.dart';
@@ -26,6 +29,9 @@ import 'daos/language_dao.dart';
 import 'daos/sales_dao.dart';
 import 'daos/purchase_dao.dart';
 import 'daos/event_dao.dart';
+// Phase 2 DAOs
+import 'daos/exchange_rate_dao.dart';
+import 'daos/pricing_settings_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -42,6 +48,9 @@ part 'app_database.g.dart';
     PurchaseInvoices,
     PurchaseItems,
     Events,
+    // Phase 2 tables
+    ExchangeRateEvents,
+    PricingSettings,
   ],
   daos: [
     // Core DAOs
@@ -53,6 +62,9 @@ part 'app_database.g.dart';
     SalesDao,
     PurchaseDao,
     EventDao,
+    // Phase 2 DAOs
+    ExchangeRateDao,
+    PricingSettingsDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {

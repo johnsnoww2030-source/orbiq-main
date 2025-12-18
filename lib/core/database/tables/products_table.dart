@@ -31,6 +31,14 @@ class Products extends Table {
   IntColumn get minMarginPercent => integer().withDefault(const Constant(20))();
   IntColumn get syncStatus => integer().withDefault(const Constant(0))();
 
+  // Phase 2: Currency and pricing fields
+  TextColumn get baseCurrencyCode =>
+      text().withDefault(const Constant('IRR'))();
+  RealColumn get costExchangeRate => real().nullable()();
+  RealColumn get minPrice => real().nullable()();
+  RealColumn get sellingPrice => real().nullable()();
+  RealColumn get maxPrice => real().nullable()();
+
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 

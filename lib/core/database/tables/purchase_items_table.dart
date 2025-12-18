@@ -13,6 +13,11 @@ class PurchaseItems extends Table {
   RealColumn get unitBuyPrice => real()();
   RealColumn get totalPrice => real()();
 
+  // Phase 2: Currency fields
+  TextColumn get currencyCode => text().withDefault(const Constant('IRR'))();
+  RealColumn get exchangeRateAtPurchase => real().nullable()(); // 🔒 Immutable
+  RealColumn get costInBaseCurrency => real().nullable()();
+
   @override
   Set<Column> get primaryKey => {itemUuid};
 }
