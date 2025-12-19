@@ -2683,6 +2683,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'At current rate'**
   String get atCurrentRate;
+
+  /// No description provided for @pricingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing Settings'**
+  String get pricingSettings;
+
+  /// No description provided for @pricingSettingsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit margin and price rounding'**
+  String get pricingSettingsDesc;
 }
 
 class _AppLocalizationsDelegate

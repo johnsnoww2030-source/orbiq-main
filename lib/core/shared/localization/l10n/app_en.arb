@@ -461,5 +461,7 @@
   "valueIncrease": "Value Increase",
   "valueDecrease": "Value Decrease",
   "atSaleRate": "At sale rate",
-  "atCurrentRate": "At current rate"
+  "atCurrentRate": "At current rate",
+  "pricingSettings": "Pricing Settings",
+  "pricingSettingsDesc": "Profit margin and price rounding"
 }

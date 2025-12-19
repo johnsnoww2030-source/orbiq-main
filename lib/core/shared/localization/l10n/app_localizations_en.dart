@@ -1325,4 +1325,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get atCurrentRate => 'At current rate';
+
+  @override
+  String get pricingSettings => 'Pricing Settings';
+
+  @override
+  String get pricingSettingsDesc => 'Profit margin and price rounding';
 }

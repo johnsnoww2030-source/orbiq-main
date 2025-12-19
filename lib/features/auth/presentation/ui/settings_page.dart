@@ -226,8 +226,8 @@ class _SettingsPageState extends State<SettingsPage>
               _buildSecurityItem(
                 context,
                 icon: Icons.price_change,
-                title: 'تنظیمات قیمت‌گذاری', // TODO: Add to localization
-                subtitle: 'حاشیه سود و گرد کردن قیمت',
+                title: l10n.pricingSettings,
+                subtitle: l10n.pricingSettingsDesc,
                 actionLabel: l10n.change,
                 onAction: () =>
                     Navigator.pushNamed(context, Routes.pricingSettings),

@@ -464,5 +464,7 @@
   "valueIncrease": "افزایش ارزش",
   "valueDecrease": "کاهش ارزش",
   "atSaleRate": "با نرخ زمان فروش",
-  "atCurrentRate": "با نرخ امروز"
+  "atCurrentRate": "با نرخ امروز",
+  "pricingSettings": "تنظیمات قیمت‌گذاری",
+  "pricingSettingsDesc": "حاشیه سود و گرد کردن قیمت"
 }

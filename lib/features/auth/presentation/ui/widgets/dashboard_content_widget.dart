@@ -410,7 +410,7 @@ class _DashboardContentWidgetState extends State<DashboardContentWidget> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'نرخ ارز', // TODO: Add to localization
+                      l10n.exchangeRates,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),

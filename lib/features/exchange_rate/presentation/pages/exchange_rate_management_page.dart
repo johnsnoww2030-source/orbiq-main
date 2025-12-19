@@ -358,10 +358,7 @@ class _ExchangeRateManagementPageState
             child: const Text('انصراف'),
           ),
           FilledButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Re-add with confirmation flag
-            },
+            onPressed: () => Navigator.pop(context),
             child: const Text('تایید و ثبت'),
           ),
         ],

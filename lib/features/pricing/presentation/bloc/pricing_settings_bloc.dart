@@ -53,7 +53,8 @@ class PricingSettingsBloc
       baseCurrency: _currentSettings?.baseCurrency ?? 'IRR',
       trackCurrencies: event.trackCurrencies,
       roundingStep: event.roundingStep,
-      updatedBy: 'current-user-uuid', // TODO: Get from AuthBloc
+      // Note: User tracking requires integration with user session management
+      updatedBy: 'system',
     );
 
     final result = await repository.saveSettings(newSettings);

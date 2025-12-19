@@ -462,5 +462,7 @@
   "valueIncrease": "زيادة القيمة",
   "valueDecrease": "انخفاض القيمة",
   "atSaleRate": "بسعر وقت البيع",
-  "atCurrentRate": "بالسعر الحالي"
+  "atCurrentRate": "بالسعر الحالي",
+  "pricingSettings": "إعدادات التسعير",
+  "pricingSettingsDesc": "هامش الربح وتقريب السعر"
 }

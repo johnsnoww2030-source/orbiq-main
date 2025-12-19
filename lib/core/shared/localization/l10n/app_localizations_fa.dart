@@ -1325,4 +1325,10 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get atCurrentRate => 'با نرخ امروز';
+
+  @override
+  String get pricingSettings => 'تنظیمات قیمت‌گذاری';
+
+  @override
+  String get pricingSettingsDesc => 'حاشیه سود و گرد کردن قیمت';
 }

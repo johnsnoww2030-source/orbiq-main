@@ -52,12 +52,6 @@ class NavigationService {
     Navigator.pushNamed(context, Routes.editProduct, arguments: product);
   }
 
-  // TODO: Replace with Sales Module (PRD)
-  // /// Navigate to the payments report screen
-  // void navigateToPaymentsReport(BuildContext context) {
-  //   Navigator.pushNamed(context, Routes.paymentsReport);
-  // }
-
   /// Navigate to the update screen
   void navigateToUpdate(BuildContext context) {
     Navigator.pushNamed(context, Routes.update);

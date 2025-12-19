@@ -104,8 +104,8 @@ class ExchangeRateBloc extends Bloc<ExchangeRateEvent, ExchangeRateState> {
     AddExchangeRateEvent event,
     Emitter<ExchangeRateState> emit,
   ) async {
-    // Get current user UUID (should come from auth)
-    const recordedBy = 'current-user-uuid'; // TODO: Get from AuthBloc
+    // Note: User tracking requires integration with user session management
+    const recordedBy = 'system';
 
     final params = AddRateEventParams(
       currencyCode: event.currencyCode,

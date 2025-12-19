@@ -12,8 +12,6 @@ import 'package:orbiq/core/shared/theme/presentation/controller/theme_state.dart
 import 'package:orbiq/features/auth/presentation/ui/widgets/navigation_drawer_widget.dart';
 import 'package:orbiq/features/auth/presentation/ui/widgets/dashboard_content_widget.dart';
 
-// TODO: Replace with Sales Module (PRD)
-// Removed: payment_report_page.dart
 import 'package:orbiq/features/get_product/presentation/ui/products_management_page.dart';
 import 'package:orbiq/features/reports/presentation/ui/reports_page.dart';
 import 'package:orbiq/features/reports/presentation/controller/reports_bloc.dart';

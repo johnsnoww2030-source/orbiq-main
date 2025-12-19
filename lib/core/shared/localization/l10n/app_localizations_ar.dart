@@ -1321,4 +1321,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get atCurrentRate => 'بالسعر الحالي';
+
+  @override
+  String get pricingSettings => 'إعدادات التسعير';
+
+  @override
+  String get pricingSettingsDesc => 'هامش الربح وتقريب السعر';
 }
