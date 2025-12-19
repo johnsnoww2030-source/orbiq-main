@@ -21,6 +21,8 @@ import 'package:orbiq/features/reports/presentation/controller/reports_event.dar
 import 'package:orbiq/features/purchase/presentation/ui/purchase_page.dart';
 import 'package:orbiq/features/sales/presentation/ui/sales_page.dart';
 import 'package:orbiq/features/auth/presentation/ui/settings_page.dart';
+import 'package:orbiq/features/profit/presentation/bloc/profit_report_bloc.dart';
+import 'package:orbiq/features/profit/presentation/pages/profit_report_page.dart';
 
 class ManagerPage extends StatefulWidget {
   const ManagerPage({super.key});
@@ -193,6 +195,11 @@ class _ManagerPageState extends State<ManagerPage> {
         );
       case 8: // Settings
         return const SettingsPage();
+      case 9: // Profit Report
+        return BlocProvider(
+          create: (context) => getIt<ProfitReportBloc>(),
+          child: const ProfitReportPage(),
+        );
       default:
         return const DashboardContentWidget();
     }

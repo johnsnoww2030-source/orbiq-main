@@ -16,6 +16,10 @@ import 'package:orbiq/features/purchase/presentation/controller/purchase_state.d
 import 'package:orbiq/features/purchase/domain/entities/purchase_entity.dart';
 import 'package:orbiq/features/purchase/presentation/ui/widgets/quick_add_product_dialog.dart';
 import 'package:orbiq/features/purchase/presentation/ui/widgets/pricing_suggestion_dialog.dart';
+// Phase 2: Exchange Rate
+import 'package:orbiq/features/exchange_rate/presentation/bloc/exchange_rate_bloc.dart';
+import 'package:orbiq/features/exchange_rate/presentation/bloc/exchange_rate_event.dart';
+import 'package:orbiq/features/exchange_rate/presentation/bloc/exchange_rate_state.dart';
 
 /// Add Purchase Page - form to create a new purchase invoice
 class AddPurchasePage extends StatefulWidget {
@@ -336,114 +340,199 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
 
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
+          child: Column(
             children: [
-              // Product dropdown
-              Expanded(
-                flex: 3,
-                child: DropdownButtonFormField<String>(
-                  initialValue: item.productUuid.isEmpty
-                      ? null
-                      : item.productUuid,
-                  decoration: InputDecoration(
-                    labelText: l10n.product,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
+              Row(
+                children: [
+                  // Product dropdown
+                  Expanded(
+                    flex: 3,
+                    child: DropdownButtonFormField<String>(
+                      initialValue: item.productUuid.isEmpty
+                          ? null
+                          : item.productUuid,
+                      decoration: InputDecoration(
+                        labelText: l10n.product,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                      ),
+                      items: products
+                          .map(
+                            (p) => DropdownMenuItem(
+                              value: p.uuid,
+                              child: Text(
+                                p.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          final product = products.firstWhere(
+                            (p) => p.uuid == value,
+                          );
+                          setState(() {
+                            item.productUuid = value;
+                            item.productName = product.name;
+                          });
+                        }
+                      },
                     ),
                   ),
-                  items: products
-                      .map(
-                        (p) => DropdownMenuItem(
-                          value: p.uuid,
-                          child: Text(p.name, overflow: TextOverflow.ellipsis),
+                  const SizedBox(width: 8),
+                  // Currency dropdown (Phase 2)
+                  SizedBox(
+                    width: 80,
+                    child: DropdownButtonFormField<String>(
+                      initialValue: item.currencyCode,
+                      decoration: InputDecoration(
+                        labelText: 'ارز',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                      )
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      final product = products.firstWhere(
-                        (p) => p.uuid == value,
-                      );
-                      setState(() {
-                        item.productUuid = value;
-                        item.productName = product.name;
-                      });
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 8,
+                        ),
+                      ),
+                      items: _availableCurrencies
+                          .map(
+                            (c) => DropdownMenuItem(
+                              value: c,
+                              child: Text(
+                                c,
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) async {
+                        if (value != null) {
+                          setState(() {
+                            item.currencyCode = value;
+                          });
+                          // Load exchange rate for this currency
+                          if (value != 'IRR') {
+                            context.read<ExchangeRateBloc>().add(
+                              LoadCurrentRatesEvent([value]),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Quantity
+                  Expanded(
+                    child: TextFormField(
+                      controller: item.quantityController,
+                      decoration: InputDecoration(
+                        labelText: l10n.quantity,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      onChanged: (_) => setState(() {}),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Unit price
+                  Expanded(
+                    flex: 2,
+                    child: TextFormField(
+                      controller: item.priceController,
+                      decoration: InputDecoration(
+                        labelText: '${l10n.unitPrice} (${item.currencyCode})',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d*\.?\d*'),
+                        ),
+                      ],
+                      onChanged: (_) => setState(() {}),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Total (readonly)
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: Text(
+                        NumberFormat('#,##0').format(item.totalPrice),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  // Delete button
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline, color: Colors.red),
+                    onPressed: () => _removeItem(index),
+                  ),
+                ],
+              ),
+              // Show exchange rate info for foreign currency
+              if (item.currencyCode != 'IRR')
+                BlocBuilder<ExchangeRateBloc, ExchangeRateState>(
+                  builder: (context, rateState) {
+                    if (rateState is ExchangeRatesLoaded) {
+                      final rate = rateState.currentRates[item.currencyCode];
+                      if (rate != null) {
+                        // Update item's exchange rate
+                        item.exchangeRate = rate.rate;
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 4, right: 88),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                size: 14,
+                                color: Colors.blue[600],
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'نرخ: ${NumberFormat('#,##0').format(rate.rate)} تومان | معادل ریالی: ${NumberFormat('#,##0').format(item.costInBaseCurrency)}',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.blue[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
                     }
+                    return const SizedBox.shrink();
                   },
                 ),
-              ),
-              const SizedBox(width: 8),
-              // Quantity
-              Expanded(
-                child: TextFormField(
-                  controller: item.quantityController,
-                  decoration: InputDecoration(
-                    labelText: l10n.quantity,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                  ),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  onChanged: (_) => setState(() {}),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Unit price
-              Expanded(
-                flex: 2,
-                child: TextFormField(
-                  controller: item.priceController,
-                  decoration: InputDecoration(
-                    labelText: l10n.unitPrice,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                  ),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                  ],
-                  onChanged: (_) => setState(() {}),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Total (readonly)
-              Expanded(
-                flex: 2,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey[300]!),
-                  ),
-                  child: Text(
-                    NumberFormat('#,##0').format(item.totalPrice),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              // Delete button
-              IconButton(
-                icon: const Icon(Icons.delete_outline, color: Colors.red),
-                onPressed: () => _removeItem(index),
-              ),
             ],
           ),
         );
@@ -604,6 +693,14 @@ class _AddPurchasePageState extends State<AddPurchasePage> {
             quantity: item.quantity,
             unitBuyPrice: item.unitPrice,
             totalPrice: item.totalPrice,
+            // Phase 2: Currency fields
+            currencyCode: item.currencyCode,
+            exchangeRateAtPurchase: item.currencyCode != 'IRR'
+                ? item.exchangeRate
+                : null,
+            costInBaseCurrency: item.currencyCode != 'IRR'
+                ? item.costInBaseCurrency
+                : null,
           ),
         )
         .toList();
@@ -636,12 +733,26 @@ class _PurchaseItemFormData {
     text: '0',
   );
 
+  // Phase 2: Currency fields
+  String currencyCode = 'IRR';
+  double? exchangeRate; // Will be set when currency changes
+
   int get quantity => int.tryParse(quantityController.text) ?? 0;
   double get unitPrice => double.tryParse(priceController.text) ?? 0;
   double get totalPrice => quantity * unitPrice;
+
+  // Cost in base currency (IRR)
+  double get costInBaseCurrency {
+    if (currencyCode == 'IRR') return totalPrice;
+    final rate = exchangeRate ?? 1.0;
+    return totalPrice * rate;
+  }
 
   void dispose() {
     quantityController.dispose();
     priceController.dispose();
   }
 }
+
+/// Available currencies for purchase
+const _availableCurrencies = ['IRR', 'USD', 'EUR', 'AED'];

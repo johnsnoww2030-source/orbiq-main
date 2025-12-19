@@ -62,6 +62,10 @@ class SalesMapper {
       costAtSale: item.costAtSale,
       totalPrice: item.totalPrice,
       profit: item.profit,
+      // Phase 2: Exchange rate fields
+      exchangeRateAtSale: item.exchangeRateAtSale,
+      costExchangeRate: item.costExchangeRate,
+      profitIrr: item.profitIrr,
     );
   }
 
@@ -83,6 +87,10 @@ class SalesMapper {
       costAtSale: Value(entity.costAtSale),
       totalPrice: Value(totalPrice),
       profit: Value(profit),
+      // Phase 2: Exchange rate fields
+      exchangeRateAtSale: Value(entity.exchangeRateAtSale),
+      costExchangeRate: Value(entity.costExchangeRate),
+      profitIrr: Value(entity.profitIrr ?? entity.calculatedProfitIrr),
     );
   }
 }

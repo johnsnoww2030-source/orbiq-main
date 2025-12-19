@@ -71,7 +71,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
@@ -82,7 +82,51 @@ class AppDatabase extends _$AppDatabase {
         await into(themes).insert(ThemesCompanion.insert(themeType: 'light'));
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        // Future migrations will go here
+        // Migration from version 1 to 2 (Phase 2)
+        if (from < 2) {
+          // Add new columns to products table
+          await customStatement('''
+            ALTER TABLE products ADD COLUMN base_currency_code TEXT DEFAULT 'IRR';
+          ''');
+          await customStatement('''
+            ALTER TABLE products ADD COLUMN cost_exchange_rate REAL;
+          ''');
+          await customStatement('''
+            ALTER TABLE products ADD COLUMN min_price REAL;
+          ''');
+          await customStatement('''
+            ALTER TABLE products ADD COLUMN selling_price REAL;
+          ''');
+          await customStatement('''
+            ALTER TABLE products ADD COLUMN max_price REAL;
+          ''');
+
+          // Add new columns to purchase_items table
+          await customStatement('''
+            ALTER TABLE purchase_items ADD COLUMN currency_code TEXT DEFAULT 'IRR';
+          ''');
+          await customStatement('''
+            ALTER TABLE purchase_items ADD COLUMN exchange_rate_at_purchase REAL;
+          ''');
+          await customStatement('''
+            ALTER TABLE purchase_items ADD COLUMN cost_in_base_currency REAL;
+          ''');
+
+          // Add new columns to sales_items table
+          await customStatement('''
+            ALTER TABLE sales_items ADD COLUMN exchange_rate_at_sale REAL;
+          ''');
+          await customStatement('''
+            ALTER TABLE sales_items ADD COLUMN cost_exchange_rate REAL;
+          ''');
+          await customStatement('''
+            ALTER TABLE sales_items ADD COLUMN profit_irr REAL DEFAULT 0;
+          ''');
+
+          // Create new Phase 2 tables
+          await m.createTable(exchangeRateEvents);
+          await m.createTable(pricingSettings);
+        }
       },
     );
   }

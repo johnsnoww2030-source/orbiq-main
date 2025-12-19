@@ -61,6 +61,10 @@ class PurchaseMapper {
       quantity: item.quantity,
       unitBuyPrice: item.unitBuyPrice,
       totalPrice: item.totalPrice,
+      // Phase 2: Currency fields
+      currencyCode: item.currencyCode,
+      exchangeRateAtPurchase: item.exchangeRateAtPurchase,
+      costInBaseCurrency: item.costInBaseCurrency,
     );
   }
 
@@ -78,6 +82,10 @@ class PurchaseMapper {
       quantity: Value(entity.quantity),
       unitBuyPrice: Value(entity.unitBuyPrice),
       totalPrice: Value(entity.totalPrice),
+      // Phase 2: Currency fields
+      currencyCode: Value(entity.currencyCode),
+      exchangeRateAtPurchase: Value(entity.exchangeRateAtPurchase),
+      costInBaseCurrency: Value(entity.costInBaseCurrency),
     );
   }
 }

@@ -24,4 +24,9 @@ class Routes {
   static const String barcodeReader = '/barcode-reader';
   static const String languageSettings = '/settings/language';
   static const String currencySettings = '/settings/currency';
+
+  // Phase 2: Pricing & Currency routes
+  static const String exchangeRateManagement = '/settings/exchange-rate';
+  static const String pricingSettings = '/settings/pricing';
+  static const String profitReport = '/reports/profit';
 }

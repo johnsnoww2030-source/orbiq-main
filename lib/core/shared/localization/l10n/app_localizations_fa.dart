@@ -1232,4 +1232,97 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get failureFirstLogin => 'اولین ورود - لطفا رمز عبور را تغییر دهید';
+
+  @override
+  String get displayUnit => 'واحد نمایش';
+
+  @override
+  String get exchangeRates => 'نرخ ارزها';
+
+  @override
+  String get rateHistory => 'تاریخچه نرخ‌ها';
+
+  @override
+  String get addRate => 'ثبت نرخ';
+
+  @override
+  String get rateAdded => 'نرخ ثبت شد';
+
+  @override
+  String get currentRates => 'نرخ‌های فعلی';
+
+  @override
+  String get lastUpdate => 'آخرین بروزرسانی';
+
+  @override
+  String get noRatesYet => 'هنوز نرخی ثبت نشده';
+
+  @override
+  String get historyOf => 'تاریخچه';
+
+  @override
+  String get selectCurrencyToViewHistory =>
+      'برای مشاهده تاریخچه، یک ارز انتخاب کنید';
+
+  @override
+  String get profitReport => 'گزارش سود';
+
+  @override
+  String get salesReport => 'گزارش فروش';
+
+  @override
+  String get profitIRR => 'سود ریالی';
+
+  @override
+  String get profitIRRDesc => 'مجموع سود فروش‌ها به تومان';
+
+  @override
+  String get historicalProfitUSD => 'سود دلاری (با نرخ زمان فروش)';
+
+  @override
+  String get historicalProfitUSDDesc =>
+      'مجموع سود هر فروش، تبدیل‌شده با نرخ ارز همان روز';
+
+  @override
+  String get currentValueUSD => 'ارزش امروز (با نرخ فعلی)';
+
+  @override
+  String get currentValueUSDDesc => 'اگر کل سود ریالی امروز به دلار تبدیل شود';
+
+  @override
+  String get valueChangeByFX => 'تغییر ارزش دلاری (تأثیر نرخ ارز)';
+
+  @override
+  String get valueChangeByFXDesc =>
+      'تفاوت ناشی از تغییر نرخ ارز، نه سود یا زیان عملیاتی';
+
+  @override
+  String get valueChangeNotOperational =>
+      'این تغییر ناشی از نوسان نرخ ارز است، نه عملکرد فروش';
+
+  @override
+  String get effectiveRate => 'نرخ مؤثر (میانگین وزنی)';
+
+  @override
+  String get effectiveRateDesc =>
+      'میانگین وزنی نرخ ارز بر اساس سود هر فروش - با نرخ‌های واقعی متفاوت است';
+
+  @override
+  String get valueComparison => 'مقایسه ارزش (تاریخی vs امروز)';
+
+  @override
+  String get valueComparisonDesc =>
+      'مقایسه ارزش دلاری سود با نرخ زمان فروش و نرخ امروز';
+
+  @override
+  String get valueIncrease => 'افزایش ارزش';
+
+  @override
+  String get valueDecrease => 'کاهش ارزش';
+
+  @override
+  String get atSaleRate => 'با نرخ زمان فروش';
+
+  @override
+  String get atCurrentRate => 'با نرخ امروز';
 }

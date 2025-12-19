@@ -82,6 +82,12 @@ class PurchaseItemEntity extends Equatable {
   final double unitBuyPrice;
   final double totalPrice;
 
+  // Phase 2: Multi-currency support
+  final String currencyCode; // IRR, USD, EUR, AED
+  final double?
+  exchangeRateAtPurchase; // Rate at time of purchase (null if IRR)
+  final double? costInBaseCurrency; // Cost converted to IRR
+
   const PurchaseItemEntity({
     required this.itemUuid,
     required this.purchaseUuid,
@@ -90,6 +96,9 @@ class PurchaseItemEntity extends Equatable {
     required this.quantity,
     required this.unitBuyPrice,
     required this.totalPrice,
+    this.currencyCode = 'IRR',
+    this.exchangeRateAtPurchase,
+    this.costInBaseCurrency,
   });
 
   PurchaseItemEntity copyWith({
@@ -100,6 +109,9 @@ class PurchaseItemEntity extends Equatable {
     int? quantity,
     double? unitBuyPrice,
     double? totalPrice,
+    String? currencyCode,
+    double? exchangeRateAtPurchase,
+    double? costInBaseCurrency,
   }) {
     return PurchaseItemEntity(
       itemUuid: itemUuid ?? this.itemUuid,
@@ -109,6 +121,10 @@ class PurchaseItemEntity extends Equatable {
       quantity: quantity ?? this.quantity,
       unitBuyPrice: unitBuyPrice ?? this.unitBuyPrice,
       totalPrice: totalPrice ?? this.totalPrice,
+      currencyCode: currencyCode ?? this.currencyCode,
+      exchangeRateAtPurchase:
+          exchangeRateAtPurchase ?? this.exchangeRateAtPurchase,
+      costInBaseCurrency: costInBaseCurrency ?? this.costInBaseCurrency,
     );
   }
 
@@ -121,5 +137,8 @@ class PurchaseItemEntity extends Equatable {
     quantity,
     unitBuyPrice,
     totalPrice,
+    currencyCode,
+    exchangeRateAtPurchase,
+    costInBaseCurrency,
   ];
 }

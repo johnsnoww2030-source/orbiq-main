@@ -33,6 +33,6 @@ class ExchangeRateEvents extends Table {
   List<String> get customConstraints => [
     'CHECK(rate > 0)',
     'CHECK(confidence >= 0 AND confidence <= 1)',
-    'CHECK(source IN ("manual", "api_bonbast", "api_tgju", "market_avg", "correction"))',
+    // Source validation is done in AddRateEventUseCase instead of DB constraint
   ];
 }

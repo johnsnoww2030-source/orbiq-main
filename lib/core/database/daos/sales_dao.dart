@@ -63,6 +63,28 @@ class SalesDao extends DatabaseAccessor<AppDatabase> with _$SalesDaoMixin {
     )..where((i) => i.invoiceUuid.equals(invoiceUuid))).get();
   }
 
+  /// Get sales items in date range (Phase 2)
+  Future<List<SalesItem>> getSalesItemsByDateRange(
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    // Get invoices in range first
+    final invoices = await getSalesInDateRange(startDate, endDate);
+
+    // Get all items for those invoices
+    final List<SalesItem> allItems = [];
+    for (final invoice in invoices) {
+      final items = await getItemsByInvoiceUuid(invoice.invoiceUuid);
+      allItems.addAll(items);
+    }
+    return allItems;
+  }
+
+  /// Get sales items by invoice (Phase 2)
+  Future<List<SalesItem>> getSalesItemsByInvoice(String invoiceUuid) {
+    return getItemsByInvoiceUuid(invoiceUuid);
+  }
+
   /// Insert a sales item
   Future<int> insertItem(SalesItemsCompanion item) {
     return into(salesItems).insert(item);

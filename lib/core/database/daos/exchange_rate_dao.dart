@@ -9,7 +9,7 @@ part 'exchange_rate_dao.g.dart';
 @DriftAccessor(tables: [ExchangeRateEvents])
 class ExchangeRateDao extends DatabaseAccessor<AppDatabase>
     with _$ExchangeRateDaoMixin {
-  ExchangeRateDao(AppDatabase db) : super(db);
+  ExchangeRateDao(super.db);
 
   /// Get the current (latest) exchange rate for a currency
   Future<ExchangeRateEventData?> getCurrentRate(String currencyCode) {

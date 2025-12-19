@@ -8,7 +8,7 @@ part 'pricing_settings_dao.g.dart';
 @DriftAccessor(tables: [PricingSettings])
 class PricingSettingsDao extends DatabaseAccessor<AppDatabase>
     with _$PricingSettingsDaoMixin {
-  PricingSettingsDao(AppDatabase db) : super(db);
+  PricingSettingsDao(super.db);
 
   /// Get the current pricing settings (always returns the singleton record)
   Future<PricingSettingsData?> getSettings() {

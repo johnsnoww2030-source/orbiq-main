@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:orbiq/core/di/injection.dart';
 import 'package:orbiq/core/shared/localization/l10n/app_localizations.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 import 'package:orbiq/features/auth/domain/repositories/dashboard_repository.dart';
+// Phase 2
+import 'package:orbiq/features/exchange_rate/presentation/bloc/exchange_rate_bloc.dart';
+import 'package:orbiq/features/exchange_rate/presentation/bloc/exchange_rate_event.dart';
+import 'package:orbiq/features/exchange_rate/presentation/bloc/exchange_rate_state.dart';
+import 'package:orbiq/core/adaptor/routes_constants.dart';
 
 /// Dashboard with inventory overview, low stock alerts, and today's sales summary
 class DashboardContentWidget extends StatefulWidget {
@@ -36,6 +42,10 @@ class _DashboardContentWidgetState extends State<DashboardContentWidget> {
     super.initState();
     _dashboardRepository = getIt<DashboardRepository>();
     _loadDashboardData();
+    // Phase 2: Load exchange rates
+    context.read<ExchangeRateBloc>().add(
+      const LoadCurrentRatesEvent(['USD', 'EUR', 'AED']),
+    );
   }
 
   Future<void> _loadDashboardData() async {
@@ -110,6 +120,10 @@ class _DashboardContentWidgetState extends State<DashboardContentWidget> {
 
                   // Today's sales card
                   _buildTodaySalesCard(l10n),
+                  const SizedBox(height: 24),
+
+                  // Phase 2: Exchange Rate Card
+                  _buildExchangeRateCard(l10n),
                   const SizedBox(height: 24),
 
                   // Low stock alerts
@@ -373,6 +387,105 @@ class _DashboardContentWidgetState extends State<DashboardContentWidget> {
           ],
         ),
       ),
+    );
+  }
+
+  /// Phase 2: Exchange Rate Card
+  Widget _buildExchangeRateCard(AppLocalizations l10n) {
+    return BlocBuilder<ExchangeRateBloc, ExchangeRateState>(
+      builder: (context, state) {
+        final priceFormat = NumberFormat('#,##0');
+
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.currency_exchange,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'نرخ ارز', // TODO: Add to localization
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () => Navigator.pushNamed(
+                        context,
+                        Routes.exchangeRateManagement,
+                      ),
+                      child: const Text('مدیریت'),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                if (state is ExchangeRateLoading)
+                  const Center(child: CircularProgressIndicator())
+                else if (state is ExchangeRatesLoaded)
+                  Row(
+                    children: [
+                      if (state.currentRates['USD'] != null)
+                        Expanded(
+                          child: _buildRateStat(
+                            'دلار (USD)',
+                            priceFormat.format(state.currentRates['USD']!.rate),
+                            Colors.green,
+                          ),
+                        ),
+                      if (state.currentRates['EUR'] != null)
+                        Expanded(
+                          child: _buildRateStat(
+                            'یورو (EUR)',
+                            priceFormat.format(state.currentRates['EUR']!.rate),
+                            Colors.blue,
+                          ),
+                        ),
+                      if (state.currentRates['AED'] != null)
+                        Expanded(
+                          child: _buildRateStat(
+                            'درهم (AED)',
+                            priceFormat.format(state.currentRates['AED']!.rate),
+                            Colors.orange,
+                          ),
+                        ),
+                    ],
+                  )
+                else
+                  Center(
+                    child: Text(
+                      'نرخی ثبت نشده است',
+                      style: TextStyle(color: Colors.grey[600]),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildRateStat(String label, String value, Color color) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 11)),
+      ],
     );
   }
 }

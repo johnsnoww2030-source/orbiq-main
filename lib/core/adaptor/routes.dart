@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:orbiq/core/adaptor/routes_constants.dart';
+import 'package:orbiq/core/di/injection.dart';
 import 'package:orbiq/core/shared/localization/presentation/pages/language_setting_page.dart';
-import 'package:orbiq/core/shared/currency/presentation/pages/currency_settings_page.dart';
+import 'package:orbiq/features/exchange_rate/presentation/pages/unified_currency_settings_page.dart';
 import 'package:orbiq/core/shared/product/domain/entities/product_entity.dart';
 import 'package:orbiq/features/auth/presentation/ui/login_page.dart';
 import 'package:orbiq/features/auth/presentation/ui/change_pass_page.dart';
@@ -12,6 +14,14 @@ import 'package:orbiq/features/add_product/presentation/ui/edit_product_page.dar
 import 'package:orbiq/features/auth/presentation/ui/user_management_page.dart';
 import 'package:orbiq/features/get_product/presentation/ui/get_product_page.dart';
 import 'package:orbiq/features/upgrader/presentation/ui/upgrader_page.dart';
+
+// Phase 2 imports
+import 'package:orbiq/features/exchange_rate/presentation/bloc/exchange_rate_bloc.dart';
+// UnifiedCurrencySettingsPage replaces both CurrencySettingsPage and ExchangeRateManagementPage
+import 'package:orbiq/features/pricing/presentation/bloc/pricing_settings_bloc.dart';
+import 'package:orbiq/features/pricing/presentation/pages/pricing_settings_page.dart';
+import 'package:orbiq/features/profit/presentation/bloc/profit_report_bloc.dart';
+import 'package:orbiq/features/profit/presentation/pages/profit_report_page.dart';
 
 import '../../features/barcode_reader/presentation/ui/data_transfer_screen.dart';
 
@@ -36,5 +46,19 @@ Map<String, WidgetBuilder> appRoutes = {
   ),
   Routes.barcodeReader: (context) => const DataTransferScreen(),
   Routes.languageSettings: (context) => const LanguageSettingsPage(),
-  Routes.currencySettings: (context) => const CurrencySettingsPage(),
+  // Unified Currency Settings (combines currency display and exchange rate)
+  Routes.currencySettings: (context) => BlocProvider(
+    create: (_) => getIt<ExchangeRateBloc>(),
+    child: const UnifiedCurrencySettingsPage(),
+  ),
+
+  // Phase 2: Pricing, Profit
+  Routes.pricingSettings: (context) => BlocProvider(
+    create: (_) => getIt<PricingSettingsBloc>(),
+    child: const PricingSettingsPage(),
+  ),
+  Routes.profitReport: (context) => BlocProvider(
+    create: (_) => getIt<ProfitReportBloc>(),
+    child: const ProfitReportPage(),
+  ),
 };

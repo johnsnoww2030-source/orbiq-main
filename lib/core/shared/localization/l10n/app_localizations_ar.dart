@@ -1228,4 +1228,97 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get failureFirstLogin => 'تسجيل الدخول الأول - يرجى تغيير كلمة المرور';
+
+  @override
+  String get displayUnit => 'وحدة العرض';
+
+  @override
+  String get exchangeRates => 'أسعار الصرف';
+
+  @override
+  String get rateHistory => 'تاريخ الأسعار';
+
+  @override
+  String get addRate => 'إضافة سعر';
+
+  @override
+  String get rateAdded => 'تمت إضافة السعر';
+
+  @override
+  String get currentRates => 'الأسعار الحالية';
+
+  @override
+  String get lastUpdate => 'آخر تحديث';
+
+  @override
+  String get noRatesYet => 'لا توجد أسعار بعد';
+
+  @override
+  String get historyOf => 'تاريخ';
+
+  @override
+  String get selectCurrencyToViewHistory => 'اختر عملة لعرض التاريخ';
+
+  @override
+  String get profitReport => 'تقرير الأرباح';
+
+  @override
+  String get salesReport => 'تقرير المبيعات';
+
+  @override
+  String get profitIRR => 'الربح (ريال)';
+
+  @override
+  String get profitIRRDesc => 'مجموع أرباح المبيعات بالعملة المحلية';
+
+  @override
+  String get historicalProfitUSD => 'الربح بالدولار (بسعر وقت البيع)';
+
+  @override
+  String get historicalProfitUSDDesc =>
+      'مجموع ربح كل عملية بيع، محول بسعر الصرف في ذلك اليوم';
+
+  @override
+  String get currentValueUSD => 'القيمة الحالية (بالدولار)';
+
+  @override
+  String get currentValueUSDDesc =>
+      'إجمالي الربح إذا تم تحويله إلى دولار بسعر اليوم';
+
+  @override
+  String get valueChangeByFX => 'تغيير القيمة (تأثير سعر الصرف)';
+
+  @override
+  String get valueChangeByFXDesc =>
+      'التغيير بسبب تقلبات سعر الصرف، وليس الربح/الخسارة التشغيلية';
+
+  @override
+  String get valueChangeNotOperational =>
+      'هذا التغيير ناتج عن تقلبات سعر الصرف، وليس أداء المبيعات';
+
+  @override
+  String get effectiveRate => 'السعر الفعلي (المتوسط المرجح)';
+
+  @override
+  String get effectiveRateDesc =>
+      'متوسط سعر الصرف المرجح بناءً على ربح كل عملية بيع - يختلف عن الأسعار الفعلية';
+
+  @override
+  String get valueComparison => 'مقارنة القيمة (التاريخية مقابل اليوم)';
+
+  @override
+  String get valueComparisonDesc =>
+      'مقارنة قيمة الربح بالدولار بسعر وقت البيع مقابل سعر اليوم';
+
+  @override
+  String get valueIncrease => 'زيادة القيمة';
+
+  @override
+  String get valueDecrease => 'انخفاض القيمة';
+
+  @override
+  String get atSaleRate => 'بسعر وقت البيع';
+
+  @override
+  String get atCurrentRate => 'بالسعر الحالي';
 }

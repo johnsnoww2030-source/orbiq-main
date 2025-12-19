@@ -13,6 +13,8 @@ import 'bloc_providers/language_bloc_provider.dart';
 import 'bloc_providers/currency_bloc_provider.dart';
 import 'bloc_providers/purchase_bloc_provider.dart';
 import 'bloc_providers/sales_bloc_provider.dart';
+// Phase 2
+import 'bloc_providers/exchange_rate_bloc_provider.dart';
 
 List<BlocProvider> blocProviders(AppDatabase database) {
   final dio = Dio();
@@ -29,5 +31,7 @@ List<BlocProvider> blocProviders(AppDatabase database) {
     ...currencyBlocProviders(),
     ...purchaseBlocProviders,
     ...salesBlocProviders,
+    // Phase 2
+    ...exchangeRateBlocProviders,
   ];
 }

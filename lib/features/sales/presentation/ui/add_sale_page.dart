@@ -14,6 +14,9 @@ import 'package:orbiq/features/sales/presentation/controller/sales_bloc.dart';
 import 'package:orbiq/features/sales/presentation/controller/sales_event.dart';
 import 'package:orbiq/features/sales/presentation/controller/sales_state.dart';
 import 'package:orbiq/features/sales/domain/entities/sales_entity.dart';
+// Phase 2: Exchange Rate
+import 'package:orbiq/features/exchange_rate/presentation/bloc/exchange_rate_bloc.dart';
+import 'package:orbiq/features/exchange_rate/presentation/bloc/exchange_rate_state.dart';
 
 /// Add Sale Page - form to create a new sales invoice
 class AddSalePage extends StatefulWidget {
@@ -505,6 +508,13 @@ class _AddSalePageState extends State<AddSalePage> {
       userUuid = authState.user.uuid ?? 'system';
     }
 
+    // Phase 2: Get current exchange rate (USD)
+    double? currentExchangeRate;
+    final exchangeRateState = context.read<ExchangeRateBloc>().state;
+    if (exchangeRateState is ExchangeRatesLoaded) {
+      currentExchangeRate = exchangeRateState.currentRates['USD']?.rate;
+    }
+
     final saleItems = _items
         .map(
           (item) => SalesItemEntity(
@@ -517,6 +527,10 @@ class _AddSalePageState extends State<AddSalePage> {
             costAtSale: item.costAtSale,
             totalPrice: item.totalPrice,
             profit: item.profit,
+            // Phase 2: Exchange rate fields
+            exchangeRateAtSale: currentExchangeRate,
+            costExchangeRate: item.costExchangeRate,
+            profitIrr: null, // Will be calculated by entity
           ),
         )
         .toList();
@@ -551,6 +565,9 @@ class _SaleItemFormData {
   final TextEditingController priceController = TextEditingController(
     text: '0',
   );
+
+  // Phase 2: Exchange rate tracking
+  double? costExchangeRate; // Exchange rate when product was purchased
 
   int get quantity => int.tryParse(quantityController.text) ?? 0;
   double get unitPrice => double.tryParse(priceController.text) ?? 0;

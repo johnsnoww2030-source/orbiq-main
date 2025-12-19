@@ -2,21 +2,19 @@
 import '../../../auth/domain/failures/failure.dart';
 
 class ExchangeRateFailure extends Failure {
-  const ExchangeRateFailure([String message = 'Exchange rate operation failed'])
-    : super(message);
+  const ExchangeRateFailure([super.message = 'Exchange rate operation failed']);
 }
 
 class ExchangeRateNotFoundFailure extends Failure {
   const ExchangeRateNotFoundFailure([
-    String message = 'Exchange rate not found',
-  ]) : super(message);
+    super.message = 'Exchange rate not found',
+  ]);
 }
 
 class DatabaseFailure extends Failure {
-  const DatabaseFailure([String message = 'Database operation failed'])
-    : super(message);
+  const DatabaseFailure([super.message = 'Database operation failed']);
 }
 
 class ValidationFailure extends Failure {
-  const ValidationFailure(String message) : super(message);
+  const ValidationFailure(super.message);
 }

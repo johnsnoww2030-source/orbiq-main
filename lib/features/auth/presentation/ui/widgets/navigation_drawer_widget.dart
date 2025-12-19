@@ -19,6 +19,7 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget>
     with TickerProviderStateMixin {
   bool _isSalesExpanded = false;
   bool _isInventoryExpanded = false;
+  bool _isReportsExpanded = false;
 
   @override
   void initState() {
@@ -29,6 +30,9 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget>
     }
     if (widget.selectedIndex >= 3 && widget.selectedIndex <= 6) {
       _isInventoryExpanded = true;
+    }
+    if (widget.selectedIndex == 7 || widget.selectedIndex == 9) {
+      _isReportsExpanded = true;
     }
   }
 
@@ -41,6 +45,9 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget>
     }
     if (widget.selectedIndex >= 3 && widget.selectedIndex <= 6) {
       _isInventoryExpanded = true;
+    }
+    if (widget.selectedIndex == 7 || widget.selectedIndex == 9) {
+      _isReportsExpanded = true;
     }
   }
 
@@ -170,13 +177,36 @@ class _NavigationDrawerWidgetState extends State<NavigationDrawerWidget>
 
                   const SizedBox(height: 4),
 
-                  // Reports
-                  _buildNavItem(
+                  // Reports (expandable)
+                  _buildExpandableNavItem(
                     context,
-                    index: 7,
                     icon: Icons.analytics_outlined,
                     selectedIcon: Icons.analytics_rounded,
                     label: l10n.reports,
+                    isExpanded: _isReportsExpanded,
+                    onExpandTap: () {
+                      setState(() {
+                        _isReportsExpanded = !_isReportsExpanded;
+                      });
+                    },
+                    isAnyChildSelected:
+                        widget.selectedIndex == 7 || widget.selectedIndex == 9,
+                    children: [
+                      _buildSubNavItem(
+                        context,
+                        index: 7,
+                        icon: Icons.bar_chart_outlined,
+                        selectedIcon: Icons.bar_chart_rounded,
+                        label: l10n.salesReport,
+                      ),
+                      _buildSubNavItem(
+                        context,
+                        index: 9,
+                        icon: Icons.insights_outlined,
+                        selectedIcon: Icons.insights_rounded,
+                        label: l10n.profitReport,
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -2509,6 +2509,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'First login - please change your password'**
   String get failureFirstLogin;
+
+  /// No description provided for @displayUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Unit'**
+  String get displayUnit;
+
+  /// No description provided for @exchangeRates.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange Rates'**
+  String get exchangeRates;
+
+  /// No description provided for @rateHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate History'**
+  String get rateHistory;
+
+  /// No description provided for @addRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Rate'**
+  String get addRate;
+
+  /// No description provided for @rateAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate added'**
+  String get rateAdded;
+
+  /// No description provided for @currentRates.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Rates'**
+  String get currentRates;
+
+  /// No description provided for @lastUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Update'**
+  String get lastUpdate;
+
+  /// No description provided for @noRatesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No rates yet'**
+  String get noRatesYet;
+
+  /// No description provided for @historyOf.
+  ///
+  /// In en, this message translates to:
+  /// **'History of'**
+  String get historyOf;
+
+  /// No description provided for @selectCurrencyToViewHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a currency to view history'**
+  String get selectCurrencyToViewHistory;
+
+  /// No description provided for @profitReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit Report'**
+  String get profitReport;
+
+  /// No description provided for @salesReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales Report'**
+  String get salesReport;
+
+  /// No description provided for @profitIRR.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit (IRR)'**
+  String get profitIRR;
+
+  /// No description provided for @profitIRRDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Total profit from sales in local currency'**
+  String get profitIRRDesc;
+
+  /// No description provided for @historicalProfitUSD.
+  ///
+  /// In en, this message translates to:
+  /// **'Profit (USD at sale rate)'**
+  String get historicalProfitUSD;
+
+  /// No description provided for @historicalProfitUSDDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sum of each sale\'s profit, converted at the exchange rate on that day'**
+  String get historicalProfitUSDDesc;
+
+  /// No description provided for @currentValueUSD.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Value (USD)'**
+  String get currentValueUSD;
+
+  /// No description provided for @currentValueUSDDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Total profit if converted to USD at today\'s rate'**
+  String get currentValueUSDDesc;
+
+  /// No description provided for @valueChangeByFX.
+  ///
+  /// In en, this message translates to:
+  /// **'Value Change (FX Impact)'**
+  String get valueChangeByFX;
+
+  /// No description provided for @valueChangeByFXDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Change due to exchange rate fluctuation, not operational profit/loss'**
+  String get valueChangeByFXDesc;
+
+  /// No description provided for @valueChangeNotOperational.
+  ///
+  /// In en, this message translates to:
+  /// **'This change is due to FX fluctuation, not sales performance'**
+  String get valueChangeNotOperational;
+
+  /// No description provided for @effectiveRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Effective Rate (Weighted Avg.)'**
+  String get effectiveRate;
+
+  /// No description provided for @effectiveRateDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Weighted average exchange rate based on each sale\'s profit - differs from actual rates'**
+  String get effectiveRateDesc;
+
+  /// No description provided for @valueComparison.
+  ///
+  /// In en, this message translates to:
+  /// **'Value Comparison (Historical vs Today)'**
+  String get valueComparison;
+
+  /// No description provided for @valueComparisonDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare USD profit value at sale time vs today\'s rate'**
+  String get valueComparisonDesc;
+
+  /// No description provided for @valueIncrease.
+  ///
+  /// In en, this message translates to:
+  /// **'Value Increase'**
+  String get valueIncrease;
+
+  /// No description provided for @valueDecrease.
+  ///
+  /// In en, this message translates to:
+  /// **'Value Decrease'**
+  String get valueDecrease;
+
+  /// No description provided for @atSaleRate.
+  ///
+  /// In en, this message translates to:
+  /// **'At sale rate'**
+  String get atSaleRate;
+
+  /// No description provided for @atCurrentRate.
+  ///
+  /// In en, this message translates to:
+  /// **'At current rate'**
+  String get atCurrentRate;
 }
 
 class _AppLocalizationsDelegate

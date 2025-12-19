@@ -1232,4 +1232,97 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failureFirstLogin => 'First login - please change your password';
+
+  @override
+  String get displayUnit => 'Display Unit';
+
+  @override
+  String get exchangeRates => 'Exchange Rates';
+
+  @override
+  String get rateHistory => 'Rate History';
+
+  @override
+  String get addRate => 'Add Rate';
+
+  @override
+  String get rateAdded => 'Rate added';
+
+  @override
+  String get currentRates => 'Current Rates';
+
+  @override
+  String get lastUpdate => 'Last Update';
+
+  @override
+  String get noRatesYet => 'No rates yet';
+
+  @override
+  String get historyOf => 'History of';
+
+  @override
+  String get selectCurrencyToViewHistory => 'Select a currency to view history';
+
+  @override
+  String get profitReport => 'Profit Report';
+
+  @override
+  String get salesReport => 'Sales Report';
+
+  @override
+  String get profitIRR => 'Profit (IRR)';
+
+  @override
+  String get profitIRRDesc => 'Total profit from sales in local currency';
+
+  @override
+  String get historicalProfitUSD => 'Profit (USD at sale rate)';
+
+  @override
+  String get historicalProfitUSDDesc =>
+      'Sum of each sale\'s profit, converted at the exchange rate on that day';
+
+  @override
+  String get currentValueUSD => 'Current Value (USD)';
+
+  @override
+  String get currentValueUSDDesc =>
+      'Total profit if converted to USD at today\'s rate';
+
+  @override
+  String get valueChangeByFX => 'Value Change (FX Impact)';
+
+  @override
+  String get valueChangeByFXDesc =>
+      'Change due to exchange rate fluctuation, not operational profit/loss';
+
+  @override
+  String get valueChangeNotOperational =>
+      'This change is due to FX fluctuation, not sales performance';
+
+  @override
+  String get effectiveRate => 'Effective Rate (Weighted Avg.)';
+
+  @override
+  String get effectiveRateDesc =>
+      'Weighted average exchange rate based on each sale\'s profit - differs from actual rates';
+
+  @override
+  String get valueComparison => 'Value Comparison (Historical vs Today)';
+
+  @override
+  String get valueComparisonDesc =>
+      'Compare USD profit value at sale time vs today\'s rate';
+
+  @override
+  String get valueIncrease => 'Value Increase';
+
+  @override
+  String get valueDecrease => 'Value Decrease';
+
+  @override
+  String get atSaleRate => 'At sale rate';
+
+  @override
+  String get atCurrentRate => 'At current rate';
 }

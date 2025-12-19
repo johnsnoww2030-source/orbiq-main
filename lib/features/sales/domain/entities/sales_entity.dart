@@ -93,6 +93,11 @@ class SalesItemEntity extends Equatable {
   final double totalPrice;
   final double profit; // (unitSellPrice - costAtSale) × quantity
 
+  // Phase 2: Exchange rate tracking for accurate profit
+  final double? exchangeRateAtSale; // Current exchange rate at sale time
+  final double? costExchangeRate; // Exchange rate when product was purchased
+  final double? profitIrr; // Profit in IRR (considering FX changes)
+
   const SalesItemEntity({
     required this.itemUuid,
     required this.invoiceUuid,
@@ -103,6 +108,10 @@ class SalesItemEntity extends Equatable {
     required this.costAtSale,
     this.totalPrice = 0.0,
     this.profit = 0.0,
+    // Phase 2
+    this.exchangeRateAtSale,
+    this.costExchangeRate,
+    this.profitIrr,
   });
 
   /// Calculate profit
@@ -110,6 +119,17 @@ class SalesItemEntity extends Equatable {
 
   /// Calculate total price
   double get calculatedTotalPrice => unitSellPrice * quantity;
+
+  /// Calculate profit in IRR (Phase 2)
+  /// profitIRR = sellPrice - (costPrice * exchangeRateAtSale / costExchangeRate)
+  double get calculatedProfitIrr {
+    if (costExchangeRate == null || exchangeRateAtSale == null) {
+      return calculatedProfit;
+    }
+    if (costExchangeRate == 0) return calculatedProfit;
+    final adjustedCost = costAtSale * (exchangeRateAtSale! / costExchangeRate!);
+    return (unitSellPrice - adjustedCost) * quantity;
+  }
 
   @override
   List<Object?> get props => [
@@ -122,6 +142,9 @@ class SalesItemEntity extends Equatable {
     costAtSale,
     totalPrice,
     profit,
+    exchangeRateAtSale,
+    costExchangeRate,
+    profitIrr,
   ];
 
   SalesItemEntity copyWith({
@@ -134,6 +157,9 @@ class SalesItemEntity extends Equatable {
     double? costAtSale,
     double? totalPrice,
     double? profit,
+    double? exchangeRateAtSale,
+    double? costExchangeRate,
+    double? profitIrr,
   }) {
     return SalesItemEntity(
       itemUuid: itemUuid ?? this.itemUuid,
@@ -145,6 +171,9 @@ class SalesItemEntity extends Equatable {
       costAtSale: costAtSale ?? this.costAtSale,
       totalPrice: totalPrice ?? this.totalPrice,
       profit: profit ?? this.profit,
+      exchangeRateAtSale: exchangeRateAtSale ?? this.exchangeRateAtSale,
+      costExchangeRate: costExchangeRate ?? this.costExchangeRate,
+      profitIrr: profitIrr ?? this.profitIrr,
     );
   }
 }

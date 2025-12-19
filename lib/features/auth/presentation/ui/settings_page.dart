@@ -211,14 +211,26 @@ class _SettingsPageState extends State<SettingsPage>
                     Navigator.pushNamed(context, Routes.languageSettings),
               ),
               const Divider(height: 32),
+              // Unified Currency Settings (واحد نمایش + نرخ ارز + تاریخچه)
               _buildSecurityItem(
                 context,
-                icon: Icons.attach_money,
-                title: l10n.currencyUnit,
+                icon: Icons.currency_exchange,
+                title: l10n.currencySettings,
                 subtitle: l10n.manageCurrencyAndRate,
                 actionLabel: l10n.change,
                 onAction: () =>
                     Navigator.pushNamed(context, Routes.currencySettings),
+              ),
+              const Divider(height: 32),
+              // Phase 2: Pricing Settings
+              _buildSecurityItem(
+                context,
+                icon: Icons.price_change,
+                title: 'تنظیمات قیمت‌گذاری', // TODO: Add to localization
+                subtitle: 'حاشیه سود و گرد کردن قیمت',
+                actionLabel: l10n.change,
+                onAction: () =>
+                    Navigator.pushNamed(context, Routes.pricingSettings),
               ),
             ],
           ),

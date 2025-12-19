@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:orbiq/core/database/app_database.dart';
 import 'injection.config.dart';
+import 'phase2_injection.dart';
 
 final getIt = GetIt.instance;
 
@@ -12,4 +13,7 @@ Future<void> configureDependencies() async {
     return;
   }
   await getIt.init();
+
+  // Register Phase 2 dependencies
+  registerPhase2Dependencies(getIt);
 }
